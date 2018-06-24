@@ -1,0 +1,4 @@
+flask
+flask_paginate
+rdflib
+pyldapi
