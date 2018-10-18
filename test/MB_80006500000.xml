@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:MB="WFS" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" previous="-1" next="-1" numberMatched="-1" numberReturned="-1" xsi:schemaLocation="WFS https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer?request=DescribeFeatureType%26version=2.0.0%26typename=MB http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+    <gml:boundedBy>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG:6.9:3857">
+            <gml:lowerCorner>10777612.616999999 -5425372.8682000004</gml:lowerCorner>
+            <gml:upperCorner>18701455.709399998 -1022048.4728000015</gml:upperCorner>
+        </gml:Envelope>
+    </gml:boundedBy>
+    <gml:member>
+        <MB:MB gml:id="F3__34224">
+            <MB:OBJECTID>34224</MB:OBJECTID>
+            <MB:Shape>
+                <gml:MultiSurface srsName="urn:ogc:def:crs:EPSG:6.9:3857">
+                    <gml:surfaceMember>
+                        <gml:Polygon>
+                            <gml:exterior>
+                                <gml:LinearRing>
+                                    <gml:posList>16590281.1043 -4191588.0053000003 16590261.077 -4191588.6251999997 16590245.888899997 -4191615.4721999988 16590257.208800003 -4191620.4246999994 16590328.927599996 -4191661.2320000008 16590332.470700003 -4191663.3896000013 16590340.544299997 -4191672.2967000008 16590542.909999996 -4191787.7987999991 16590563.051100001 -4191782.0800999999 16590421.145099998 -4191701.0819000006 16590429.438100003 -4191686.4459999986 16590427.203400001 -4191685.1656999998 16590438.693999998 -4191664.8513999991 16590390.3627 -4191637.2708999999 16590376.881099999 -4191608.0522999987 16590351.913000003 -4191614.3178000003 16590335.262199998 -4191618.9175000004 16590281.1043 -4191588.0053000003</gml:posList>
+                                </gml:LinearRing>
+                            </gml:exterior>
+                        </gml:Polygon>
+                    </gml:surfaceMember>
+                </gml:MultiSurface>
+            </MB:Shape>
+            <MB:MB_CODE_2016>80006500000</MB:MB_CODE_2016>
+            <MB:MB_CATEGORY_CODE_2016>40</MB:MB_CATEGORY_CODE_2016>
+            <MB:MB_CATEGORY_NAME_2016>Parkland</MB:MB_CATEGORY_NAME_2016>
+            <MB:AREA_ALBERS_SQKM>0.0080000000000000002</MB:AREA_ALBERS_SQKM>
+            <MB:SA1_MAINCODE_2016>80101100409</MB:SA1_MAINCODE_2016>
+            <MB:STATE_CODE_2016>8</MB:STATE_CODE_2016>
+            <MB:DZN_CODE_2016>810041010</MB:DZN_CODE_2016>
+            <MB:SSC_CODE_2016>80034</MB:SSC_CODE_2016>
+            <MB:NRMR_CODE_2016>801</MB:NRMR_CODE_2016>
+            <MB:ADD_CODE_2016>D03</MB:ADD_CODE_2016>
+            <MB:Shape_Length>815.20211193848252</MB:Shape_Length>
+            <MB:Shape_Area>11984.571639310154</MB:Shape_Area>
+        </MB:MB>
+    </gml:member>
+</wfs:FeatureCollection>

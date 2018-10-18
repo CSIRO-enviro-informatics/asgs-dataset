@@ -2,15 +2,22 @@
 <html>
 <head lang="en">
     <meta charset="utf-8">
-    <title>Media Types</title>
+    <title>ASGS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='simple.css') }}" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli">
 </head>
 <body>
     <header>
+        ASGS Test LD API ||
         <a href="{{ url_for('controller.home') }}">Home</a> |
-        <a href="{{ url_for('controller.mediatypes') }}">Media Types</a> |
-        <a href="{{ url_for('controller.agents') }}">Persons</a>
+        <a href="{{ url_for('controller.meshblocks') }}">Mesh Blocks</a> |
+        <a href="{{ url_for('controller.meshblocks') }}">SA1s</a> |
+        <a href="{{ url_for('controller.meshblocks') }}">SA2s</a> |
+        <a href="{{ url_for('controller.meshblocks') }}">SA3s</a> |
+        <a href="{{ url_for('controller.meshblocks') }}">SA4s</a> |
+        <a href="{{ url_for('controller.meshblocks') }}">SA5s</a> |
+        <a href="{{ url_for('controller.meshblocks') }}">SA6s</a> |
+        <a href="{{ url_for('controller.states') }}">States</a>
     </header>
     <div id="content">
         {% block content %}{% endblock %}
