@@ -1,7 +1,7 @@
 import logging
-import _conf as conf
+import asgs_dataset._config as conf
 from flask import Flask
-from controller import routes
+from asgs_dataset.controller import routes
 import pyldapi
 
 app = Flask(__name__, template_folder=conf.TEMPLATES_DIR, static_folder=conf.STATIC_DIR)
@@ -15,11 +15,8 @@ if __name__ == '__main__':
                         datefmt='%Y-%m-%d %H:%M:%S',
                         format='%(asctime)s %(levelname)s %(filename)s:%(lineno)s %(message)s')
 
-    # generate the RDF sitemap
-    # thread = pyldapi.setup(app, conf.APP_DIR, conf.URI_BASE)
+    pyldapi.setup(app, conf.APP_DIR, conf.URI_BASE)
 
-    # runn the Flask app
+    # run the Flask app
     app.run(debug=conf.DEBUG, use_reloader=False)
 
-    # complete the RDF sitemap
-    # thread.join()

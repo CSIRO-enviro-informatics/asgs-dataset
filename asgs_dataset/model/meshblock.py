@@ -3,16 +3,18 @@ import requests
 from io import StringIO
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
 from pyldapi import Renderer, View
-import _conf as conf
+import asgs_dataset._config as conf
 from lxml import objectify
 from lxml import etree
 import requests
 from io import StringIO
 import os
-from model.lookups import *
+
+from asgs_dataset.model import ASGSModel
+from asgs_dataset.model.lookups import *
 
 
-class MeshBlockRenderer(Renderer):
+class MeshBlock(ASGSModel):
     """
     <wfs:FeatureCollection previous='-1' next='-1' numberMatched='-1' numberReturned='-1' xsi:schemaLocation='WFS https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer?request=DescribeFeatureType%26version=2.0.0%26typename=MB http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd' xmlns:MB='WFS' xmlns:gml='http://www.opengis.net/gml/3.2' xmlns:wfs='http://www.opengis.net/wfs/2.0' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
         <gml:boundedBy>
@@ -62,41 +64,33 @@ class MeshBlockRenderer(Renderer):
         </gml:boundedBy>
     </wfs:FeatureCollection>
     """
-    def __init__(self, request, uri):
+
+    @classmethod
+    def make_instance_label(cls, instance_id):
+        return "MeshBlock ID: {}".format(str(instance_id))
+
+    @classmethod
+    def get_index(cls, base_uri, page, per_page):
+        register = [
+            '80006300000',
+            '80006500000',
+            '80010000000'
+        ]
+        return register
+
+    @classmethod
+    def make_canonical_uri(cls, instance_id):
+        raise NotImplementedError()
+
+    @classmethod
+    def make_local_url(cls, instance_id):
+        raise NotImplementedError()
+
+    def __init__(self, uri):
+        super(MeshBlock, self).__init__()
         self.uri = uri
         self.id = uri.split('/')[-1]
-        views = {
-            'asgs': View(
-                'ASGS View',
-                'Basic properties of a Mesh Block using the ASGS ontology and those it imports',
-                ['text/html'] + Renderer.RDF_MIMETYPES,
-                'text/turtle',
-                languages=['en'],
-                namespace='http://linked.data.gov.au/def/asgs#'
-            ),
-            'geosparql': View(
-                'GeoSPARQL View',
-                'Basic properties of a Mesh Block using only the GeoSPARQL ontology and those it imports',
-                ['text/html'] + Renderer.RDF_MIMETYPES,
-                'text/turtle',
-                languages=['en'],
-                namespace='http://www.opengis.net/ont/geosparql#'
-            ),
-            'wfs': View(
-                'Web Feature Service View',
-                'An OGC Web Feature Service view of a Mesh Block. The properties are defined in the ASGS product guide.',
-                ['text/html'] + Renderer.RDF_MIMETYPES,
-                'text/turtle',
-                languages=['en'],
-                namespace='https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer?service=wfs&version=2.0.0&request=GetCapabilities'
-            )
-        }
-        super().__init__(
-            request,
-            self.uri,
-            views,
-            'asgs'
-        )
+
 
     def render(self):
         if hasattr(self, 'vf_error'):

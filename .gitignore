@@ -112,4 +112,4 @@ venv.bak/
 .DS_Store
 
 # config
-_conf/
+asgs_dataset/_config/__init__.py
