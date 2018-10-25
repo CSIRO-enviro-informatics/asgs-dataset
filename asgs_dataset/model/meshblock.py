@@ -1,6 +1,6 @@
 from flask import Response, render_template
 import requests
-from io import StringIO
+from io import StringIO, BytesIO
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
 from pyldapi import Renderer, View
 import asgs_dataset._config as conf
@@ -71,12 +71,18 @@ class MeshBlock(ASGSModel):
 
     @classmethod
     def get_index(cls, base_uri, page, per_page):
-        register = [
-            '80006300000',
-            '80006500000',
-            '80010000000'
-        ]
-        return register
+        per_page = max(int(per_page), 1)
+        offset = (max(int(page), 1) - 1) * per_page
+        url_template = 'https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer' \
+                       '?service=wfs&version=2.0.0&request=GetFeature&typeName=MB:MB' \
+                       '&propertyName=MB:MB_CODE_2016' \
+                       '&sortBy=MB:MB_CODE_2016&startIndex={startindex}&count={count}'
+        url = url_template.format(startindex=offset, count=per_page)
+        resp = requests.get(url)
+        tree = etree.parse(BytesIO(resp.content))  # type lxml._ElementTree
+        items = tree.xpath('//MB:MB_CODE_2016/text()', namespaces=tree.getroot().nsmap)
+        return items
+
 
     @classmethod
     def make_canonical_uri(cls, instance_id):
