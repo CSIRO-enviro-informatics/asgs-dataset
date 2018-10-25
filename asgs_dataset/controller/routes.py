@@ -33,15 +33,11 @@ def reg():
 
 @routes.route('/state/')
 def states():
-    per_page = request.args.get('per_page', type=int, default=20)
-    page = request.args.get('page', type=int, default=1)
-
     total = ASGSFeature.total_states()
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
     # get page of MB URIs from ABS Web Service
-    q = '''Fake Query {} {}'''.format(per_page, (page - 1) * per_page)
     register = [
         'ACT',
         'NT',
@@ -56,13 +52,13 @@ def states():
 
     register_renderer = ASGSRegisterRenderer(
         request,
-        'http://localhost:5000/state/',
+        conf.URI_STATE_INSTANCE_BASE,
         'Register of States',
         'Australian States and Territories',
-        ['http://test.linked.data.gov.au/def/asgs#State'],
+        [conf.URI_STATE_CLASS],
         total,
         None,
-        super_register='http://localhost:5000/reg/'
+        super_register=conf.URI_BASE
     )
     register_renderer.register_items = register
     return register_renderer.render()
@@ -70,23 +66,92 @@ def states():
 
 @routes.route('/meshblock/')
 def meshblocks():
-    per_page = request.args.get('per_page', type=int, default=20)
-    page = request.args.get('page', type=int, default=1)
-
     total = ASGSFeature.total_meshblocks()
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
     return ASGSRegisterRenderer(
         request,
-        'http://localhost:5000/policy/',
-        'Register of Media Types',
-        'All the Media Types in IANA\'s list at https://www.iana.org/assignments/media-types/media-types.xml.',
-        ['http://test.linked.data.gov.au/def/asgs#MeshBlock'],
+        conf.URI_MESHBLOCK_INSTANCE_BASE,
+        'Register of ASGS Meshblocks',
+        'All the ASGS Meshblocks',
+        [conf.URI_MESHBLOCK_CLASS],
         total,
-        MeshBlock
+        MeshBlock,
+        super_register=conf.URI_BASE
     ).render()
 
+
+@routes.route('/sa1/')
+def sa1s():
+    total = ASGSFeature.total_sa1s()
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_SA1_INSTANCE_BASE,
+        'Register of ASGS SA1 regions',
+        'All the ASGS SA1 regions',
+        [conf.URI_SA1_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.URI_BASE
+    ).render()
+
+
+@routes.route('/sa2/')
+def sa2s():
+    total = ASGSFeature.total_sa2s()
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_SA2_INSTANCE_BASE,
+        'Register of ASGS SA2 regions',
+        'All the ASGS SA2 regions',
+        [conf.URI_SA2_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.URI_BASE
+    ).render()
+
+
+@routes.route('/sa3/')
+def sa3s():
+    total = ASGSFeature.total_sa3s()
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_SA3_INSTANCE_BASE,
+        'Register of ASGS SA3 regions',
+        'All the ASGS SA3 regions',
+        [conf.URI_SA3_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.URI_BASE
+    ).render()
+
+
+@routes.route('/sa4/')
+def sa4s():
+    total = ASGSFeature.total_sa4s()
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_SA4_INSTANCE_BASE,
+        'Register of ASGS SA4 regions',
+        'All the ASGS SA4 regions',
+        [conf.URI_SA4_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.URI_BASE
+    ).render()
 
 #
 #   instances
@@ -107,10 +172,30 @@ def object():
 # mediatype alias
 @routes.route('/meshblock/<path:mb>')
 def redirect_meshblock(mb):
-    return redirect(url_for('controller.object', uri='http://test.linked.data.gov.au/dataset/asgs/meshblock/' + mb))
+    return redirect(url_for('controller.object', uri=conf.URI_MESHBLOCK_INSTANCE_BASE + mb))
 
 
 # state alias
 @routes.route('/state/<path:state>')
 def redirect_state(state):
-    return redirect(url_for('controller.object', uri='http://test.linked.data.gov.au/dataset/asgs/state/' + state))
+    return redirect(url_for('controller.object', uri=conf.URI_STATE_INSTANCE_BASE + state))
+
+# sa1 alias
+@routes.route('/sa1/<path:sa1>')
+def redirect_sa1(sa1):
+    return redirect(url_for('controller.object', uri=conf.URI_SA1_INSTANCE_BASE + sa1))
+
+# sa2 alias
+@routes.route('/sa2/<path:sa2>')
+def redirect_sa2(sa2):
+    return redirect(url_for('controller.object', uri=conf.URI_SA2_INSTANCE_BASE + sa2))
+
+# sa3 alias
+@routes.route('/sa3/<path:sa3>')
+def redirect_sa3(sa3):
+    return redirect(url_for('controller.object', uri=conf.URI_SA3_INSTANCE_BASE + sa3))
+
+# sa4 alias
+@routes.route('/sa4/<path:sa4>')
+def redirect_sa4(sa4):
+    return redirect(url_for('controller.object', uri=conf.URI_SA4_INSTANCE_BASE + sa4))
