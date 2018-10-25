@@ -5,7 +5,7 @@ import asgs_dataset._config as conf
 from lxml import objectify
 from lxml import etree
 import requests
-from io import StringIO
+from io import StringIO, BytesIO
 import os
 from asgs_dataset.model import ASGSModel
 from asgs_dataset.model.lookups import *
@@ -15,16 +15,14 @@ class ASGSFeature(ASGSModel):
 
     @classmethod
     def make_instance_label(cls, instance_id):
-        raise NotImplementedError()
+        return "asgs feature #{}".format(instance_id)
 
     @classmethod
     def get_index(cls, base_uri, page, per_page):
         per_page = max(int(per_page), 1)
         offset = (max(int(page), 1)-1)*per_page
         asgs_type = cls.determine_asgs_type(base_uri)
-        url = cls.get_wfs_query_for_index(asgs_type, offset, per_page)
-        resp = requests.get(url)
-        return resp.text
+        return cls.get_feature_index(asgs_type, offset, per_page)
 
     @classmethod
     def make_canonical_uri(cls, instance_id):
@@ -319,28 +317,49 @@ class ASGSFeature(ASGSModel):
         return 10
 
     @classmethod
+    def get_feature_index(cls, asgs_type, startindex, count):
+        url = cls.get_wfs_query_for_index(asgs_type, startindex, count)
+        resp = requests.get(url)
+        tree = etree.parse(BytesIO(resp.content)) #type lxml._ElementTree
+        if asgs_type == 'MB':
+            propertyname = 'MB:MB_CODE_2016'
+        elif asgs_type == 'SA1':
+            propertyname = 'SA1:SA1_MAINCODE_2016'
+        elif asgs_type == 'SA2':
+            propertyname = 'SA2:SA2_MAINCODE_2016'
+        elif asgs_type == 'SA3':
+            propertyname = 'SA3:SA3_CODE_2016'
+        elif asgs_type == 'SA4':
+            propertyname = 'SA4:SA4_CODE_2016'
+        else:  # state
+            propertyname = 'STATE:STATE_CODE_2016'
+        items = tree.xpath('//{}/text()'.format(propertyname), namespaces=tree.getroot().nsmap)
+        return items
+
+
+    @classmethod
     def get_wfs_query_for_index(cls, asgs_type, startindex, count):
         uri_template = 'https://geo.abs.gov.au/arcgis/services/ASGS2016/{service}/MapServer/WFSServer' \
                        '?service=wfs&version=2.0.0&request=GetFeature&typeName={typename}' \
                        '&propertyName={propertyname}' \
                        '&sortBy={propertyname}&startIndex={startindex}&count={count}'
-        if asgs_type == 'meshblock':
+        if asgs_type == 'MB':
             service = 'MB'
             typename = 'MB:MB'
             propertyname = 'MB:MB_CODE_2016'
-        elif asgs_type == 'sa1':
+        elif asgs_type == 'SA1':
             service = 'SA1'
             typename = 'SA1:SA1'
             propertyname = 'SA1:SA1_MAINCODE_2016'
-        elif asgs_type == 'sa2':
+        elif asgs_type == 'SA2':
             service = 'SA2'
             typename = 'SA2:SA2'
             propertyname = 'SA2:SA2_MAINCODE_2016'
-        elif asgs_type == 'sa3':
+        elif asgs_type == 'SA3':
             service = 'SA3'
             typename = 'SA3:SA3'
             propertyname = 'SA3:SA3_CODE_2016'
-        elif asgs_type == 'sa4':
+        elif asgs_type == 'SA4':
             service = 'SA4'
             typename = 'SA4:SA4'
             propertyname = 'SA4:SA4_CODE_2016'
