@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, Response
+from flask import render_template, Response, redirect
 import pyldapi
 from flask_paginate import Pagination
 import asgs_dataset._config as config
@@ -84,8 +84,8 @@ class ASGSClassRenderer(pyldapi.Renderer):
         except AttributeError:
             pass
         self.asgs_template = asgs_template
-        self.identifier = None  # inheriting classes will need to add the Identifier themselves.
-        self.instance = None  # inheriting classes will need to add the Instance themselves.
+        #self.identifier = None  # inheriting classes will need to add the Identifier themselves.
+        #self.instance = None  # inheriting classes will need to add the Instance themselves.
 
     def render(self):
         try:
@@ -107,20 +107,6 @@ class ASGSClassRenderer(pyldapi.Renderer):
             from flask import request
             return render_error(request, e)
 
-    def _render_alternates_view_html(self):
-        views_formats = {k: v for k, v in self.views.items()}
-        views_formats['default'] = self.default_view_token
-        return Response(
-            render_template(
-                self.alternates_template or 'alternates.html',
-                class_uri=self.ASGS_CLASS,
-                instance_uri=self.uri,
-                default_view_token=self.default_view_token,
-                views_formats=views_formats
-            ),
-            headers=self.headers
-        )
-
     def _render_asgs_view(self):
         if self.format == 'text/html':
             return self._render_asgs_view_html()
@@ -130,17 +116,19 @@ class ASGSClassRenderer(pyldapi.Renderer):
             raise RuntimeError("Cannot render 'asgs' View with format '{}'.".format(self.format))
 
     def _render_asgs_view_html(self):
-        view_html = self.instance.export_html(view='asgs')
+        deets = self.instance._get_instance_details()
+        if not deets[0]:
+            return Response(deets[1], status=404, mimetype='text/plain')
         return Response(render_template(
             self.asgs_template,
-            view_html=view_html,
-            instance_id=self.identifier,
-            instance_uri=self.uri,
+            uri=self.uri,
+            deets=deets[1],
+            instance_id=self.identifier
             ),
             headers=self.headers)
 
     def _render_asgs_view_rdf(self):
-        g = self.instance.to_hyfeatures_graph()
+        g = self.instance._get_instance_rdf(profile='asgs')
         if self.format in ['application/ld+json', 'application/json']:
             serial_format = 'json-ld'
         elif self.format in self.RDF_MIMETYPES:
@@ -156,11 +144,10 @@ class ASGSClassRenderer(pyldapi.Renderer):
         elif self.format in ['application/xml', 'text/xml']:
             return self._render_wfs_view_xml()
         else:
-            raise RuntimeError("Cannot render 'hyfeatures' View with format '{}'.".format(self.format))
+            raise RuntimeError("Cannot render 'wfs' View with format '{}'.".format(self.format))
 
     def _render_wfs_view_xml(self):
-        xml = self.instance.to_wfs_xml()
-        return Response(response=xml, mimetype=self.format, headers=self.headers)
+        return redirect(self.instance.get_wfs_query_for_feature_type(), 303)
 
     def _render_geosparql_view(self):
         if self.format == 'text/html':
@@ -171,7 +158,7 @@ class ASGSClassRenderer(pyldapi.Renderer):
             raise RuntimeError("Cannot render 'geosparql' View with format '{}'.".format(self.format))
 
     def _render_geosparql_view_rdf(self):
-        g = self.instance.to_geosparql_graph()
+        g = self.instance._get_instance_rdf(profile='geosparql')
         if self.format in ['application/ld+json', 'application/json']:
             serial_format = 'json-ld'
         elif self.format in self.RDF_MIMETYPES:
@@ -179,7 +166,9 @@ class ASGSClassRenderer(pyldapi.Renderer):
         else:
             serial_format = 'text/turtle'
             self.format = serial_format
-        return Response(g.serialize(format=serial_format), mimetype=self.format, headers=self.headers)
+        return Response(
+            g.serialize(format=serial_format), mimetype=self.format,
+            headers=self.headers)
 
 
     @classmethod
@@ -229,8 +218,9 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
             for item_id in items:
                 item_id = str(item_id)
                 uri = ''.join([self.uri, item_id])
+                local_uri = self.asgs_model_class.make_local_url(uri, item_id)
                 label = self.asgs_model_class.make_instance_label(item_id)
-                self.register_items.append((uri, label, item_id))
+                self.register_items.append((local_uri, label, item_id))
 
     def render(self):
         try:
@@ -238,20 +228,6 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
         except Exception as e:
             from flask import request
             return render_error(request, e)
-
-    def _render_alternates_view_html(self):
-        views_formats = {k: v for k, v in self.views.items()}
-        views_formats['default'] = self.default_view_token
-        return Response(
-            render_template(
-                self.alternates_template or 'alternates.html',
-                class_uri="http://purl.org/linked-data/registry#Register",
-                instance_uri=None,
-                default_view_token=self.default_view_token,
-                views_formats=views_formats
-            ),
-            headers=self.headers
-        )
 
     def _render_reg_view_html(self):
         pagination = Pagination(
@@ -281,16 +257,4 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
 
 
 class ASGSRegisterOfRegistersRenderer(pyldapi.RegisterOfRegistersRenderer):
-    def _render_alternates_view_html(self):
-        views_formats = {k: v for k, v in self.views.items()}
-        views_formats['default'] = self.default_view_token
-        return Response(
-            render_template(
-                self.alternates_template or 'alternates.html',
-                class_uri=None,
-                instance_uri=None,
-                default_view_token=self.default_view_token,
-                views_formats=views_formats
-            ),
-            headers=self.headers
-        )
+    pass

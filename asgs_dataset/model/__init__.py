@@ -16,12 +16,12 @@ class ASGSModel:
 
     @classmethod
     @abstractmethod
-    def make_canonical_uri(cls, instance_id):
+    def make_canonical_uri(cls, instance_uri, instance_id):
         raise NotImplementedError()
 
     @classmethod
     @abstractmethod
-    def make_local_url(cls, instance_id):
+    def make_local_url(cls, instance_uri, instance_id):
         raise NotImplementedError()
 
     @abstractmethod

@@ -10,11 +10,17 @@ class ASGSFeatureRenderer(ASGSClassRenderer):
     def __init__(self, request, identifier, views, *args,
                  default_view_token=None, **kwargs):
         _views = views or {}
-        _uri = ''.join([config.URI_ASGSFEATURE_INSTANCE_BASE, identifier])
-        kwargs.setdefault('asgs_template', 'asgs-STATE-en.html')
+        if identifier.startswith("http:") or identifier.startswith("https:"):
+            _uri = identifier
+            identifier = _uri.split('/')[-1]
+        else:
+            _uri = ''.join([config.URI_ASGSFEATURE_INSTANCE_BASE, identifier])
+        self.identifier = identifier
+        self.instance = ASGSFeature(_uri)
+        kwargs.setdefault('asgs_template',
+                          'asgs-'+self.instance.asgs_type+'-en.html')
         super(ASGSFeatureRenderer, self).__init__(
             request, _uri, _views, *args,
             default_view_token=default_view_token, **kwargs)
-        self.identifier = identifier
-        self.instance = ASGSFeature(self.identifier)
+
 

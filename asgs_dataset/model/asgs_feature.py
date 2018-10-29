@@ -1,4 +1,4 @@
-from flask import Response, render_template, redirect
+from flask import Response, render_template, redirect, url_for
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
 from pyldapi import Renderer, View
 import asgs_dataset._config as conf
@@ -25,14 +25,15 @@ class ASGSFeature(ASGSModel):
         return cls.get_feature_index(asgs_type, offset, per_page)
 
     @classmethod
-    def make_canonical_uri(cls, instance_id):
-        raise NotImplementedError()
+    def make_canonical_uri(cls, instance_uri, instance_id):
+        return instance_uri
 
     @classmethod
-    def make_local_url(cls, instance_id):
-        raise NotImplementedError()
+    def make_local_url(cls, instance_uri, instance_id):
+        return url_for("controller.object", uri=instance_uri)
 
     def __init__(self, uri):
+        super(ASGSFeature, self).__init__()
         # split ID out of URI for all ASGS Features
         self.uri = uri
         self.id = uri.split('/')[-1]
@@ -41,42 +42,17 @@ class ASGSFeature(ASGSModel):
         self._assign_asgs_type()
 
 
-    def render(self):
-        if hasattr(self, 'vf_error'):
-            return Response(self.vf_error, status=406, mimetype='text/plain')
-        else:
-            if self.view == 'alternates':
-                return self._render_alternates_view()
-            elif self.view == 'asgs':
-                if self.format in Renderer.RDF_MIMETYPES:
-                    return self._get_instance_rdf(profile='asgs')
-                else:  # only the HTML format left
-                    deets = self._get_instance_details()
-                    if not deets[0]:
-                        return Response(deets[1], status=404, mimetype='text/plain')
-                    else:
-                        return render_template(
-                            'asgs-' + self.asgs_type + '-en.html',
-                            uri=self.uri,
-                            deets=deets[1]
-                        )
-            elif self.view == 'geosparql':
-                return self._get_instance_rdf(profile='geosparql')
-            elif self.view == 'wfs':
-                # redirect to WFS URI
-                return redirect(self.get_wfs_query_for_feature_type(), 303)
-
     @classmethod
     def determine_asgs_type(cls, instance_uri):
-        if 'meshblock' in instance_uri:
+        if '/meshblock/' in instance_uri:
             return 'MB'
-        elif 'sa1' in instance_uri:
+        elif '/sa1/' in instance_uri:
             return 'SA1'
-        elif 'sa2' in instance_uri:
+        elif '/sa2/' in instance_uri:
             return 'SA2'
-        elif 'sa3' in instance_uri:
+        elif '/sa3/' in instance_uri:
             return 'SA3'
-        elif 'sa4' in instance_uri:
+        elif '/sa4/' in instance_uri:
             return 'SA4'
         else:  # state
             return 'STATE'
@@ -85,45 +61,6 @@ class ASGSFeature(ASGSModel):
         self.asgs_type = self.determine_asgs_type(self.uri)
 
     def _get_instance_details(self, from_local_file=True):
-        def get_wfs_query_for_feature_type():
-            featureid = self.uri.split('/')[-1]
-            uri_template = 'https://geo.abs.gov.au/arcgis/services/ASGS2016/{service}/MapServer/WFSServer' \
-                           '?service=wfs&version=2.0.0&request=GetFeature&typeName={typename}' \
-                           '&Filter=<ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>{propertyname}</ogc:PropertyName>' \
-                           '<ogc:Literal>{featureid}</ogc:Literal>' \
-                           '</ogc:PropertyIsEqualTo></ogc:Filter>'
-
-            if self.asgs_type == 'meshblock':
-                service = 'MB'
-                typename = 'MB:MB'
-                propertyname = 'MB:MB_CODE_2016'
-            elif self.asgs_type == 'sa1':
-                service = 'SA1'
-                typename = 'SA1:SA1'
-                propertyname = 'SA1:SA1_MAINCODE_2016'
-            elif self.asgs_type == 'sa2':
-                service = 'SA2'
-                typename = 'SA2:SA2'
-                propertyname = 'SA2:SA2_MAINCODE_2016'
-            elif self.asgs_type == 'sa3':
-                service = 'SA3'
-                typename = 'SA3:SA3'
-                propertyname = 'SA3:SA3_CODE_2016'
-            elif self.asgs_type == 'sa4':
-                service = 'SA4'
-                typename = 'SA4:SA4'
-                propertyname = 'SA4:SA4_CODE_2016'
-            else:  # state
-                service = 'STATE'
-                typename = 'STATE:STATE'
-                propertyname = 'STATE:STATE_NAME_ABBREV_2016'
-
-            return uri_template.format(**{
-                'service': service,
-                'typename': typename,
-                'propertyname': propertyname,
-                'featureid': featureid
-            })
 
         def _get_mb_details(root):
             return {
@@ -200,14 +137,20 @@ class ASGSFeature(ASGSModel):
             }
         # handle any connection exceptions
         try:
+            root = None
             if from_local_file:  # a stub to use a local file for testing
                 xml_file = os.path.join(
                     os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
                     'test',
                     self.asgs_type + '_' + self.id + '.xml')
-                root = etree.parse(xml_file)
-            else:
-                wfs_uri = get_wfs_query_for_feature_type()
+                try:
+                    root = etree.parse(xml_file)
+                except (FileNotFoundError, OSError):
+                    root = None
+                except Exception as e:
+                    print(e)
+            if root is None:
+                wfs_uri = self.get_wfs_query_for_feature_type()
                 r = requests.get(wfs_uri)
 
                 # check we have a valid result with an XPath to get the posList (polygon coordinates)
@@ -235,6 +178,8 @@ class ASGSFeature(ASGSModel):
                 d = _get_sa4_details(root)
             elif self.asgs_type == 'STATE':
                 d = _get_state_details(root)
+            else:
+                raise RuntimeError()
 
             return True, d
 
@@ -290,7 +235,9 @@ class ASGSFeature(ASGSModel):
         # elif profile == 'wfs':
             return g
         else:
-            False
+            return NotImplementedError(
+                "RDF Export for profile \"{}\" is not implemented.".
+                format(profile))
 
     @staticmethod
     def total_meshblocks():
@@ -310,7 +257,7 @@ class ASGSFeature(ASGSModel):
 
     @staticmethod
     def total_sa4s():
-        return 100  # TODO: replace magic number with real count from Web Service
+        return 49  # TODO: replace magic number with real count from Web Service
 
     @staticmethod
     def total_states():
@@ -376,7 +323,6 @@ class ASGSFeature(ASGSModel):
             'count': count
         })
 
-
     def get_wfs_query_for_feature_type(self):
         featureid = self.uri.split('/')[-1]
         uri_template = 'https://geo.abs.gov.au/arcgis/services/ASGS2016/{service}/MapServer/WFSServer' \
@@ -385,37 +331,37 @@ class ASGSFeature(ASGSModel):
                        '<ogc:Literal>{featureid}</ogc:Literal>' \
                        '</ogc:PropertyIsEqualTo></ogc:Filter>'
 
-        if self.asgs_type == 'meshblock':
+        if self.asgs_type == 'MB':
             service = 'MB'
             typename = 'MB:MB'
             propertyname = 'MB:MB_CODE_2016'
-        elif self.asgs_type == 'sa1':
+        elif self.asgs_type == 'SA1':
             service = 'SA1'
             typename = 'SA1:SA1'
             propertyname = 'SA1:SA1_MAINCODE_2016'
-        elif self.asgs_type == 'sa2':
+        elif self.asgs_type == 'SA2':
             service = 'SA2'
             typename = 'SA2:SA2'
             propertyname = 'SA2:SA2_MAINCODE_2016'
-        elif self.asgs_type == 'sa3':
+        elif self.asgs_type == 'SA3':
             service = 'SA3'
             typename = 'SA3:SA3'
             propertyname = 'SA3:SA3_CODE_2016'
-        elif self.asgs_type == 'sa4':
+        elif self.asgs_type == 'SA4':
             service = 'SA4'
             typename = 'SA4:SA4'
             propertyname = 'SA4:SA4_CODE_2016'
         else:  # state
             service = 'STATE'
             typename = 'STATE:STATE'
-            propertyname = 'STATE:STATE_CODE_2016'
+            propertyname = 'STATE:STATE_NAME_ABBREV_2016'
 
         return uri_template.format(**{
             'service': service,
             'typename': typename,
             'propertyname': propertyname,
             'featureid': featureid
-        })
+    })
 
 
 class Req:

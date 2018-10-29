@@ -1,4 +1,4 @@
-from flask import Response, render_template
+from flask import Response, render_template, url_for
 import requests
 from io import StringIO, BytesIO
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
@@ -85,12 +85,12 @@ class MeshBlock(ASGSModel):
 
 
     @classmethod
-    def make_canonical_uri(cls, instance_id):
-        raise NotImplementedError()
+    def make_canonical_uri(cls, instance_uri, instance_id):
+        return instance_uri
 
     @classmethod
-    def make_local_url(cls, instance_id):
-        raise NotImplementedError()
+    def make_local_url(cls, instance_uri, instance_id):
+        return url_for("controller.object", uri=instance_uri)
 
     def __init__(self, uri):
         super(MeshBlock, self).__init__()
@@ -121,13 +121,16 @@ class MeshBlock(ASGSModel):
                 return 'xml'
 
     def _get_instance_details(self, from_local_file=False):
-        from_local_file = True
         # handle anny connection exceptions
         try:
+            root = None
             if from_local_file:  # a stub to use a local file for testing
-                xml_file = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'test', 'mb_' + self.id + '.xml')
-                root = etree.parse(xml_file)
-            else:
+                xml_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), 'test', 'mb_' + self.id + '.xml')
+                try:
+                    root = etree.parse(xml_file)
+                except (OSError, FileNotFoundError):
+                    root = None
+            if root is None:
                 wfs_uri =   'https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer'\
                             '?service=wfs&version=2.0.0&request=GetFeature&typeName=MB:MB'\
                             '&Filter=<ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>MB:MB_CODE_2016</ogc:PropertyName>'\
@@ -219,12 +222,10 @@ class MeshBlock(ASGSModel):
         # elif profile == 'wfs':
 
         else:
-            return Response('', status=404, mimetype='text/plain')
-
-        if self.format in ['application/rdf+json', 'application/json']:
-            return Response(g.serialize(format='json-ld'), mimetype=self.format)
-        else:
-            return Response(g.serialize(format=self.format), mimetype=self.format)
+            return NotImplementedError(
+                "RDF Export for profile \"{}\" is not implemented.".
+                format(profile))
+        return g
 
     @staticmethod
     def total_meshblocks():
