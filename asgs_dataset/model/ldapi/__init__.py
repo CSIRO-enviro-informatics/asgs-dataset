@@ -21,10 +21,10 @@ GEOSparqlView = pyldapi.View('GeoSPARQL',
     namespace='http://www.opengis.net/ont/geosparql#'
 )
 WFSView = pyldapi.View('Web Feature Service',
-    'An OGC Web Feature Service (WFS) view of a Mesh Block. '
+    'An OGC Web Feature Service (WFS) view of a Mesh Block.\n'
     'The ASGS-specific properties are defined in the ASGS product guide.',
     ['application/xml', 'text/xml'],
-    'application/xml',
+    'text/xml',
     languages=['en'],
     namespace='https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer?service=wfs&version=2.0.0&request=GetCapabilities'
 )
