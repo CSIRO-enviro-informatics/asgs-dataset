@@ -38,7 +38,7 @@ def states():
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
     # get page of MB URIs from ABS Web Service
-    register = [
+    register_states = [
         'ACT',
         'NT',
         'NSW',
@@ -60,7 +60,9 @@ def states():
         None,
         super_register=conf.URI_BASE
     )
-    register_renderer.register_items = register
+    register_renderer.register_items =\
+        [ (url_for('controller.redirect_state', state=s), s)
+          for s in register_states ]
     return register_renderer.render()
 
 
