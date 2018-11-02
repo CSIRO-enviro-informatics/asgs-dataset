@@ -1,8 +1,17 @@
 {% extends "layout.html" %}
 
     {% block content %}
-    <h1>SA1 Feature {{ deets['object_id'] }}</h1>
+    <h1>SA1 Feature {{ deets['code'] }}</h1>
     <h3><a href="{{ uri }}">{{ uri }}</a></h3>
+    <ul>
+        <li>Within SA2: <a href="{{ url_for("controller.redirect_sa2", sa2=deets['sa2']) }}">{{ deets['sa2'] }}</a></li>
+        <li>Within State: <a href="{{ url_for("controller.redirect_state", state=deets['state']) }}">State ID {{ deets['state'] }}</a></li>
+        <li>Albers Area: {{ deets['albers_area'] }}&nbsp;km<sup>2</sup></li>
+        <li>Shape Area: {{ deets['shape_area'] }}</li>
+        <li>Shape Length: {{ deets['shape_length'] }}</li>
+    </ul>
+    <hr/>
+    <p>JSON Dump</p>
     <pre style="white-space: pre-wrap; max-width:800px;"><code>{{ deets|tojson|safe }}</code></pre>
 
     <h3>Other profiles, formats and languages:</h3>

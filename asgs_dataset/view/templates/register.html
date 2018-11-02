@@ -9,6 +9,9 @@
             <li><a href="{{ class }}">{{ class }}</a></li>
         {%  endfor %}
         </ul>
+        {% if comment %}
+            <p>{{ comment }}</p>
+        {% endif %}
         <table>
             <tr>
                 <td style="vertical-align:top; width:500px;">

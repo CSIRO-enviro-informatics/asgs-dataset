@@ -116,7 +116,7 @@ class ASGSClassRenderer(pyldapi.Renderer):
             raise RuntimeError("Cannot render 'asgs' View with format '{}'.".format(self.format))
 
     def _render_asgs_view_html(self):
-        deets = self.instance._get_instance_details()
+        deets = self.instance._get_instance_details(from_local_file=True)
         if not deets[0]:
             return Response(deets[1], status=404, mimetype='text/plain')
         return Response(render_template(
@@ -240,6 +240,7 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
                 self.register_template or 'register.html',
                 uri=self.uri,
                 label=self.label,
+                comment=self.comment,
                 model=self.asgs_model_class,
                 contained_item_classes=self.contained_item_classes,
                 register_items=self.register_items,

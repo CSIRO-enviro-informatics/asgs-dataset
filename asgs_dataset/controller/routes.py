@@ -65,6 +65,26 @@ def states():
           for s in register_states ]
     return register_renderer.render()
 
+@routes.route('/australia/')
+def aus_index():
+    total_australias = 1
+    register_aus = [
+        (url_for('controller.redirect_aus', code="036"), "Australia (036)")
+    ]
+
+    register_renderer = ASGSRegisterRenderer(
+        request,
+        conf.URI_AUS_INSTANCE_BASE,
+        'Register of Australias',
+        'How many instances of Australia are there in the Australia index?',
+        [conf.URI_AUS_CLASS],
+        total_australias,
+        None,
+        super_register=conf.URI_BASE
+    )
+    register_renderer.register_items = register_aus
+    return register_renderer.render()
+
 
 @routes.route('/meshblock/')
 def meshblocks():
@@ -181,6 +201,11 @@ def redirect_meshblock(mb):
 @routes.route('/state/<path:state>')
 def redirect_state(state):
     return redirect(url_for('controller.object', uri=conf.URI_STATE_INSTANCE_BASE + state))
+
+# aus alias
+@routes.route('/australia/<string:code>')
+def redirect_aus(code):
+    return redirect(url_for('controller.object', uri=conf.URI_AUS_INSTANCE_BASE + code))
 
 # sa1 alias
 @routes.route('/sa1/<path:sa1>')

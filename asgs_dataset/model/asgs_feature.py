@@ -1,8 +1,6 @@
 from flask import Response, render_template, redirect, url_for
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
-from pyldapi import Renderer, View
 import asgs_dataset._config as conf
-from lxml import objectify
 from lxml import etree
 import requests
 from io import StringIO, BytesIO
@@ -37,10 +35,15 @@ class ASGSFeature(ASGSModel):
         # split ID out of URI for all ASGS Features
         self.uri = uri
         self.id = uri.split('/')[-1]
-
-        # create at least these views for all ASGS Features
         self._assign_asgs_type()
-
+        if self.asgs_type == "STATE":
+            # State can sometimes be called by the code rather than the name
+            try:
+                state_int = int(self.id)
+                if 9 >= state_int >= 1:
+                    self.id = STATES[state_int]
+            except ValueError:
+                pass
 
     @classmethod
     def determine_asgs_type(cls, instance_uri):
@@ -54,8 +57,10 @@ class ASGSFeature(ASGSModel):
             return 'SA3'
         elif '/sa4/' in instance_uri:
             return 'SA4'
-        else:  # state
+        elif '/state/' in instance_uri:
             return 'STATE'
+        else:  # australia
+            return 'AUS'
 
     def _assign_asgs_type(self):
         self.asgs_type = self.determine_asgs_type(self.uri)
@@ -65,9 +70,10 @@ class ASGSFeature(ASGSModel):
         def _get_mb_details(root):
             return {
                 'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-                'object_id': root.xpath('//MB:MB/MB:MB_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
+                'object_id': root.xpath('//MB:MB/MB:OBJECTID', namespaces={'MB': 'WFS'})[0].text,
                 'category': root.xpath('//MB:MB/MB:MB_CATEGORY_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
                 'category_name': root.xpath('//MB:MB/MB:MB_CATEGORY_NAME_2016', namespaces={'MB': 'WFS'})[0].text,
+                'code': root.xpath('//MB:MB/MB:MB_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
                 'albers_area': root.xpath('//MB:MB/MB:AREA_ALBERS_SQKM', namespaces={'MB': 'WFS'})[0].text,
                 'sa1': root.xpath('//MB:MB/MB:SA1_MAINCODE_2016', namespaces={'MB': 'WFS'})[0].text,
                 'state': int(root.xpath('//MB:MB/MB:STATE_CODE_2016', namespaces={'MB': 'WFS'})[0].text),
@@ -85,6 +91,8 @@ class ASGSFeature(ASGSModel):
                 'object_id': root.xpath('//SA1:OBJECTID', namespaces={'SA1': 'WFS'})[0].text,
                 'albers_area': root.xpath('//SA1:AREA_ALBERS_SQKM', namespaces={'SA1': 'WFS'})[0].text,
                 'sa2': root.xpath('//SA1:SA2_MAINCODE_2016', namespaces={'SA1': 'WFS'})[0].text,
+                'code': root.xpath('//SA1:SA1_MAINCODE_2016', namespaces={'SA1': 'WFS'})[0].text,
+                'seven_code': root.xpath('//SA1:SA1_7DIGITCODE_2016', namespaces={'SA1': 'WFS'})[0].text,
                 'state': int(root.xpath('//SA1:STATE_CODE_2016', namespaces={'SA1': 'WFS'})[0].text),
                 'shape_length': root.xpath('//SA1:Shape_Length', namespaces={'SA1': 'WFS'})[0].text,
                 'shape_area': root.xpath('//SA1:Shape_Area', namespaces={'SA1': 'WFS'})[0].text
@@ -96,6 +104,8 @@ class ASGSFeature(ASGSModel):
                 'object_id': root.xpath('//SA2:OBJECTID', namespaces={'SA2': 'WFS'})[0].text,
                 'albers_area': root.xpath('//SA2:AREA_ALBERS_SQKM', namespaces={'SA2': 'WFS'})[0].text,
                 'sa3': root.xpath('//SA2:SA3_CODE_2016', namespaces={'SA2': 'WFS'})[0].text,
+                'code': root.xpath('//SA2:SA2_MAINCODE_2016', namespaces={'SA2': 'WFS'})[0].text,
+                'name': root.xpath('//SA2:SA2_NAME_2016', namespaces={'SA2': 'WFS'})[0].text,
                 'state': int(root.xpath('//SA2:STATE_CODE_2016', namespaces={'SA2': 'WFS'})[0].text),
                 'shape_length': root.xpath('//SA2:Shape_Length', namespaces={'SA2': 'WFS'})[0].text,
                 'shape_area': root.xpath('//SA2:Shape_Area', namespaces={'SA2': 'WFS'})[0].text
@@ -104,10 +114,11 @@ class ASGSFeature(ASGSModel):
         def _get_sa3_details(root):
             return {
                 'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-                'object_id': root.xpath('//SA3:SA3/SA3:SA3_CODE_2016', namespaces={'SA3': 'WFS'})[0].text,
+                'object_id': root.xpath('//SA3:SA3/SA3:OBJECTID', namespaces={'SA3': 'WFS'})[0].text,
                 'name': root.xpath('//SA3:SA3/SA3:SA3_NAME_2016', namespaces={'SA3': 'WFS'})[0].text,
                 'albers_area': root.xpath('//SA3:SA3/SA3:AREA_ALBERS_SQKM', namespaces={'SA3': 'WFS'})[0].text,
-                'sa4': root.xpath('//SA3:SA3/SA3:SA3_CODE_2016', namespaces={'SA3': 'WFS'})[0].text,
+                'code': root.xpath('//SA3:SA3/SA3:SA3_CODE_2016', namespaces={'SA3': 'WFS'})[0].text,
+                'sa4': root.xpath('//SA3:SA3/SA3:SA4_CODE_2016', namespaces={'SA3': 'WFS'})[0].text,
                 'state': int(root.xpath('//SA3:SA3/SA3:STATE_CODE_2016', namespaces={'SA3': 'WFS'})[0].text),
                 'shape_length': root.xpath('//SA3:SA3/SA3:Shape_Length', namespaces={'SA3': 'WFS'})[0].text,
                 'shape_area': root.xpath('//SA3:SA3/SA3:Shape_Area', namespaces={'SA3': 'WFS'})[0].text
@@ -119,6 +130,7 @@ class ASGSFeature(ASGSModel):
                 'object_id': root.xpath('//SA4:OBJECTID', namespaces={'SA4': 'WFS'})[0].text,
                 'name': root.xpath('//SA4:SA4_NAME_2016', namespaces={'SA4': 'WFS'})[0].text,
                 'albers_area': root.xpath('//SA4:AREA_ALBERS_SQKM', namespaces={'SA4': 'WFS'})[0].text,
+                'code': int(root.xpath('//SA4:SA4_CODE_2016', namespaces={'SA4': 'WFS'})[0].text),
                 'state': int(root.xpath('//SA4:STATE_CODE_2016', namespaces={'SA4': 'WFS'})[0].text),
                 'shape_length': root.xpath('//SA4:Shape_Length', namespaces={'SA4': 'WFS'})[0].text,
                 'shape_area': root.xpath('//SA4:Shape_Area', namespaces={'SA4': 'WFS'})[0].text
@@ -128,12 +140,21 @@ class ASGSFeature(ASGSModel):
             return {
                 'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
                 'object_id': root.xpath('//STATE:OBJECTID', namespaces={'STATE': 'WFS'})[0].text,
-                'name': root.xpath('//SA4:STATE_NAME_2016', namespaces={'SA4': 'WFS'})[0].text,
+                'name': root.xpath('//STATE:STATE_NAME_2016', namespaces={'STATE': 'WFS'})[0].text,
                 'name_abbrev': root.xpath('//STATE:STATE_NAME_ABBREV_2016', namespaces={'STATE': 'WFS'})[0].text,
                 'albers_area': root.xpath('//STATE:AREA_ALBERS_SQKM', namespaces={'STATE': 'WFS'})[0].text,
-                'state': int(root.xpath('//STATE:STATE_CODE_2016', namespaces={'STATE': 'WFS'})[0].text),
+                'code': int(root.xpath('//STATE:STATE_CODE_2016', namespaces={'STATE': 'WFS'})[0].text),
                 'shape_length': root.xpath('//STATE:Shape_Length', namespaces={'STATE': 'WFS'})[0].text,
                 'shape_area': root.xpath('//STATE:Shape_Area', namespaces={'STATE': 'WFS'})[0].text
+            }
+        def _get_aus_details(root):
+            return {
+                'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
+                'object_id': root.xpath('//AUS:OBJECTID', namespaces={'AUS': 'WFS'})[0].text,
+                'name': root.xpath('//AUS:AUS_NAME_2016', namespaces={'AUS': 'WFS'})[0].text,
+                'code': int(root.xpath('//AUS:AUS_CODE_2016', namespaces={'AUS': 'WFS'})[0].text),
+                'shape_length': root.xpath('//AUS:Shape_Length', namespaces={'AUS': 'WFS'})[0].text,
+                'shape_area': root.xpath('//AUS:Shape_Area', namespaces={'AUS': 'WFS'})[0].text
             }
         # handle any connection exceptions
         try:
@@ -144,7 +165,11 @@ class ASGSFeature(ASGSModel):
                     'test',
                     self.asgs_type + '_' + self.id + '.xml')
                 try:
-                    root = etree.parse(xml_file)
+                    if self.asgs_type == "STATE" or self.asgs_type == "AUS":
+                        parser = etree.XMLParser(recover=True, huge_tree=True)
+                    else:
+                        parser = etree.XMLParser(recover=True)
+                    root = etree.parse(xml_file, parser=parser)
                 except (FileNotFoundError, OSError):
                     root = None
                 except Exception as e:
@@ -178,6 +203,8 @@ class ASGSFeature(ASGSModel):
                 d = _get_sa4_details(root)
             elif self.asgs_type == 'STATE':
                 d = _get_state_details(root)
+            elif self.asgs_type == 'AUS':
+                d = _get_aus_details(root)
             else:
                 raise RuntimeError()
 
@@ -202,13 +229,22 @@ class ASGSFeature(ASGSModel):
             mb = URIRef(self.uri)
             g.add((mb, RDF.type, ASGS.MeshBlock))
 
-            # State - top-level register
-            g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/state/' + STATES[deets[1]['state']])))
-            # TODO: add hasState to ASGS ont as a subProperty of sfWithin wth fixed range value being an Aust state individual
-            g.add((mb, ASGS.hasState, URIRef('http://linked.data.gov.au/state/' + STATES[deets[1]['state']])))
+            if self.asgs_type != "AUS" and self.asgs_type != "STATE":
+                # State - top-level register
+                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/state/' + STATES[deets[1]['state']])))
+                # TODO: add hasState to ASGS ont as a subProperty of sfWithin wth fixed range value being an Aust state individual
+                g.add((mb, ASGS.hasState, URIRef('http://linked.data.gov.au/state/' + STATES[deets[1]['state']])))
 
-            # SA1 - 2nd level register
-            g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa1/' + deets[1]['sa1'])))
+            if self.asgs_type == "MB":
+                # SA1 - 2nd level register
+                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa1/' + deets[1]['sa1'])))
+                # TODO: Do category and category_name for MB
+            elif self.asgs_type == "SA1":
+                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa2/' + deets[1]['sa2'])))
+            elif self.asgs_type == "SA2":
+                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa3/' + deets[1]['sa3'])))
+            elif self.asgs_type == "SA3":
+                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa4/' + deets[1]['sa4'])))
 
             # area
             # TODO: check multiplier on m^2 or km^2
@@ -241,27 +277,27 @@ class ASGSFeature(ASGSModel):
 
     @staticmethod
     def total_meshblocks():
-        return 100  # TODO: replace magic number with real count from Web Service
+        return conf.MESHBLOCK_COUNT
 
     @staticmethod
     def total_sa1s():
-        return 100  # TODO: replace magic number with real count from Web Service
+        return conf.SA1_COUNT
 
     @staticmethod
     def total_sa2s():
-        return 100  # TODO: replace magic number with real count from Web Service
+        return conf.SA2_COUNT
 
     @staticmethod
     def total_sa3s():
-        return 100  # TODO: replace magic number with real count from Web Service
+        return conf.SA3_COUNT
 
     @staticmethod
     def total_sa4s():
-        return 49  # TODO: replace magic number with real count from Web Service
+        return conf.SA4_COUNT  # return 49
 
     @staticmethod
     def total_states():
-        return 10
+        return 9
 
     @classmethod
     def get_feature_index(cls, asgs_type, startindex, count):
@@ -278,8 +314,10 @@ class ASGSFeature(ASGSModel):
             propertyname = 'SA3:SA3_CODE_2016'
         elif asgs_type == 'SA4':
             propertyname = 'SA4:SA4_CODE_2016'
-        else:  # state
-            propertyname = 'STATE:STATE_CODE_2016'
+        elif asgs_type == 'STATE':
+            propertyname = 'STATE:STATE_NAME_ABBREV_2016'
+        else:  # australia
+            propertyname = 'AUS:AUS_CODE_2016'
         items = tree.xpath('//{}/text()'.format(propertyname), namespaces=tree.getroot().nsmap)
         return items
 
@@ -310,10 +348,14 @@ class ASGSFeature(ASGSModel):
             service = 'SA4'
             typename = 'SA4:SA4'
             propertyname = 'SA4:SA4_CODE_2016'
-        else:  # state
+        elif asgs_type == 'STATE':
             service = 'STATE'
             typename = 'STATE:STATE'
-            propertyname = 'STATE:STATE_CODE_2016'
+            propertyname = 'STATE:STATE_NAME_ABBREV_2016'
+        else:  # australia
+            service = 'AUS'
+            typename = 'AUS:AUS'
+            propertyname = 'AUS:AUS_CODE_2016'
 
         return uri_template.format(**{
             'service': service,
@@ -351,10 +393,14 @@ class ASGSFeature(ASGSModel):
             service = 'SA4'
             typename = 'SA4:SA4'
             propertyname = 'SA4:SA4_CODE_2016'
-        else:  # state
+        elif self.asgs_type == 'STATE':  # state
             service = 'STATE'
             typename = 'STATE:STATE'
             propertyname = 'STATE:STATE_NAME_ABBREV_2016'
+        else:  # australia
+            service = 'AUS'
+            typename = 'AUS:AUS'
+            propertyname = 'AUS:AUS_CODE_2016'
 
         return uri_template.format(**{
             'service': service,
