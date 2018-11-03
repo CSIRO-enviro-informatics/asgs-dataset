@@ -66,7 +66,7 @@ class MeshBlock(ASGSModel):
     """
 
     @classmethod
-    def make_instance_label(cls, instance_id):
+    def make_instance_label(cls, instance_uri, instance_id):
         return "MeshBlock ID: {}".format(str(instance_id))
 
     @classmethod
@@ -90,7 +90,7 @@ class MeshBlock(ASGSModel):
 
     @classmethod
     def make_local_url(cls, instance_uri, instance_id):
-        return url_for("controller.object", uri=instance_uri)
+        return url_for("controller.redirect_meshblock", mb=instance_id)
 
     def __init__(self, uri):
         super(MeshBlock, self).__init__()

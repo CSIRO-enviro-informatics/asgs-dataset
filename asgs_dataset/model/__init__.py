@@ -6,7 +6,7 @@ class ASGSModel:
 
     @classmethod
     @abstractmethod
-    def make_instance_label(cls, instance_id):
+    def make_instance_label(cls, instance_uri, instance_id):
         raise NotImplementedError()
 
     @classmethod

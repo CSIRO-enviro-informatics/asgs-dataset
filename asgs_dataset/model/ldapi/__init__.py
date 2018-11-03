@@ -116,13 +116,19 @@ class ASGSClassRenderer(pyldapi.Renderer):
             raise RuntimeError("Cannot render 'asgs' View with format '{}'.".format(self.format))
 
     def _render_asgs_view_html(self):
-        deets = self.instance._get_instance_details(from_local_file=True)
-        if not deets[0]:
-            return Response(deets[1], status=404, mimetype='text/plain')
+        deets = self.instance.properties
+        geometry = self.instance.geometry
+        if len(geometry) > 0:
+            (w, s, e, n) = self.instance.get_bbox()  # (minx, miny, maxx, maxy)
+            bbox = [[w,s],[e,n]]
+        else:
+            bbox = None
         return Response(render_template(
             self.asgs_template,
             uri=self.uri,
-            deets=deets[1],
+            deets=deets,
+            geometry=geometry,
+            bbox=bbox,
             instance_id=self.identifier
             ),
             headers=self.headers)
@@ -219,7 +225,7 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
                 item_id = str(item_id)
                 uri = ''.join([self.uri, item_id])
                 local_uri = self.asgs_model_class.make_local_url(uri, item_id)
-                label = self.asgs_model_class.make_instance_label(item_id)
+                label = self.asgs_model_class.make_instance_label(uri, item_id)
                 self.register_items.append((local_uri, label, item_id))
 
     def render(self):

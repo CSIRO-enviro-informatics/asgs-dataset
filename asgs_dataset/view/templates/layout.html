@@ -5,6 +5,12 @@
     <title>ASGS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='simple.css') }}" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli">
+    {% block extra_head_stylesheets%}
+    {% endblock %}
+    {% block extra_head_css%}
+    {% endblock %}
+    {% block extra_head_javascript%}
+    {% endblock %}
 </head>
 <body>
     <header>
@@ -23,5 +29,7 @@
     <footer>
         <a href="https://creativecommons.org/licenses/by/4.0/">Licensed using Creative Commons 4.0</a>.
     </footer>
+    {% block extra_body_javascript%}
+    {% endblock %}
 </body>
 </html>
