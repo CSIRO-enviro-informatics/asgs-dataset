@@ -4,3 +4,4 @@ rdflib
 pyldapi>=2.0.13
 lxml
 requests
+pytest
