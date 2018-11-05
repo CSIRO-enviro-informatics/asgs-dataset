@@ -2,8 +2,8 @@ from flask import Blueprint, request, redirect, url_for, Response, render_templa
 from pyldapi import RegisterOfRegistersRenderer
 
 from asgs_dataset.model.asgs_feature import ASGSFeature
-from asgs_dataset.model.ldapi import ASGSRegisterRenderer
-from asgs_dataset.model.ldapi.asgs_feature import ASGSFeatureRenderer
+from asgs_dataset.view.ldapi import ASGSRegisterRenderer
+from asgs_dataset.view.ldapi.asgs_feature import ASGSFeatureRenderer
 import asgs_dataset._config as conf
 from asgs_dataset.model.meshblock import MeshBlock
 
@@ -60,16 +60,25 @@ def states():
         None,
         super_register=conf.URI_BASE
     )
+    # TODO: Determine whether to generate these with canonical_url or local_url!
+    # register_renderer.register_items =\
+    #     [ (url_for('controller.redirect_state', state=s), s)
+    #       for s in register_states ]
     register_renderer.register_items =\
-        [ (url_for('controller.redirect_state', state=s), s)
+        [ (conf.URI_STATE_INSTANCE_BASE+s,
+           "ASGS Feature State: {}".format(s), s)
           for s in register_states ]
     return register_renderer.render()
 
 @routes.route('/australia/')
 def aus_index():
     total_australias = 1
+    #TODO: Determine whether to generate these with canonical_url or local_url!
+    # register_aus = [
+    #     (url_for('controller.redirect_aus', code="036"), "Australia (036)")
+    # ]
     register_aus = [
-        (url_for('controller.redirect_aus', code="036"), "Australia (036)")
+        (conf.URI_AUS_INSTANCE_BASE+"036", "Australia (036)", "036")
     ]
 
     register_renderer = ASGSRegisterRenderer(

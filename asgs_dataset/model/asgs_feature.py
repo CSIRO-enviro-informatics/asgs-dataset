@@ -334,7 +334,7 @@ class ASGSFeature(ASGSModel):
         elif asgs_type == "STATE":
             return url_for("controller.redirect_state", state=instance_id)
         elif asgs_type == "AUS":
-            return url_for("controller.redirect_aus", aus=instance_id)
+            return url_for("controller.redirect_aus", code=instance_id)
         return url_for("controller.object", uri=instance_uri)
 
     def __init__(self, uri):

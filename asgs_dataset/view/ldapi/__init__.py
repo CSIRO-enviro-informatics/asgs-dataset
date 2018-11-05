@@ -5,6 +5,7 @@ import pyldapi
 from flask_paginate import Pagination
 import asgs_dataset._config as config
 from asgs_dataset.model import ASGSModel
+from asgs_dataset.model.asgs_feature import ASGSFeature
 
 ASGSView = pyldapi.View('ASGS',
     'Basic properties of a Mesh Block using the ASGS ontology and those it imports',
@@ -224,9 +225,9 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
             for item_id in items:
                 item_id = str(item_id)
                 uri = ''.join([self.uri, item_id])
-                local_uri = self.asgs_model_class.make_local_url(uri, item_id)
+                #local_uri = self.asgs_model_class.make_local_url(uri, item_id)
                 label = self.asgs_model_class.make_instance_label(uri, item_id)
-                self.register_items.append((local_uri, label, item_id))
+                self.register_items.append((uri, label, item_id))
 
     def render(self):
         try:
@@ -240,7 +241,19 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
             page=self.page, per_page=self.per_page,
             total=self.register_total_count,
             page_parameter='page', per_page_parameter='per_page')
-
+        if self.asgs_model_class:
+            register_view_items = [
+                (self.asgs_model_class.make_local_url(uri, identifier), label)
+                for uri, label, identifier in self.register_items
+            ]
+        else:
+            try:
+                register_view_items = [
+                    (ASGSFeature.make_local_url(uri, identifier), label)
+                    for uri, label, identifier in self.register_items
+                ]
+            except Exception as e:
+                register_view_items = self.register_items
         return Response(
             render_template(
                 self.register_template or 'register.html',
@@ -249,7 +262,7 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
                 comment=self.comment,
                 model=self.asgs_model_class,
                 contained_item_classes=self.contained_item_classes,
-                register_items=self.register_items,
+                register_items=register_view_items,
                 page=self.page,
                 per_page=self.per_page,
                 first_page=self.first_page,
