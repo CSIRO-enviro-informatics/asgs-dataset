@@ -58,7 +58,7 @@ def states():
         [conf.URI_STATE_CLASS],
         total,
         None,
-        super_register=conf.URI_BASE
+        super_register=conf.DATA_URI_PREFIX+"/reg",
     )
     # TODO: Determine whether to generate these with canonical_url or local_url!
     # register_renderer.register_items =\
@@ -89,7 +89,7 @@ def aus_index():
         [conf.URI_AUS_CLASS],
         total_australias,
         None,
-        super_register=conf.URI_BASE
+        super_register=conf.DATA_URI_PREFIX+"/reg",
     )
     register_renderer.register_items = register_aus
     return register_renderer.render()
@@ -109,7 +109,7 @@ def meshblocks():
         [conf.URI_MESHBLOCK_CLASS],
         total,
         MeshBlock,
-        super_register=conf.URI_BASE
+        super_register=conf.DATA_URI_PREFIX+"/reg",
     ).render()
 
 
@@ -127,7 +127,7 @@ def sa1s():
         [conf.URI_SA1_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.URI_BASE
+        super_register=conf.DATA_URI_PREFIX+"/reg",
     ).render()
 
 
@@ -145,7 +145,7 @@ def sa2s():
         [conf.URI_SA2_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.URI_BASE
+        super_register=conf.DATA_URI_PREFIX+"/reg",
     ).render()
 
 
@@ -163,7 +163,7 @@ def sa3s():
         [conf.URI_SA3_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.URI_BASE
+        super_register=conf.DATA_URI_PREFIX+"/reg",
     ).render()
 
 
@@ -181,7 +181,7 @@ def sa4s():
         [conf.URI_SA4_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.URI_BASE
+        super_register=conf.DATA_URI_PREFIX+"/reg",
     ).render()
 
 #
