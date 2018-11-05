@@ -24,7 +24,7 @@ def home():
 def reg():
     return RegisterOfRegistersRenderer(
         request,
-        'http://localhost:5000/',
+        conf.DATA_URI_PREFIX+"/reg",
         'Register of Registers',
         'The master register of this API',
         conf.APP_DIR + '/rofr.ttl'
