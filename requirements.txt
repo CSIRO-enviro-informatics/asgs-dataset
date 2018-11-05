@@ -1,6 +1,6 @@
 flask
 flask_paginate
 rdflib
-pyldapi>=2.0.12
+pyldapi>=2.0.13
 lxml
 requests
