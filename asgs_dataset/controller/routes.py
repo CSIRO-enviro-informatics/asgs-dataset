@@ -52,7 +52,7 @@ def states():
 
     register_renderer = ASGSRegisterRenderer(
         request,
-        conf.URI_STATE_INSTANCE_BASE,
+        conf.URI_STATE_INSTANCE_BASE.rstrip('/'),
         'Register of States',
         'Australian States and Territories',
         [conf.URI_STATE_CLASS],
@@ -83,7 +83,7 @@ def aus_index():
 
     register_renderer = ASGSRegisterRenderer(
         request,
-        conf.URI_AUS_INSTANCE_BASE,
+        conf.URI_AUS_INSTANCE_BASE.rstrip('/'),
         'Register of Australias',
         'How many instances of Australia are there in the Australia index?',
         [conf.URI_AUS_CLASS],
@@ -103,7 +103,7 @@ def meshblocks():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_MESHBLOCK_INSTANCE_BASE,
+        conf.URI_MESHBLOCK_INSTANCE_BASE.rstrip('/'),
         'Register of ASGS Meshblocks',
         'All the ASGS Meshblocks',
         [conf.URI_MESHBLOCK_CLASS],
@@ -121,7 +121,7 @@ def sa1s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA1_INSTANCE_BASE,
+        conf.URI_SA1_INSTANCE_BASE.rstrip('/'),
         'Register of ASGS SA1 regions',
         'All the ASGS SA1 regions',
         [conf.URI_SA1_CLASS],
@@ -139,7 +139,7 @@ def sa2s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA2_INSTANCE_BASE,
+        conf.URI_SA2_INSTANCE_BASE.rstrip('/'),
         'Register of ASGS SA2 regions',
         'All the ASGS SA2 regions',
         [conf.URI_SA2_CLASS],
@@ -157,7 +157,7 @@ def sa3s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA3_INSTANCE_BASE,
+        conf.URI_SA3_INSTANCE_BASE.rstrip('/'),
         'Register of ASGS SA3 regions',
         'All the ASGS SA3 regions',
         [conf.URI_SA3_CLASS],
@@ -175,7 +175,7 @@ def sa4s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA4_INSTANCE_BASE,
+        conf.URI_SA4_INSTANCE_BASE.rstrip('/'),
         'Register of ASGS SA4 regions',
         'All the ASGS SA4 regions',
         [conf.URI_SA4_CLASS],
