@@ -15,7 +15,7 @@ if __name__ == '__main__':
                         datefmt='%Y-%m-%d %H:%M:%S',
                         format='%(asctime)s %(levelname)s %(filename)s:%(lineno)s %(message)s')
 
-    pyldapi.setup(app, conf.APP_DIR, str(conf.DATA_URI_PREFIX).rstrip('/'))
+    pyldapi.setup(app, conf.APP_DIR, conf.DATA_URI_PREFIX)
 
     # run the Flask app
     app.run(debug=conf.DEBUG, threaded=True, use_reloader=False)

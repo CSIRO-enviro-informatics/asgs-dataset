@@ -110,6 +110,7 @@ venv.bak/
 
 # Mac
 .DS_Store
+.directory
 
 # config
 asgs_dataset/_config/__init__.py

@@ -52,7 +52,7 @@ def states():
 
     register_renderer = ASGSRegisterRenderer(
         request,
-        conf.URI_STATE_INSTANCE_BASE.rstrip('/'),
+        conf.URI_STATE_INSTANCE_BASE,
         'Register of States',
         'Australian States and Territories',
         [conf.URI_STATE_CLASS],
@@ -83,7 +83,7 @@ def aus_index():
 
     register_renderer = ASGSRegisterRenderer(
         request,
-        conf.URI_AUS_INSTANCE_BASE.rstrip('/'),
+        conf.URI_AUS_INSTANCE_BASE,
         'Register of Australias',
         'How many instances of Australia are there in the Australia index?',
         [conf.URI_AUS_CLASS],
@@ -103,7 +103,7 @@ def meshblocks():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_MESHBLOCK_INSTANCE_BASE.rstrip('/'),
+        conf.URI_MESHBLOCK_INSTANCE_BASE,
         'Register of ASGS Meshblocks',
         'All the ASGS Meshblocks',
         [conf.URI_MESHBLOCK_CLASS],
@@ -121,7 +121,7 @@ def sa1s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA1_INSTANCE_BASE.rstrip('/'),
+        conf.URI_SA1_INSTANCE_BASE,
         'Register of ASGS SA1 regions',
         'All the ASGS SA1 regions',
         [conf.URI_SA1_CLASS],
@@ -139,7 +139,7 @@ def sa2s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA2_INSTANCE_BASE.rstrip('/'),
+        conf.URI_SA2_INSTANCE_BASE,
         'Register of ASGS SA2 regions',
         'All the ASGS SA2 regions',
         [conf.URI_SA2_CLASS],
@@ -157,7 +157,7 @@ def sa3s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA3_INSTANCE_BASE.rstrip('/'),
+        conf.URI_SA3_INSTANCE_BASE,
         'Register of ASGS SA3 regions',
         'All the ASGS SA3 regions',
         [conf.URI_SA3_CLASS],
@@ -175,7 +175,7 @@ def sa4s():
 
     return ASGSRegisterRenderer(
         request,
-        conf.URI_SA4_INSTANCE_BASE.rstrip('/'),
+        conf.URI_SA4_INSTANCE_BASE,
         'Register of ASGS SA4 regions',
         'All the ASGS SA4 regions',
         [conf.URI_SA4_CLASS],
@@ -203,35 +203,42 @@ def object():
 # mediatype alias
 @routes.route('/meshblock/<path:mb>')
 def redirect_meshblock(mb):
-    return redirect(url_for('controller.object', uri=conf.URI_MESHBLOCK_INSTANCE_BASE + mb))
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_MESHBLOCK_INSTANCE_BASE + mb, **args))
 
 
 # state alias
 @routes.route('/state/<path:state>')
 def redirect_state(state):
-    return redirect(url_for('controller.object', uri=conf.URI_STATE_INSTANCE_BASE + state))
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_STATE_INSTANCE_BASE + state, **args))
 
 # aus alias
 @routes.route('/australia/<string:code>')
 def redirect_aus(code):
-    return redirect(url_for('controller.object', uri=conf.URI_AUS_INSTANCE_BASE + code))
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_AUS_INSTANCE_BASE + code, **args))
 
 # sa1 alias
 @routes.route('/sa1/<path:sa1>')
 def redirect_sa1(sa1):
-    return redirect(url_for('controller.object', uri=conf.URI_SA1_INSTANCE_BASE + sa1))
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_SA1_INSTANCE_BASE + sa1, **args))
 
 # sa2 alias
 @routes.route('/sa2/<path:sa2>')
 def redirect_sa2(sa2):
-    return redirect(url_for('controller.object', uri=conf.URI_SA2_INSTANCE_BASE + sa2))
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_SA2_INSTANCE_BASE + sa2, **args))
 
 # sa3 alias
 @routes.route('/sa3/<path:sa3>')
 def redirect_sa3(sa3):
-    return redirect(url_for('controller.object', uri=conf.URI_SA3_INSTANCE_BASE + sa3))
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_SA3_INSTANCE_BASE + sa3, **args))
 
 # sa4 alias
 @routes.route('/sa4/<path:sa4>')
 def redirect_sa4(sa4):
-    return redirect(url_for('controller.object', uri=conf.URI_SA4_INSTANCE_BASE + sa4))
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_SA4_INSTANCE_BASE + sa4, **args))
