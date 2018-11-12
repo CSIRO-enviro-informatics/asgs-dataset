@@ -18,7 +18,7 @@ def valid_endpoint_content(uri, headers, pattern, print_out=False, allow_redirec
     if re.search(pattern, r.content.decode('utf-8'), re.MULTILINE):
         return True
     else:
-        pp.pprint(r.content)
+        # pp.pprint(r.content)
         return False
 
 
@@ -1053,11 +1053,297 @@ def test_asgs_sa4_register_alternates_view_rdf_turtle_accept_header():
         r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/> alt:hasDefaultView'
     ), 'ASGS SA4 Register alternates view rdf turtle accept header failed'
 
-#TODO: Continue on asgs sa4 instance ... http://13.236.122.60/asgs/sa4/
+
+def test_asgs_sa4_instance_216_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216',
+        HEADERS_HTML,
+        r'<p>JSON Dump<\/p>'
+    ), 'ASGS SA4 instance 216 html failed'
+
+
+@pytest.mark.skip('ASGS SA4 instance 216 rdf turtle file extension not yet implemented. Defaults to HTML.')
+def test_asgs_sa4_instance_216_rdf_turtle_file_extension():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216.ttl',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216> a asgs:SA4,'
+    ), 'ASGS SA4 instance 216 rdf turtle file extension failed'
+
+
+def test_asgs_sa4_instance_216_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216> a asgs:SA4,'
+    ), 'ASGS SA4 instance 216 rdf turtle qsa failed'
+
+
+def test_asgs_sa4_instance_216_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216> a asgs:SA4,'
+    ), 'ASGS SA4 instance 216 rdf turtle accept header failed'
+
+
+def test_asgs_sa4_instance_216_asgs_view_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=asgs&_format=text/html',
+        None,
+        r'<p>JSON Dump</p>'
+    ), 'ASGS SA4 instance 216 asgs view html failed'
+
+
+def test_asgs_sa4_instance_216_asgs_view_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=asgs&_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216> a asgs:SA4,'
+    ), 'ASGS SA4 instance 216 asgs view rdf turtle qsa failed'
+
+
+def test_asgs_sa4_instance_216_asgs_view_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=asgs',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216> a asgs:SA4,'
+    ), 'ASGS SA4 instance 216 asgs view rdf turtle accept header failed'
+
+
+def test_asgs_sa4_instance_216_alternates_view_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=alternates&_format=text/html',
+        None,
+        r'<h1>Alternates View<\/h1>'
+    ), 'ASGS SA4 instance 216 alternates view html failed'
+
+
+def test_asgs_sa4_instance_216_alternates_view_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=alternates&_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216>'
+    ), 'ASGS SA4 instance 216 alternates view rdf turtle qsa failed'
+
+
+def test_asgs_sa4_instance_216_alternates_view_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=alternates',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216>'
+    ), 'ASGS SA4 instance 216 alternates view rdf turtle accept header failed'
+
+
+def test_asgs_sa4_instance_216_geosparql_view_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=geosparql&_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216>'
+    ), 'ASGS SA4 instance 216 geosparql view rdf turtle qsa failed'
 
 
 
-#TODO: States register and instances ...
+def test_asgs_sa4_instance_216_geosparql_view_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=geosparql',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/sa4\/216>'
+    ), 'ASGS SA4 instance 216 geosparql view rdf turtle qsa failed'
+
+
+def test_asgs_sa4_instance_216_wfs_view_xml():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/sa4/216?_view=wfs&_format=application/xml',
+        None,
+        r'<gml:lowerCorner>10777612\.616999999 -5425372\.8682000004<\/gml:lowerCorner>'
+    ), 'ASGS SA4 instance 216 wfs view application/xml failed'
+
+
+def test_asgs_state_register_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/',
+        None,
+        r'<h3>Classes of item in this Register:<\/h3>'
+    ), 'ASGS State Register html failed'
+
+
+@pytest.mark.skip('ASGS State Register rdf turtle file extension not yet implemented')
+def test_asgs_state_register_rdf_turtle_file_extension():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/index.ttl',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a <http:\/\/test\.linked\.data\.gov\.au\/def\/asgs#State> ;'
+    ), 'ASGS State Register rdf turtle file extension failed'
+
+
+def test_asgs_state_register_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/?_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a <http:\/\/test\.linked\.data\.gov\.au\/def\/asgs#State> ;'
+    ), 'ASGS State Register rdf turtle qsa failed'
+
+
+def test_asgs_state_register_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a <http:\/\/test\.linked\.data\.gov\.au\/def\/asgs#State> ;'
+    ), 'ASGS State Register rdf turtle qsa failed'
+
+
+def test_asgs_state_register_reg_view_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/?_view=reg',
+        None,
+        r'<h3>Classes of item in this Register:<\/h3>'
+    ), 'ASGS State Register reg view html failed'
+
+
+def test_asgs_state_register_reg_view_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/?_view=reg&_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a <http:\/\/test\.linked\.data\.gov\.au\/def\/asgs#State> ;'
+    ), 'ASGS State Register reg view rdf turtle qsa failed'
+
+
+def test_asgs_state_register_reg_view_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/?_view=reg',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a <http:\/\/test\.linked\.data\.gov\.au\/def\/asgs#State> ;'
+    ), 'ASGS State Register reg view rdf turtle qsa failed'
+
+
+def test_asgs_state_register_alternates_view_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/?_view=alternates&_format=text/html',
+        None,
+        r'<h1>Alternates View<\/h1>'
+    ), 'ASGS State Register alternates view html failed'
+
+
+def test_asgs_state_register_alternates_view_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/?_view=alternates&_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/>'
+    ), 'ASGS State Register alternates view rdf turtle qsa failed'
+
+
+def test_asgs_state_register_alternates_view_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/?_view=alternates',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/>'
+    ), 'ASGS State Register alternates view rdf turtle accept header failed'
+
+
+def test_asgs_state_instance_act_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT',
+        HEADERS_HTML,
+        r'<h1>ASGS State Feature - Australian Capital Territory \(ACT\)<\/h1>'
+    ), 'ASGS State instance ACT html failed'
+
+
+@pytest.mark.skip('ASGS State instance ACT rdf turtle file extension not yet implemented')
+def test_asgs_state_instance_act_rdf_turtle_file_extension():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT.ttl',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a asgs:State,'
+    ), 'ASGS State instance ACT rdf turtle file extension failed'
+
+
+def test_asgs_state_instance_act_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a asgs:State,'
+    ), 'ASGS State instance ACT rdf turtle qsa failed'
+
+
+def test_asgs_state_instance_act_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a asgs:State,'
+    ), 'ASGS State instance ACT rdf turtle accept header failed'
+
+
+def test_asgs_state_instance_act_asgs_view_act_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT',
+        HEADERS_HTML,
+        r'<h1>ASGS State Feature - Australian Capital Territory \(ACT\)<\/h1>'
+    ), 'ASGS State instance ACT asgs view html failed'
+
+
+def test_asgs_state_instance_act_asgs_view_act_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a asgs:State,'
+    ), 'ASGS State instance ACT asgs view rdf turtle qsa failed'
+
+
+def test_asgs_state_instance_act_asgs_view_act_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a asgs:State,'
+    ), 'ASGS State instance ACT asgs view rdf turtle accept header failed'
+
+
+def test_asgs_state_instance_act_alternates_view_html():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_view=alternates&_format=text/html',
+        None,
+        r'<h1>Alternates View<\/h1>'
+    ), 'ASGS State instance ACT alternates view html failed'
+
+
+def test_asgs_state_instance_act_alternates_view_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_view=alternates&_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT>'
+    ), 'ASGS State instance ACT alternates view rdf turtle qsa failed'
+
+
+def test_asgs_state_instance_act_alternates_view_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_view=alternates',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT>'
+    ), 'ASGS State instance ACT alternates view rdf turtle accept header failed'
+
+
+def test_asgs_state_instance_act_geosparql_view_rdf_turtle_qsa():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_view=geosparql&_format=text/turtle',
+        None,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a asgs:State,'
+    ), 'ASGS State instance ACT geosparql view rdf turtle qsa failed'
+
+
+def test_asgs_state_instance_act_geosparql_view_rdf_turtle_accept_header():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_view=geosparql',
+        HEADERS_TTL,
+        r'<http:\/\/test\.linked\.data\.gov\.au\/dataset\/asgs\/state\/ACT> a asgs:State,'
+    ), 'ASGS State instance ACT geosparql view rdf turtle accept header failed'
+
+
+def test_asgs_state_instance_act_wfs_view_xml():
+    assert valid_endpoint_content(
+        f'{SYSTEM_URI}/state/ACT?_view=wfs&_format=application/xml',
+        None,
+        r'<gml:lowerCorner>10777612\.616999999 -5425372\.8682000004<\/gml:lowerCorner>'
+    ), 'ASGS State instance ACT wfs view application/xml failed'
 
 
 if __name__ == '__main__':
