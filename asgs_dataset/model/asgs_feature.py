@@ -19,6 +19,12 @@ from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
 from asgs_dataset.model import ASGSModel
 from asgs_dataset.model.lookups import *
 
+MESHBLOCK_COUNT = 358009
+SA1_COUNT = 57490
+SA2_COUNT = 2292
+SA3_COUNT = 340
+SA4_COUNT = 89
+
 # WHY ARE THEY ALL WFS?!
 xml_ns = {
     "MB": "WFS",
@@ -355,7 +361,11 @@ class ASGSFeature(ASGSModel):
         self.xml_tree = feature_xml_tree
         wfs_features = extract_asgs_features_as_geojson(
             self.asgs_type, feature_xml_tree)
-        asgs_feature = wfs_features['features'][0]
+        try:
+            asgs_feature = wfs_features['features'][0]
+        except (AttributeError, KeyError, TypeError) as e:
+            print("No WFS feature found on uri: {}".format(self.uri))
+            return
         self.geometry = asgs_feature['geometry']
         self.properties = asgs_feature['properties']
 
@@ -394,154 +404,6 @@ class ASGSFeature(ASGSModel):
         json_bbox = calculate_bbox(coords, pad=pad, srs=srs)
         (n, s, e, w) = json_bbox
         return (w,s,e,n) # (minx, miny, maxx, maxy)
-
-    # def _get_instance_details(self, from_local_file=True):
-    #
-    #     def _get_mb_details(root):
-    #         return {
-    #             'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-    #             'object_id': root.xpath('//MB:MB/MB:OBJECTID', namespaces={'MB': 'WFS'})[0].text,
-    #             'category': root.xpath('//MB:MB/MB:MB_CATEGORY_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'category_name': root.xpath('//MB:MB/MB:MB_CATEGORY_NAME_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'code': root.xpath('//MB:MB/MB:MB_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'albers_area': root.xpath('//MB:MB/MB:AREA_ALBERS_SQKM', namespaces={'MB': 'WFS'})[0].text,
-    #             'sa1': root.xpath('//MB:MB/MB:SA1_MAINCODE_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'state': int(root.xpath('//MB:MB/MB:STATE_CODE_2016', namespaces={'MB': 'WFS'})[0].text),
-    #             'dzn': root.xpath('//MB:MB/MB:DZN_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'ssc': root.xpath('//MB:MB/MB:SSC_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'nrmr': root.xpath('//MB:MB/MB:NRMR_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'add': root.xpath('//MB:MB/MB:ADD_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-    #             'shape_length': root.xpath('//MB:MB/MB:Shape_Length', namespaces={'MB': 'WFS'})[0].text,
-    #             'shape_area': root.xpath('//MB:MB/MB:Shape_Area', namespaces={'MB': 'WFS'})[0].text
-    #         }
-    #
-    #     def _get_sa1_details(root):
-    #         return {
-    #             'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-    #             'object_id': root.xpath('//SA1:OBJECTID', namespaces={'SA1': 'WFS'})[0].text,
-    #             'albers_area': root.xpath('//SA1:AREA_ALBERS_SQKM', namespaces={'SA1': 'WFS'})[0].text,
-    #             'sa2': root.xpath('//SA1:SA2_MAINCODE_2016', namespaces={'SA1': 'WFS'})[0].text,
-    #             'code': root.xpath('//SA1:SA1_MAINCODE_2016', namespaces={'SA1': 'WFS'})[0].text,
-    #             'seven_code': root.xpath('//SA1:SA1_7DIGITCODE_2016', namespaces={'SA1': 'WFS'})[0].text,
-    #             'state': int(root.xpath('//SA1:STATE_CODE_2016', namespaces={'SA1': 'WFS'})[0].text),
-    #             'shape_length': root.xpath('//SA1:Shape_Length', namespaces={'SA1': 'WFS'})[0].text,
-    #             'shape_area': root.xpath('//SA1:Shape_Area', namespaces={'SA1': 'WFS'})[0].text
-    #         }
-    #
-    #     def _get_sa2_details(root):
-    #         return {
-    #             'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-    #             'object_id': root.xpath('//SA2:OBJECTID', namespaces={'SA2': 'WFS'})[0].text,
-    #             'albers_area': root.xpath('//SA2:AREA_ALBERS_SQKM', namespaces={'SA2': 'WFS'})[0].text,
-    #             'sa3': root.xpath('//SA2:SA3_CODE_2016', namespaces={'SA2': 'WFS'})[0].text,
-    #             'code': root.xpath('//SA2:SA2_MAINCODE_2016', namespaces={'SA2': 'WFS'})[0].text,
-    #             'name': root.xpath('//SA2:SA2_NAME_2016', namespaces={'SA2': 'WFS'})[0].text,
-    #             'state': int(root.xpath('//SA2:STATE_CODE_2016', namespaces={'SA2': 'WFS'})[0].text),
-    #             'shape_length': root.xpath('//SA2:Shape_Length', namespaces={'SA2': 'WFS'})[0].text,
-    #             'shape_area': root.xpath('//SA2:Shape_Area', namespaces={'SA2': 'WFS'})[0].text
-    #         }
-    #
-    #     def _get_sa3_details(root):
-    #         return {
-    #             'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-    #             'object_id': root.xpath('//SA3:SA3/SA3:OBJECTID', namespaces={'SA3': 'WFS'})[0].text,
-    #             'name': root.xpath('//SA3:SA3/SA3:SA3_NAME_2016', namespaces={'SA3': 'WFS'})[0].text,
-    #             'albers_area': root.xpath('//SA3:SA3/SA3:AREA_ALBERS_SQKM', namespaces={'SA3': 'WFS'})[0].text,
-    #             'code': root.xpath('//SA3:SA3/SA3:SA3_CODE_2016', namespaces={'SA3': 'WFS'})[0].text,
-    #             'sa4': root.xpath('//SA3:SA3/SA3:SA4_CODE_2016', namespaces={'SA3': 'WFS'})[0].text,
-    #             'state': int(root.xpath('//SA3:SA3/SA3:STATE_CODE_2016', namespaces={'SA3': 'WFS'})[0].text),
-    #             'shape_length': root.xpath('//SA3:SA3/SA3:Shape_Length', namespaces={'SA3': 'WFS'})[0].text,
-    #             'shape_area': root.xpath('//SA3:SA3/SA3:Shape_Area', namespaces={'SA3': 'WFS'})[0].text
-    #         }
-    #
-    #     def _get_sa4_details(root):
-    #         return {
-    #             'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-    #             'object_id': root.xpath('//SA4:OBJECTID', namespaces={'SA4': 'WFS'})[0].text,
-    #             'name': root.xpath('//SA4:SA4_NAME_2016', namespaces={'SA4': 'WFS'})[0].text,
-    #             'albers_area': root.xpath('//SA4:AREA_ALBERS_SQKM', namespaces={'SA4': 'WFS'})[0].text,
-    #             'code': int(root.xpath('//SA4:SA4_CODE_2016', namespaces={'SA4': 'WFS'})[0].text),
-    #             'state': int(root.xpath('//SA4:STATE_CODE_2016', namespaces={'SA4': 'WFS'})[0].text),
-    #             'shape_length': root.xpath('//SA4:Shape_Length', namespaces={'SA4': 'WFS'})[0].text,
-    #             'shape_area': root.xpath('//SA4:Shape_Area', namespaces={'SA4': 'WFS'})[0].text
-    #         }
-    #
-    #     def _get_state_details(root):
-    #         return {
-    #             'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-    #             'object_id': root.xpath('//STATE:OBJECTID', namespaces={'STATE': 'WFS'})[0].text,
-    #             'name': root.xpath('//STATE:STATE_NAME_2016', namespaces={'STATE': 'WFS'})[0].text,
-    #             'name_abbrev': root.xpath('//STATE:STATE_NAME_ABBREV_2016', namespaces={'STATE': 'WFS'})[0].text,
-    #             'albers_area': root.xpath('//STATE:AREA_ALBERS_SQKM', namespaces={'STATE': 'WFS'})[0].text,
-    #             'code': int(root.xpath('//STATE:STATE_CODE_2016', namespaces={'STATE': 'WFS'})[0].text),
-    #             'shape_length': root.xpath('//STATE:Shape_Length', namespaces={'STATE': 'WFS'})[0].text,
-    #             'shape_area': root.xpath('//STATE:Shape_Area', namespaces={'STATE': 'WFS'})[0].text
-    #         }
-    #     def _get_aus_details(root):
-    #         return {
-    #             'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-    #             'object_id': root.xpath('//AUS:OBJECTID', namespaces={'AUS': 'WFS'})[0].text,
-    #             'name': root.xpath('//AUS:AUS_NAME_2016', namespaces={'AUS': 'WFS'})[0].text,
-    #             'code': int(root.xpath('//AUS:AUS_CODE_2016', namespaces={'AUS': 'WFS'})[0].text),
-    #             'shape_length': root.xpath('//AUS:Shape_Length', namespaces={'AUS': 'WFS'})[0].text,
-    #             'shape_area': root.xpath('//AUS:Shape_Area', namespaces={'AUS': 'WFS'})[0].text
-    #         }
-    #     # handle any connection exceptions
-    #     try:
-    #         root = None
-    #         if from_local_file:  # a stub to use a local file for testing
-    #             xml_file = os.path.join(
-    #                 os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
-    #                 'test',
-    #                 self.asgs_type + '_' + self.id + '.xml')
-    #             try:
-    #                 if self.asgs_type == "STATE" or self.asgs_type == "AUS":
-    #                     parser = etree.XMLParser(recover=True, huge_tree=True)
-    #                 else:
-    #                     parser = etree.XMLParser(recover=True)
-    #                 root = etree.parse(xml_file, parser=parser)
-    #             except (FileNotFoundError, OSError):
-    #                 root = None
-    #             except Exception as e:
-    #                 print(e)
-    #         if root is None:
-    #             wfs_uri = self.get_wfs_query_for_feature_type()
-    #             r = requests.get(wfs_uri)
-    #
-    #             # check we have a valid result with an XPath to get the posList (polygon coordinates)
-    #             root = etree.parse(StringIO(r.text))
-    #         try:
-    #             coords = root.xpath('//gml:posList', namespaces={'gml': 'http://www.opengis.net/gml/3.2'})
-    #         except IndexError as e:
-    #             return False, 'No Mesh Block with that ID was found'
-    #
-    #         coords_wkt = ''
-    #         c = coords[0].text.strip().split(' ')  # must strip to remove leading ' '
-    #
-    #         for i in range(0, len(c), 2):
-    #             coords_wkt += c[i] + ',' + c[i + 1] + ' '
-    #
-    #         if self.asgs_type == 'MB':
-    #             d = _get_mb_details(root)
-    #         elif self.asgs_type == 'SA1':
-    #             d = _get_sa1_details(root)
-    #         elif self.asgs_type == 'SA2':
-    #             d = _get_sa2_details(root)
-    #         elif self.asgs_type == 'SA3':
-    #             d = _get_sa3_details(root)
-    #         elif self.asgs_type == 'SA4':
-    #             d = _get_sa4_details(root)
-    #         elif self.asgs_type == 'STATE':
-    #             d = _get_state_details(root)
-    #         elif self.asgs_type == 'AUS':
-    #             d = _get_aus_details(root)
-    #         else:
-    #             raise RuntimeError()
-    #
-    #         return True, d
-    #
-    #     except Exception as e:
-    #         return False, str(e)
 
     def _get_instance_rdf(self, profile='asgs'):  # fixed to asgs profile for now
         deets = self.properties
@@ -604,23 +466,23 @@ class ASGSFeature(ASGSModel):
 
     @staticmethod
     def total_meshblocks():
-        return conf.MESHBLOCK_COUNT
+        return MESHBLOCK_COUNT
 
     @staticmethod
     def total_sa1s():
-        return conf.SA1_COUNT
+        return SA1_COUNT
 
     @staticmethod
     def total_sa2s():
-        return conf.SA2_COUNT
+        return SA2_COUNT
 
     @staticmethod
     def total_sa3s():
-        return conf.SA3_COUNT
+        return SA3_COUNT
 
     @staticmethod
     def total_sa4s():
-        return conf.SA4_COUNT  # return 49
+        return SA4_COUNT
 
     @staticmethod
     def total_states():

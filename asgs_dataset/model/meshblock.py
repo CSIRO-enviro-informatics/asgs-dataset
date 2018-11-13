@@ -1,6 +1,8 @@
 from flask import Response, render_template, url_for
 import requests
 from io import StringIO, BytesIO
+
+from lxml.etree import XMLSyntaxError
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
 from pyldapi import Renderer, View
 import asgs_dataset._config as conf
@@ -79,7 +81,11 @@ class MeshBlock(ASGSModel):
                        '&sortBy=MB:MB_CODE_2016&startIndex={startindex}&count={count}'
         url = url_template.format(startindex=offset, count=per_page)
         resp = requests.get(url)
-        tree = etree.parse(BytesIO(resp.content))  # type lxml._ElementTree
+        try:
+            tree = etree.parse(BytesIO(resp.content))  # type lxml._ElementTree
+        except (XMLSyntaxError, TypeError, AttributeError) as e:
+            print(e)
+            raise e
         items = tree.xpath('//MB:MB_CODE_2016/text()', namespaces=tree.getroot().nsmap)
         return items
 
