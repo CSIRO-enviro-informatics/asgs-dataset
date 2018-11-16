@@ -17,17 +17,17 @@
         {% for token, vals in views.items() %}
             <tr>
                 {% if default_view_token == token %}
-                    <td><strong><a href="{{ request.base_url }}?_view={{ token }}&_format={{ vals['default_format'] }}">{{ token }}</a></strong>&nbsp;&ast;</td>
+                    <td><strong><a href="{{ uri }}?_view={{ token }}&_format={{ vals['default_format'] }}">{{ token }}</a></strong>&nbsp;&ast;</td>
                 {% else %}
-                    <td><a href="{{ request.base_url }}?_view={{ token }}">{{ token }}</a></td>
+                    <td><a href="{{ uri }}?_view={{ token }}">{{ token }}</a></td>
                 {% endif %}
                 <td>{{ vals['label'] }}</td>
                 <td style="text-align: center;">
                 {% for f in vals['formats'] %}
                   {% if 'default_format' in vals and f == vals['default_format'] %}
-                      <strong><a href="{{ request.base_url }}?_view={{ token }}&_format={{ f }}">{{ f }}</a>&nbsp;&ast;</strong>
+                      <strong><a href="{{ uri }}?_view={{ token }}&_format={{ f }}">{{ f }}</a>&nbsp;&ast;</strong>
                   {% else %}
-                      <a href="{{ request.base_url }}?_view={{ token }}&_format={{ f }}">{{ f }}</a>
+                      <a href="{{ uri }}?_view={{ token }}&_format={{ f }}">{{ f }}</a>
                   {% endif %}
                   {% if loop.index != vals['formats']|length %}<br />{% endif %}
                 {% endfor %}
