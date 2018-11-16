@@ -104,28 +104,6 @@ class MeshBlock(ASGSModel):
         self.id = uri.split('/')[-1]
 
 
-    def render(self):
-        if hasattr(self, 'vf_error'):
-            return Response(self.vf_error, status=406, mimetype='text/plain')
-        else:
-            if self.view == 'alternates':
-                return self._render_alternates_view()
-            elif self.view == 'asgs':
-                if self.format in Renderer.RDF_MIMETYPES:
-                    return self._get_instance_rdf()
-                else:  # only the HTML format left
-                    deets = self._get_instance_details()
-                    if not deets[0]:
-                        return Response(deets[1], status=404, mimetype='text/plain')
-                    else:
-                        return render_template(
-                            'asgs-MB-en.html',
-                            uri=self.uri,
-                            deets=deets[1]
-                        )
-            elif self.view == 'wfs':
-                return 'xml'
-
     def _get_instance_details(self, from_local_file=False):
         # handle anny connection exceptions
         try:

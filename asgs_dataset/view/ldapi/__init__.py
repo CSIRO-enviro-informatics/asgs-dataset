@@ -89,10 +89,11 @@ class ASGSClassRenderer(pyldapi.Renderer):
         #self.instance = None  # inheriting classes will need to add the Instance themselves.
 
     def render(self):
+        response = super(ASGSClassRenderer, self).render()
+        if response is not None:
+            return response
         try:
-            if self.view == 'alternates':
-                return self._render_alternates_view()
-            elif self.view == 'asgs':
+            if self.view == 'asgs':
                 return self._render_asgs_view()
             elif self.view == 'wfs':
                 return self._render_wfs_view()
@@ -220,7 +221,7 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
                     self.format = 'text/html'
         except AttributeError:
             pass
-        if asgs_model_class:
+        if self.view != "alternates" and asgs_model_class is not None:
             items = self.asgs_model_class.get_index(uri, self.page, self.per_page)
             for item_id in items:
                 item_id = str(item_id)
@@ -236,11 +237,7 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
             from flask import request
             return render_error(request, e)
 
-    def _render_reg_view_html(self):
-        pagination = Pagination(
-            page=self.page, per_page=self.per_page,
-            total=self.register_total_count,
-            page_parameter='page', per_page_parameter='per_page')
+    def _render_reg_view_html(self, template_context=None):
         if self.asgs_model_class:
             register_view_items = [
                 (self.asgs_model_class.make_local_url(uri, identifier), label)
@@ -254,26 +251,16 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
                 ]
             except Exception as e:
                 register_view_items = self.register_items
-        return Response(
-            render_template(
-                self.register_template or 'register.html',
-                uri=self.uri,
-                label=self.label,
-                comment=self.comment,
-                model=self.asgs_model_class,
-                contained_item_classes=self.contained_item_classes,
-                register_items=register_view_items,
-                page=self.page,
-                per_page=self.per_page,
-                first_page=self.first_page,
-                prev_page=self.prev_page,
-                next_page=self.next_page,
-                last_page=self.last_page,
-                super_register=self.super_register,
-                pagination=pagination
-            ),
-            headers=self.headers
-        )
+        _template_context = {
+            'model': self.asgs_model_class,
+            'register_items': register_view_items
+        }
+        if template_context is not None and isinstance(template_context, dict):
+            _template_context.update(template_context)
+
+        return super(ASGSRegisterRenderer, self).\
+            _render_reg_view_html(template_context=_template_context)
+
 
 
 class ASGSRegisterOfRegistersRenderer(pyldapi.RegisterOfRegistersRenderer):
