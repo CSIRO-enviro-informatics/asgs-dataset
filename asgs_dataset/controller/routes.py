@@ -9,6 +9,7 @@ from asgs_dataset.model.meshblock import MeshBlock
 
 routes = Blueprint('controller', __name__)
 
+
 #
 #   pages
 #
@@ -65,15 +66,18 @@ def states():
     #     [ (url_for('controller.redirect_state', state=s), s)
     #       for s in register_states ]
     register_renderer.register_items =\
-        [ (conf.URI_STATE_INSTANCE_BASE+s,
-           "ASGS Feature State: {}".format(s), s)
-          for s in register_states ]
+        [
+            (conf.URI_STATE_INSTANCE_BASE+s,
+             "ASGS Feature State: {}".format(s), s)
+            for s in register_states
+        ]
     return register_renderer.render()
+
 
 @routes.route('/australia/')
 def aus_index():
     total_australias = 1
-    #TODO: Determine whether to generate these with canonical_url or local_url!
+    # TODO: Determine whether to generate these with canonical_url or local_url!
     # register_aus = [
     #     (url_for('controller.redirect_aus', code="036"), "Australia (036)")
     # ]
@@ -184,6 +188,7 @@ def sa4s():
         super_register=conf.DATA_URI_PREFIX+"/reg",
     ).render()
 
+
 #
 #   instances
 #
@@ -213,11 +218,13 @@ def redirect_state(state):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_STATE_INSTANCE_BASE + state, **args))
 
+
 # aus alias
 @routes.route('/australia/<string:code>')
 def redirect_aus(code):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_AUS_INSTANCE_BASE + code, **args))
+
 
 # sa1 alias
 @routes.route('/sa1/<path:sa1>')
@@ -225,17 +232,20 @@ def redirect_sa1(sa1):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA1_INSTANCE_BASE + sa1, **args))
 
+
 # sa2 alias
 @routes.route('/sa2/<path:sa2>')
 def redirect_sa2(sa2):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA2_INSTANCE_BASE + sa2, **args))
 
+
 # sa3 alias
 @routes.route('/sa3/<path:sa3>')
 def redirect_sa3(sa3):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA3_INSTANCE_BASE + sa3, **args))
+
 
 # sa4 alias
 @routes.route('/sa4/<path:sa4>')
