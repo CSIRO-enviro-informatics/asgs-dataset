@@ -91,8 +91,6 @@ state_tag_map = {
 }
 
 
-
-
 def asgs_features_geojson_converter(asgs_type, wfs_features):
     if len(wfs_features) < 1:
         return None
@@ -238,11 +236,13 @@ def asgs_features_geosparql_converter(asgs_type, canonical_uri, wfs_features):
         features_list.append(feature_uri)
     return triples, feature_nodes
 
+
 def extract_asgs_features_as_geojson(asgs_type, tree):
     geojson_features = wfs_extract_features_as_geojson(
         tree, 'WFS', asgs_type,
         partial(asgs_features_geojson_converter, asgs_type))
     return geojson_features
+
 
 def extract_asgs_features_as_geosparql(asgs_type, canonical_uri, tree):
     g = rdflib.Graph()
@@ -254,6 +254,7 @@ def extract_asgs_features_as_geosparql(asgs_type, canonical_uri, tree):
     for (s, p, o) in iter(triples):
         g.add((s, p, o))
     return g
+
 
 @lru_cache(maxsize=128)
 def retrieve_asgs_feature(asgs_type, identifier, local=True):
@@ -289,6 +290,8 @@ def retrieve_asgs_feature(asgs_type, identifier, local=True):
             raise e
         tree = etree.parse(BytesIO(r.content), parser=parser)
     return tree
+
+
 retrieve_asgs_feature.session = None
 
 
@@ -373,15 +376,15 @@ class ASGSFeature(ASGSModel):
     def determine_asgs_type(cls, instance_uri):
         if '/meshblock/' in instance_uri:
             return 'MB'
-        elif '/sa1/' in instance_uri:
+        elif '/statisticalarealevel1/' in instance_uri:
             return 'SA1'
-        elif '/sa2/' in instance_uri:
+        elif '/statisticalarealevel2/' in instance_uri:
             return 'SA2'
-        elif '/sa3/' in instance_uri:
+        elif '/statisticalarealevel3/' in instance_uri:
             return 'SA3'
-        elif '/sa4/' in instance_uri:
+        elif '/statisticalarealevel4/' in instance_uri:
             return 'SA4'
-        elif '/state/' in instance_uri:
+        elif '/stateorterritory/' in instance_uri:
             return 'STATE'
         else:  # australia
             return 'AUS'
@@ -509,7 +512,6 @@ class ASGSFeature(ASGSModel):
             propertyname = 'AUS:AUS_CODE_2016'
         items = tree.xpath('//{}/text()'.format(propertyname), namespaces=tree.getroot().nsmap)
         return items
-
 
     @classmethod
     def construct_wfs_query_for_index(cls, asgs_type, startindex, count):

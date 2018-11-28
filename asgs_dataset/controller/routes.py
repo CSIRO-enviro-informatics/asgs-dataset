@@ -32,14 +32,14 @@ def home_ttl():
 def reg():
     return RegisterOfRegistersRenderer(
         request,
-        conf.DATA_URI_PREFIX+"/reg",
+        conf.DATA_URI_PREFIX,
         'Register of Registers',
         'The master register of this API',
         conf.APP_DIR + '/rofr.ttl'
     ).render()
 
 
-@routes.route('/state/')
+@routes.route('/stateorterritory/')
 def states():
     total = ASGSFeature.total_states()
     if total is None:
@@ -61,12 +61,12 @@ def states():
     register_renderer = ASGSRegisterRenderer(
         request,
         conf.URI_STATE_INSTANCE_BASE,
-        'Register of States',
+        'Register of States or Territories',
         'Australian States and Territories',
         [conf.URI_STATE_CLASS],
         total,
         None,
-        super_register=conf.DATA_URI_PREFIX+"/reg",
+        super_register=conf.DATA_URI_PREFIX,
     )
     # TODO: Determine whether to generate these with canonical_url or local_url!
     # register_renderer.register_items =\
@@ -100,7 +100,7 @@ def aus_index():
         [conf.URI_AUS_CLASS],
         total_australias,
         None,
-        super_register=conf.DATA_URI_PREFIX+"/reg",
+        super_register=conf.DATA_URI_PREFIX,
     )
     register_renderer.register_items = register_aus
     return register_renderer.render()
@@ -120,11 +120,11 @@ def meshblocks():
         [conf.URI_MESHBLOCK_CLASS],
         total,
         MeshBlock,
-        super_register=conf.DATA_URI_PREFIX+"/reg",
+        super_register=conf.DATA_URI_PREFIX,
     ).render()
 
 
-@routes.route('/sa1/')
+@routes.route('/statisticalarealevel1/')
 def sa1s():
     total = ASGSFeature.total_sa1s()
     if total is None:
@@ -133,16 +133,16 @@ def sa1s():
     return ASGSRegisterRenderer(
         request,
         conf.URI_SA1_INSTANCE_BASE,
-        'Register of ASGS SA1 regions',
-        'All the ASGS SA1 regions',
+        'Register of ASGS Statistical Area Level 1 regions',
+        'All the ASGS Statistical Area Level 1 regions',
         [conf.URI_SA1_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.DATA_URI_PREFIX+"/reg",
+        super_register=conf.DATA_URI_PREFIX,
     ).render()
 
 
-@routes.route('/sa2/')
+@routes.route('/statisticalarealevel2/')
 def sa2s():
     total = ASGSFeature.total_sa2s()
     if total is None:
@@ -151,16 +151,16 @@ def sa2s():
     return ASGSRegisterRenderer(
         request,
         conf.URI_SA2_INSTANCE_BASE,
-        'Register of ASGS SA2 regions',
-        'All the ASGS SA2 regions',
+        'Register of ASGS Statistical Area Level 2 regions',
+        'All the ASGS Statistical Area Level 2 regions',
         [conf.URI_SA2_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.DATA_URI_PREFIX+"/reg",
+        super_register=conf.DATA_URI_PREFIX,
     ).render()
 
 
-@routes.route('/sa3/')
+@routes.route('/statisticalarealevel3/')
 def sa3s():
     total = ASGSFeature.total_sa3s()
     if total is None:
@@ -169,16 +169,16 @@ def sa3s():
     return ASGSRegisterRenderer(
         request,
         conf.URI_SA3_INSTANCE_BASE,
-        'Register of ASGS SA3 regions',
-        'All the ASGS SA3 regions',
+        'Register of ASGS Statistical Area Level 3 regions',
+        'All the ASGS Statistical Area Level 3 regions',
         [conf.URI_SA3_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.DATA_URI_PREFIX+"/reg",
+        super_register=conf.DATA_URI_PREFIX,
     ).render()
 
 
-@routes.route('/sa4/')
+@routes.route('/statisticalarealevel4/')
 def sa4s():
     total = ASGSFeature.total_sa4s()
     if total is None:
@@ -187,12 +187,12 @@ def sa4s():
     return ASGSRegisterRenderer(
         request,
         conf.URI_SA4_INSTANCE_BASE,
-        'Register of ASGS SA4 regions',
-        'All the ASGS SA4 regions',
+        'Register of ASGS Statistical Area Level 4 regions',
+        'All the ASGS Statistical Area Level 4 regions',
         [conf.URI_SA4_CLASS],
         total,
         ASGSFeature,
-        super_register=conf.DATA_URI_PREFIX+"/reg",
+        super_register=conf.DATA_URI_PREFIX,
     ).render()
 
 
@@ -234,28 +234,28 @@ def redirect_aus(code):
 
 
 # sa1 alias
-@routes.route('/sa1/<path:sa1>')
+@routes.route('/statisticalarealevel1/<path:sa1>')
 def redirect_sa1(sa1):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA1_INSTANCE_BASE + sa1, **args))
 
 
 # sa2 alias
-@routes.route('/sa2/<path:sa2>')
+@routes.route('/statisticalarealevel3/<path:sa2>')
 def redirect_sa2(sa2):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA2_INSTANCE_BASE + sa2, **args))
 
 
 # sa3 alias
-@routes.route('/sa3/<path:sa3>')
+@routes.route('/statisticalarealevel3/<path:sa3>')
 def redirect_sa3(sa3):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA3_INSTANCE_BASE + sa3, **args))
 
 
 # sa4 alias
-@routes.route('/sa4/<path:sa4>')
+@routes.route('/statisticalarealevel4/<path:sa4>')
 def redirect_sa4(sa4):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA4_INSTANCE_BASE + sa4, **args))

@@ -178,7 +178,6 @@ class ASGSClassRenderer(pyldapi.Renderer):
             g.serialize(format=serial_format), mimetype=self.format,
             headers=self.headers)
 
-
     @classmethod
     def _add_default_asgs_views(cls, _views):
         if 'asgs' in _views.keys():
@@ -226,7 +225,7 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
             for item_id in items:
                 item_id = str(item_id)
                 uri = ''.join([self.uri, item_id])
-                #local_uri = self.asgs_model_class.make_local_url(uri, item_id)
+                # local_uri = self.asgs_model_class.make_local_url(uri, item_id)
                 label = self.asgs_model_class.make_instance_label(uri, item_id)
                 self.register_items.append((uri, label, item_id))
 
@@ -260,7 +259,6 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
 
         return super(ASGSRegisterRenderer, self).\
             _render_reg_view_html(template_context=_template_context)
-
 
 
 class ASGSRegisterOfRegistersRenderer(pyldapi.RegisterOfRegistersRenderer):
