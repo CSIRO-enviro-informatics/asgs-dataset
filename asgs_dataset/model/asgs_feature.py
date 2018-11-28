@@ -25,6 +25,10 @@ SA2_COUNT = 2292
 SA3_COUNT = 340
 SA4_COUNT = 89
 
+INVERSE_TOKEN = object()
+
+RDF_INCLUDE_UNKNOWN_PREDICATES = False
+
 # WHY ARE THEY ALL WFS?!
 xml_ns = {
     "MB": "WFS",
@@ -55,12 +59,26 @@ mb_tag_map = {
     "{WFS}NRMR_CODE_2016": "nrmr",
     "{WFS}ADD_CODE_2016": "add"
 }
+mb_predicate_map = {
+    'code': [ASGS.mbCode2016],
+    'category_name': [ASGS.category],
+    'sa1': INVERSE_TOKEN,
+    'state': INVERSE_TOKEN,
+    'dzn': INVERSE_TOKEN,
+    'ssc': INVERSE_TOKEN,
+    'nrmr': INVERSE_TOKEN,
+}
 
 sa1_tag_map = {
     "{WFS}SA1_MAINCODE_2016": 'code',
     "{WFS}SA2_MAINCODE_2016": "sa2",
     "{WFS}STATE_CODE_2016": "state",
     "{WFS}SA1_7DIGITCODE_2016": "seven_code",
+}
+sa1_predicate_map = {
+    'code': [ASGS.sa1Maincode2016, ASGS.statisticalArea1Sa111DigitCode],
+    'sa2': INVERSE_TOKEN,
+    'state': INVERSE_TOKEN,
 }
 
 sa2_tag_map = {
@@ -69,12 +87,24 @@ sa2_tag_map = {
     "{WFS}SA3_CODE_2016": "sa3",
     "{WFS}STATE_CODE_2016": "state",
 }
+sa2_predicate_map = {
+    'code': [ASGS.sa2Maincode2016, ASGS.statisticalArea2Sa29DigitCode],
+    'name': [ASGS.sa2Name2016],
+    'sa3': INVERSE_TOKEN,
+    'state': INVERSE_TOKEN,
+}
 
 sa3_tag_map = {
     "{WFS}SA3_CODE_2016": 'code',
     "{WFS}SA3_NAME_2016": 'name',
     "{WFS}SA4_CODE_2016": "sa4",
     "{WFS}STATE_CODE_2016": "state",
+}
+sa3_predicate_map = {
+    'code': [ASGS.sa3Code2016, ASGS.statisticalArea3Sa35DigitCode],
+    'name': [ASGS.sa3Name2016],
+    'sa4': INVERSE_TOKEN,
+    'state': INVERSE_TOKEN,
 }
 
 sa4_tag_map = {
@@ -83,11 +113,23 @@ sa4_tag_map = {
     "{WFS}GCCSA_CODE_2016": "gccsa",
     "{WFS}STATE_CODE_2016": "state",
 }
+sa4_predicate_map = {
+    'code': [ASGS.sa4Code2016, ASGS.statisticalArea4Sa43DigitCode],
+    'name': [ASGS.sa4Name2016],
+    'state': INVERSE_TOKEN,
+    'gccsa': INVERSE_TOKEN,
+}
+
 
 state_tag_map = {
     "{WFS}STATE_CODE_2016": 'code',
     "{WFS}STATE_NAME_2016": 'name',
     "{WFS}STATE_NAME_ABBREV_2016": 'name_abbrev'
+}
+state_predicate_map = {
+    'code': [ASGS.stateCode2016, ASGS.stateOrTerritory1DigitCode],
+    'name': [ASGS.stateName2016],
+    'name_abbrev': [ASGS.label],
 }
 
 
@@ -185,16 +227,22 @@ def asgs_features_geosparql_converter(asgs_type, canonical_uri, wfs_features):
     ignore_geom = False
     if asgs_type == "MB":
         tag_map = {**tag_map, **mb_tag_map}
+        predicate_map = {**predicate_map, **mb_predicate_map}
     elif asgs_type == "SA1":
         tag_map = {**tag_map, **sa1_tag_map}
+        predicate_map = {**predicate_map, **sa1_predicate_map}
     elif asgs_type == "SA2":
         tag_map = {**tag_map, **sa2_tag_map}
+        predicate_map = {**predicate_map, **sa2_predicate_map}
     elif asgs_type == "SA3":
         tag_map = {**tag_map, **sa3_tag_map}
+        predicate_map = {**predicate_map, **sa3_predicate_map}
     elif asgs_type == "SA4":
         tag_map = {**tag_map, **sa4_tag_map}
+        predicate_map = {**predicate_map, **sa4_predicate_map}
     elif asgs_type == "STATE":
         tag_map = {**tag_map, **state_tag_map}
+        predicate_map = {**predicate_map, **state_predicate_map}
         ignore_geom = True
     elif asgs_type == "AUS":
         ignore_geom = True
@@ -221,7 +269,11 @@ def asgs_features_geosparql_converter(asgs_type, canonical_uri, wfs_features):
             if var in to_float:
                 val = Literal(float(val))
             elif var in to_int:
-                val = Literal(int(val))
+                try:
+                    val = int(val)
+                except ValueError:
+                    val = str(val)
+                val = Literal(val)
             else:
                 if not isinstance(val, (URIRef, Literal, BNode)):
                     val = Literal(str(val))
@@ -229,10 +281,18 @@ def asgs_features_geosparql_converter(asgs_type, canonical_uri, wfs_features):
                 triples.add((feature_uri, GEO_hasGeometry, val))
             elif var in predicate_map.keys():
                 predicate = predicate_map[var]
-                triples.add((feature_uri, predicate, val))
+                if predicate == INVERSE_TOKEN:
+                    continue
+                if not isinstance(predicate, list):
+                    predicate = [predicate]
+                for p in predicate:
+                    if p == INVERSE_TOKEN:
+                        continue
+                    triples.add((feature_uri, p, val))
             else:
-                dummy_prop = URIRef("{}/{}".format("WFS", var))
-                triples.add((feature_uri, dummy_prop, val))
+                if RDF_INCLUDE_UNKNOWN_PREDICATES:
+                    dummy_prop = URIRef("{}/{}".format("WFS", var))
+                    triples.add((feature_uri, dummy_prop, val))
         features_list.append(feature_uri)
     return triples, feature_nodes
 
@@ -413,37 +473,72 @@ class ASGSFeature(ASGSModel):
         if profile == 'asgs' or profile == 'geosparql':
             g = self.as_geosparql()
             # ID & definition of the MB
-            mb = URIRef(self.uri)
+            feat = URIRef(self.uri)
             if self.asgs_type == "MB":
-                g.add((mb, RDF_a, ASGS.MeshBlock))
-                # SA1 - 2nd level register
-                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa1/' + deets['sa1'])))
-                # TODO: Do category and category_name for MB
+                g.add((feat, RDF_a, ASGS.MeshBlock))
+                sa1 = URIRef(conf.URI_SA1_INSTANCE_BASE + deets['sa1'])
+                g.add((sa1, ASGS.contains, feat))
+                g.add((sa1, ASGS.isStatisticalAreaLevel1Of, feat))
+                if 'dzn' in deets:
+                    dzn_type = URIRef(conf.DEF_URI_PREFIX+"#DestinationZone")
+                    dzn_code = Literal(str(deets['dzn']))
+                    # TODO, give DZN's their own URIs, even their own register
+                    dzn = BNode()
+                    g.add((dzn, RDF_a, dzn_type))
+                    g.add((dzn, ASGS.contains, feat))
+                    g.add((dzn, ASGS.dznCode2016, dzn_code))
+                if 'ssc' in deets:
+                    ss_type = URIRef(conf.DEF_URI_PREFIX+"#StateSuburb")
+                    ss_code = Literal(str(deets['ssc']))
+                    # TODO, give SSC's their own URIs, even their own register
+                    ss = BNode()
+                    g.add((ss, RDF_a, ss_type))
+                    g.add((ss, ASGS.contains, feat))
+                    g.add((ss, ASGS.sscCode2016, ss_code))
+                if 'nrmr' in deets:
+                    nrmr_type = URIRef(conf.DEF_URI_PREFIX+"#NaturalResourceManagementRegion")
+                    nrmr_code = Literal(str(deets['nrmr']))
+                    # TODO, give NRMR's their own URIs, even their own register
+                    nrmr = BNode()
+                    g.add((nrmr, RDF_a, nrmr_type))
+                    g.add((nrmr, ASGS.contains, feat))
+                    g.add((nrmr, ASGS.nrmrCode2016, nrmr_code))
             elif self.asgs_type == "SA1":
-                g.add((mb, RDF_a, ASGS.SA1))
-                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa2/' + deets['sa2'])))
+                g.add((feat, RDF_a, ASGS.StatisticalAreaLevel1))
+                sa2 = URIRef(conf.URI_SA2_INSTANCE_BASE + deets['sa2'])
+                g.add((sa2, ASGS.contains, feat))
+                g.add((sa2, ASGS.isStatisticalAreaLevel2Of, feat))
             elif self.asgs_type == "SA2":
-                g.add((mb, RDF_a, ASGS.SA2))
-                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa3/' + deets['sa3'])))
+                g.add((feat, RDF_a, ASGS.StatisticalAreaLevel2))
+                sa3 = URIRef(conf.URI_SA3_INSTANCE_BASE + deets['sa3'])
+                g.add((sa3, ASGS.contains, feat))
+                g.add((sa3, ASGS.isStatisticalAreaLevel3Of, feat))
             elif self.asgs_type == "SA3":
-                g.add((mb, RDF_a, ASGS.SA3))
-                g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa4/' + deets['sa4'])))
+                g.add((feat, RDF_a, ASGS.StatisticalAreaLevel3))
+                sa4 = URIRef(conf.URI_SA4_INSTANCE_BASE + deets['sa4'])
+                g.add((sa4, ASGS.contains, feat))
+                g.add((sa4, ASGS.isStatisticalAreaLevel4Of, feat))
             elif self.asgs_type == "SA4":
-                g.add((mb, RDF_a, ASGS.SA4))
+                g.add((feat, RDF_a, ASGS.StatisticalAreaLevel4))
+                if 'gccsa' in deets:
+                    gccsa_type = URIRef(conf.DEF_URI_PREFIX+"#GreaterCapitalCityStatisticalArea")
+                    gccsa_code = Literal(str(deets['gccsa']))
+                    #TODO, give GCCSA's their own URIs, even their own register
+                    gccsa = BNode()
+                    g.add((gccsa, RDF_a, gccsa_type))
+                    g.add((gccsa, ASGS.contains, feat))
+                    g.add((gccsa, ASGS.isGreaterCapitalCityStatisticalAreaOf, feat))
+                    g.add((gccsa, ASGS.gccsaCode2016, gccsa_code))
+                    g.add((gccsa, ASGS.greaterCapitalCityStatisticalAreasGccsa5CharacterAlphanumericCode, gccsa_code))
             elif self.asgs_type == "STATE":
-                g.add((mb, RDF_a, ASGS.State))
+                g.add((feat, RDF_a, ASGS.StateOrTerritory))
             else:
-                g.add((mb, RDF_a, ASGS.Australia))
+                g.add((feat, RDF_a, ASGS.Australia))
             if self.asgs_type != "AUS" and self.asgs_type != "STATE":
-                # State - top-level register
-                g.add((mb, GEO.sfWithin, URIRef(
-                    'http://linked.data.gov.au/state/' + STATES[
-                        deets['state']])))
-                # TODO: add hasState to ASGS ont as a subProperty of sfWithin wth fixed range value being an Aust state individual
-                g.add((mb, ASGS.hasState, URIRef(
-                    'http://linked.data.gov.au/state/' + STATES[
-                        deets['state']])))
-
+                if 'state' in deets:
+                    state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + STATES[deets['state']])
+                    g.add((state_uri, ASGS.contains, feat))
+                    g.add((state_uri, ASGS.isStateOrTerritoryOf, feat))
             # area
             # TODO: check multiplier on m^2 or km^2
             QUDT = Namespace('http://qudt.org/schema/qudt/')
@@ -454,7 +549,7 @@ class ASGSFeature(ASGSModel):
             #               qudt:QuantityKind
             # qudt:QuantityKind qudt:symbol (max 1) xsd:string ($\\ohm$) -> owl:DatatypeProperty , qudt:latexMathString
             # qudt:QuantityKind qudt:abbreviation (max 1) xsd:string (ohm) -> owl:DatatypeProperty
-            g.add((mb, ASGS.hasArea, area))
+            g.add((feat, ASGS.hasArea, area))
             g.add((area, QUDT.numericValue, Literal(deets['shape_area'], datatype=XSD.decimal)))
             g.add((area, QUDT.unit, QUDT.SquareMeter))
 

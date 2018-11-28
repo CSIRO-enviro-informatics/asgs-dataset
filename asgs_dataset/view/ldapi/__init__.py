@@ -117,21 +117,24 @@ class ASGSClassRenderer(pyldapi.Renderer):
         else:
             raise RuntimeError("Cannot render 'asgs' View with format '{}'.".format(self.format))
 
-    def _render_asgs_view_html(self):
-        deets = self.instance.properties
+    def _render_asgs_view_html(self, template_context=None):
         geometry = self.instance.geometry
         if len(geometry) > 0:
             (w, s, e, n) = self.instance.get_bbox()  # (minx, miny, maxx, maxy)
             bbox = [[w,s],[e,n]]
         else:
             bbox = None
+        _template_context = {
+            'uri': self.uri,
+            'geometry': geometry,
+            'bbox': bbox,
+            'instance_id': self.identifier
+        }
+        if template_context is not None and len(template_context) > 0:
+            _template_context.update(template_context)
         return Response(render_template(
             self.asgs_template,
-            uri=self.uri,
-            deets=deets,
-            geometry=geometry,
-            bbox=bbox,
-            instance_id=self.identifier
+            **_template_context
             ),
             headers=self.headers)
 

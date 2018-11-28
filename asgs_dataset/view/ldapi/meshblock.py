@@ -24,4 +24,11 @@ class MeshBlockRenderer(ASGSClassRenderer):
         self.identifier = identifier
         self.instance = MeshBlock(self.identifier)
 
-
+    def _render_asgs_view_html(self, template_context=None):
+        _template_context = {
+            'deets': self.instance.properties
+        }
+        if template_context is not None and len(template_context) > 0:
+            _template_context.update(template_context)
+        return super(MeshBlockRenderer, self).\
+            _render_asgs_view_html(_template_context)

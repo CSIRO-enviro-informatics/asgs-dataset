@@ -9,7 +9,7 @@ from lxml import etree
 GEO = Namespace("http://www.opengis.net/ont/geosparql#")
 GML = Namespace("http://www.opengis.net/ont/gml#")
 OGC = Namespace("http://www.opengis.net/")
-ASGS = Namespace('http://test.linked.data.gov.au/def/asgs#')
+ASGS = Namespace('http://linked.data.gov.au/def/asgs#')
 GEO_Geometry = GEO.term('Geometry')
 GEO_Feature = GEO.term('Feature')
 GEO_hasGeometry = GEO.term('hasGeometry')

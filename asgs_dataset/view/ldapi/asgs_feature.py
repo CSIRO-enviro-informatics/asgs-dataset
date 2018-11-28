@@ -23,4 +23,13 @@ class ASGSFeatureRenderer(ASGSClassRenderer):
             request, _uri, _views, *args,
             default_view_token=default_view_token, **kwargs)
 
+    def _render_asgs_view_html(self, template_context=None):
+        _template_context = {
+            'deets': self.instance.properties
+        }
+        if template_context is not None and len(template_context) > 0:
+            _template_context.update(template_context)
+        return super(ASGSFeatureRenderer, self).\
+            _render_asgs_view_html(_template_context)
+
 

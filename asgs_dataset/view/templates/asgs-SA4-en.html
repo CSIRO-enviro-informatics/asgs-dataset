@@ -8,7 +8,7 @@
     </style>
 {% endblock %}
 {% block extra_head_javascript %}
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl-dev.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
     <script src="{{ url_for('static', filename='util.js') }}"></script>
 {% endblock %}
 {% block content %}
@@ -17,7 +17,9 @@
     <div id="map_container"></div>
     <ul>
         <li>Within State: <a href="{{ url_for("controller.redirect_state", state=deets['state']) }}">State ID {{ deets['state'] }}</a></li>
-        <li>GCCSA Code: {{ deets['gccsa'] }}</li>
+        {% if 'gccsa' in deets %}
+            <li>Within Greater Capital City Statistical Area: {{ deets['gccsa'] }}</li>
+        {% endif %}
         <li>Albers Area: {{ deets['albers_area'] }}&nbsp;km<sup>2</sup></li>
         <li>Shape Area: {{ deets['shape_area'] }}</li>
         <li>Shape Length: {{ deets['shape_length'] }}</li>
