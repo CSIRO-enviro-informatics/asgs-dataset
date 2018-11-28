@@ -1,0 +1,34 @@
+@prefix : <http://linked.data.gov.au/def/asgs#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix gnaf: <http://linked.data.gov.au/def/asgs#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix : <http://linked.data.gov.au/dataset/asgs2016/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@base <http://linked.data.gov.au/dataset/asgs2016> .
+
+
+<http://linked.data.gov.au/dataset/asgs2016> a void:Dataset ;
+    dc:creator "Ashley Sommer",
+        "Nicholas Car"@en ;
+        dc:contributor "Laurent Lefort" ;
+    dct:creator <http://orcid.org/0000-0002-8742-7730> ;
+    dct:description "A Linked Data API accessing all of the content of the Australian Bureau of Statistic's Web Feature Services for the Australian statistical Geography Standard, 2016, and delivering it according to an ASGS ontology" ;
+    dct:license <http://creativecommons.org/licenses/by/4.0/> ;
+    dct:title "Australian Statistical Geography Standard (ASGS) 2016" ;
+    dcat:contactPoint _:ncar ;
+    dcat:endpointDescription <http://linked.data.gov.au/dataset/asgs2016.ttl> ;
+    dcat:endpointURL <http://linked.data.gov.au/dataset/asgs2016> ;
+    dct:source <https://data.gov.au/dataset/geocoded-national-address-file-g-naf> ;
+    # void:sparqlEndpoint <http://linked.data.gov.au/dataset/asgs2016/sparql> ; # not available yet
+    # void:dataDump <http://linked.data.gov.au/dataset/asgs2016/data> ; # not available yet
+    void:uriSpace "http://linked.data.gov.au/dataset/asgs2016/" ;
+    void:vocabulary <http://linked.data.gov.au/def/asgs> ;
+    void:triples 300000000 ;
+    void:entities 20000000 ;
+.
+
+:turtle a void:Dataset ;
+    void:uriRegexPattern "^http://linked\\.data\\.gov\\.au/dataset/asgs2016/(.+)\\.ttl$" ;
+    void:feature <http://www.w3.org/ns/formats/Turtle> ;
+.

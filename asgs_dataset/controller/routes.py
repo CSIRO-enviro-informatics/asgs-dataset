@@ -6,6 +6,8 @@ from asgs_dataset.view.ldapi import ASGSRegisterRenderer
 from asgs_dataset.view.ldapi.asgs_feature import ASGSFeatureRenderer
 import asgs_dataset._config as conf
 from asgs_dataset.model.meshblock import MeshBlock
+import asgs_dataset.controller.LOCIDatasetRenderer
+
 
 routes = Blueprint('controller', __name__)
 
@@ -13,9 +15,14 @@ routes = Blueprint('controller', __name__)
 #
 #   pages
 #
-@routes.route('/')
+@routes.route('/', strict_slashes=True)
 def home():
-    return render_template('page_home.html')
+    return asgs_dataset.controller.LOCIDatasetRenderer.LOCIDatasetRenderer(request, url=conf.URI_BASE).render()
+
+
+@routes.route('/index.ttl')
+def home_ttl():
+    return asgs_dataset.controller.LOCIDatasetRenderer.LOCIDatasetRenderer(request, view='dcat', format='text/turtle').render()
 
 
 #

@@ -1,0 +1,106 @@
+@prefix : <http://linked.data.gov.au/dataset/asgs2016/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix asgs: <http://linked.data.gov.au/def/asgs#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix locn: <http://www.w3.org/ns/locn#> .
+@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
+
+
+<http://linked.data.gov.au/dataset/asgs2016> a dcat:DataDistributionService ;
+    dc:contributor "Ashley Sommer" ;
+    dc:creator "Joseph Abhayaratna",
+        "Nicholas Car"@en ;
+    dct:creator <http://orcid.org/0000-0002-8742-7730> ;
+    dct:description "A Linked Data API accessing all of the content of the Australian Bureau of Statistic's Web Feature Services for the Australian statistical Geography Standard, 2016, and delivering it according to an ASGS ontology" ;
+    dct:license <http://creativecommons.org/licenses/by/4.0/> ;
+    dct:title "ASGS 2016 - distributed as Linked Data" ;
+    dcat:contactPoint _:ncar ;
+    dcat:endpointDescription <http://linked.data.gov.au/dataset/asgs2016.ttl> ;
+    dcat:endpointURL <http://linked.data.gov.au/dataset/asgs2016> ;
+    dcat:servesDataset <https://data.gov.au/dataset/asgs-2016-edition-boundaries> .
+
+# a SPARQL service distribution will be added shortly
+
+<https://data.gov.au/dataset/geocoded-national-address-file-g-naf> a dcat:Dataset ;
+    dct:description """ASGS 2016 digital boundaries in GeoPackage format""";
+    dct:identifier "32adc1ef-5bac-4eaa-9521-a116792f32a1" ;
+    dct:issued "2018-02-02T00:50:47.250740"^^xsd:dateTime ;
+    dct:modified "2018-05-16T00:00:58.771059"^^xsd:dateTime ;
+    dct:publisher <https://data.gov.au/organization/760c24b1-3c3d-4ccb-8196-41530fcdebd5> ;
+    dct:spatial [ a dct:Location ;
+            locn:geometry "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral,
+                "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ] ;
+    dct:landingPage <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1> ;
+    dct:title "ASGS (2016 Edition) - Boundaries" ;
+    dct:updated "2018-08-27"^^xsd:date ;
+    dcat:contactPoint [ a vcard:Organization ;
+            vcard:fn "ABS Geospatial Solutions" ;
+            vcard:hasEmail <geography@abs.gov.au> ;
+            vcard:hasTelephone [vcard:hasValue <tel:+611300135070> ] ;
+    ] ;
+    dcat:keyword "2016",
+        "2016 Census",
+        "ABS",
+        "ADD",
+        "ASGS",
+        "Australian Bureau of Statistics",
+        "Australian Drainage Division",
+        "Australian Statistical Geography Standard",
+        "CED",
+        "Census",
+        "Commonwealth Electoral Division",
+        "GCCSA",
+        "GeoPackage",
+        "Greater Capital City Statistical Area",
+        "IARE",
+        "ILOC",
+        "IREG",
+        "Indigenous Area",
+        "Indigenous Location",
+        "Indigenous Region",
+        "LGA",
+        "Local Government Area",
+        "MB",
+        "Mesh Block",
+        "NRMR",
+        "Natural Resource Management Region",
+        "POA",
+        "Post Code Area",
+        "RA",
+        "Remoteness Area",
+        "SA1",
+        "SA2",
+        "SA3",
+        "SA4",
+        "SED",
+        "SOS",
+        "SOSR",
+        "SSC",
+        "STE",
+        "SUA",
+        "Section of State",
+        "Section of State Range",
+        "Significant Urban Area",
+        "State",
+        "State Electoral Division",
+        "State Suburb",
+        "Statistical Area Level 1",
+        "Statistical Area Level 2",
+        "Statistical Area Level 3",
+        "Statistical Area Level 4",
+        "TR",
+        "Tourism Region",
+        "UCL",
+        "Urban Centre and Locality",
+        "boundaries" .
+
+_:ncar a vcard:Individual ;
+    vcard:fn "Nicholas Car" ;
+    vcard:hasEmail <mailto:nicholas.car@csiro.au> ;
+vcard:hasTelephone [ vcard:hasValue <tel:+61738335632> ] .
