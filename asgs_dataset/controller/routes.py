@@ -241,7 +241,7 @@ def redirect_sa1(sa1):
 
 
 # sa2 alias
-@routes.route('/statisticalarealevel3/<path:sa2>')
+@routes.route('/statisticalarealevel2/<path:sa2>')
 def redirect_sa2(sa2):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_SA2_INSTANCE_BASE + sa2, **args))
