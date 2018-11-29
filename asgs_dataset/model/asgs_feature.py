@@ -477,7 +477,6 @@ class ASGSFeature(ASGSModel):
             if self.asgs_type == "MB":
                 g.add((feat, RDF_a, ASGS.MeshBlock))
                 sa1 = URIRef(conf.URI_SA1_INSTANCE_BASE + deets['sa1'])
-                g.add((sa1, ASGS.contains, feat))
                 g.add((sa1, ASGS.isStatisticalAreaLevel1Of, feat))
                 if 'dzn' in deets:
                     dzn_type = URIRef(conf.DEF_URI_PREFIX+"#DestinationZone")
@@ -506,17 +505,14 @@ class ASGSFeature(ASGSModel):
             elif self.asgs_type == "SA1":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel1))
                 sa2 = URIRef(conf.URI_SA2_INSTANCE_BASE + deets['sa2'])
-                g.add((sa2, ASGS.contains, feat))
                 g.add((sa2, ASGS.isStatisticalAreaLevel2Of, feat))
             elif self.asgs_type == "SA2":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel2))
                 sa3 = URIRef(conf.URI_SA3_INSTANCE_BASE + deets['sa3'])
-                g.add((sa3, ASGS.contains, feat))
                 g.add((sa3, ASGS.isStatisticalAreaLevel3Of, feat))
             elif self.asgs_type == "SA3":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel3))
                 sa4 = URIRef(conf.URI_SA4_INSTANCE_BASE + deets['sa4'])
-                g.add((sa4, ASGS.contains, feat))
                 g.add((sa4, ASGS.isStatisticalAreaLevel4Of, feat))
             elif self.asgs_type == "SA4":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel4))
@@ -526,7 +522,6 @@ class ASGSFeature(ASGSModel):
                     #TODO, give GCCSA's their own URIs, even their own register
                     gccsa = BNode()
                     g.add((gccsa, RDF_a, gccsa_type))
-                    g.add((gccsa, ASGS.contains, feat))
                     g.add((gccsa, ASGS.isGreaterCapitalCityStatisticalAreaOf, feat))
                     g.add((gccsa, ASGS.gccsaCode2016, gccsa_code))
                     g.add((gccsa, ASGS.greaterCapitalCityStatisticalAreasGccsa5CharacterAlphanumericCode, gccsa_code))
@@ -537,7 +532,6 @@ class ASGSFeature(ASGSModel):
             if self.asgs_type != "AUS" and self.asgs_type != "STATE":
                 if 'state' in deets:
                     state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + STATES[deets['state']])
-                    g.add((state_uri, ASGS.contains, feat))
                     g.add((state_uri, ASGS.isStateOrTerritoryOf, feat))
             # area
             # TODO: check multiplier on m^2 or km^2
