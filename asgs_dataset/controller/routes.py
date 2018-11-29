@@ -220,7 +220,7 @@ def redirect_meshblock(mb):
 
 
 # state alias
-@routes.route('/state/<path:state>')
+@routes.route('/stateorterritory/<path:state>')
 def redirect_state(state):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_STATE_INSTANCE_BASE + state, **args))
