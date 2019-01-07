@@ -20,7 +20,7 @@
         {% if 'gccsa' in deets %}
             <li>Within Greater Capital City Statistical Area: {{ deets['gccsa'] }}</li>
         {% endif %}
-        <li>Albers Area: {{ deets['albers_area'] }}&nbsp;km<sup>2</sup></li>
+        <li>Albers Area: {{ "%0.0f" | format(deets['albers_area'] * 1000000 | round(0)) }}&nbsp;m<sup>2</sup></li>
         <li>Shape Area: {{ deets['shape_area'] }}</li>
         <li>Shape Length: {{ deets['shape_length'] }}</li>
     </ul>
