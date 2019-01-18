@@ -23,7 +23,9 @@
     dcat:contactPoint _:ncar ;
     dcat:endpointDescription <http://linked.data.gov.au/dataset/asgs2016.ttl> ;
     dcat:endpointURL <http://linked.data.gov.au/dataset/asgs2016> ;
-    dcat:servesDataset <https://data.gov.au/dataset/asgs-2016-edition-boundaries> .
+    dcat:servesDataset <https://data.gov.au/dataset/asgs-2016-edition-boundaries> ;
+    dct:publisher <http://catalogue.linked.data.gov.au/org/O-000928> ;
+    dc:publisher "Australian Bureau of Statistics" .
 
 # a SPARQL service distribution will be added shortly
 
@@ -32,8 +34,8 @@
     dct:identifier "32adc1ef-5bac-4eaa-9521-a116792f32a1" ;
     dct:issued "2018-02-02T00:50:47.250740"^^xsd:dateTime ;
     dct:modified "2018-05-16T00:00:58.771059"^^xsd:dateTime ;
-    dct:publisher <https://data.gov.au/organization/760c24b1-3c3d-4ccb-8196-41530fcdebd5> ;
-    dct:publisher: <http://catalogue.linked.data.gov.au/org/O-000928> ;
+    dct:publisher <https://data.gov.au/organization/760c24b1-3c3d-4ccb-8196-41530fcdebd5> , <http://catalogue.linked.data.gov.au/org/O-000928> ;
+    dc:publisher "Australian Bureau of Statistics" ;
     dct:spatial [ a dct:Location ;
             locn:geometry "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral,
                 "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ] ;
