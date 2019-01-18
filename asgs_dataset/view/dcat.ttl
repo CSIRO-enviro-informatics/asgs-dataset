@@ -33,6 +33,7 @@
     dct:issued "2018-02-02T00:50:47.250740"^^xsd:dateTime ;
     dct:modified "2018-05-16T00:00:58.771059"^^xsd:dateTime ;
     dct:publisher <https://data.gov.au/organization/760c24b1-3c3d-4ccb-8196-41530fcdebd5> ;
+    dct:publisher: <http://catalogue.linked.data.gov.au/org/O-000928> ;
     dct:spatial [ a dct:Location ;
             locn:geometry "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral,
                 "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ] ;
