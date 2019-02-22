@@ -75,10 +75,10 @@ class MeshBlock(ASGSModel):
     def get_index(cls, base_uri, page, per_page):
         per_page = max(int(per_page), 1)
         offset = (max(int(page), 1) - 1) * per_page
-        url_template = 'https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer' \
+        url_template = 'https://geo.abs.gov.au/arcgis/services/ASGS2011/MB/MapServer/WFSServer' \
                        '?service=wfs&version=2.0.0&request=GetFeature&typeName=MB:MB' \
-                       '&propertyName=MB:MB_CODE_2016' \
-                       '&sortBy=MB:MB_CODE_2016&startIndex={startindex}&count={count}'
+                       '&propertyName=MB:MB_CODE_2011' \
+                       '&sortBy=MB:MB_CODE_2011&startIndex={startindex}&count={count}'
         url = url_template.format(startindex=offset, count=per_page)
         resp = requests.get(url)
         try:
@@ -86,7 +86,7 @@ class MeshBlock(ASGSModel):
         except (XMLSyntaxError, TypeError, AttributeError) as e:
             print(e)
             raise e
-        items = tree.xpath('//MB:MB_CODE_2016/text()', namespaces=tree.getroot().nsmap)
+        items = tree.xpath('//MB:MB_CODE_2011/text()', namespaces=tree.getroot().nsmap)
         return items
 
 
@@ -115,9 +115,9 @@ class MeshBlock(ASGSModel):
                 except (OSError, FileNotFoundError):
                     root = None
             if root is None:
-                wfs_uri =   'https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer'\
+                wfs_uri =   'https://geo.abs.gov.au/arcgis/services/ASGS2011/MB/MapServer/WFSServer'\
                             '?service=wfs&version=2.0.0&request=GetFeature&typeName=MB:MB'\
-                            '&Filter=<ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>MB:MB_CODE_2016</ogc:PropertyName>'\
+                            '&Filter=<ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>MB:MB_CODE_2011</ogc:PropertyName>'\
                             '<ogc:Literal>{}</ogc:Literal>'\
                             '</ogc:PropertyIsEqualTo></ogc:Filter>'.format(self.id)
                 r = requests.get(wfs_uri)
@@ -138,16 +138,17 @@ class MeshBlock(ASGSModel):
 
             d = {
                 'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
-                'object_id': root.xpath('//MB:MB/MB:MB_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-                'category': root.xpath('//MB:MB/MB:MB_CATEGORY_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
+                'object_id': root.xpath('//MB:MB/MB:MB_CODE_2011', namespaces={'MB': 'WFS'})[0].text,
+                # 'category': root.xpath('//MB:MB/MB:MB_CATEGORY_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
                 'category_name': root.xpath('//MB:MB/MB:MB_CATEGORY_NAME_2016', namespaces={'MB': 'WFS'})[0].text,
                 'albers_area': root.xpath('//MB:MB/MB:AREA_ALBERS_SQKM', namespaces={'MB': 'WFS'})[0].text,
-                'sa1': root.xpath('//MB:MB/MB:SA1_MAINCODE_2016', namespaces={'MB': 'WFS'})[0].text,
-                'state': int(root.xpath('//MB:MB/MB:STATE_CODE_2016', namespaces={'MB': 'WFS'})[0].text),
-                'dzn': root.xpath('//MB:MB/MB:DZN_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-                'ssc': root.xpath('//MB:MB/MB:SSC_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-                'nrmr': root.xpath('//MB:MB/MB:NRMR_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-                'add': root.xpath('//MB:MB/MB:ADD_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
+                'sa1': root.xpath('//MB:MB/MB:SA1_MAINCODE_2011', namespaces={'MB': 'WFS'})[0].text,
+                'state': int(root.xpath('//MB:MB/MB:STATE_CODE_2011', namespaces={'MB': 'WFS'})[0].text),
+                # 'dzn': root.xpath('//MB:MB/MB:DZN_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
+                # 'ssc': root.xpath('//MB:MB/MB:SSC_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
+                # 'nrmr': root.xpath('//MB:MB/MB:NRMR_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
+                # 'add': root.xpath('//MB:MB/MB:ADD_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
+                'gccsa_code': root.xpath('//MB:MB/MB:GCCSA_CODE_2011', namespaces={'MB': 'WFS'})[0].text,
                 'shape_length': root.xpath('//MB:MB/MB:Shape_Length', namespaces={'MB': 'WFS'})[0].text,
                 'shape_area': root.xpath('//MB:MB/MB:Shape_Area', namespaces={'MB': 'WFS'})[0].text
             }
@@ -170,7 +171,7 @@ class MeshBlock(ASGSModel):
             g.bind('geo', GEO)
 
             # ID & definition of the MB
-            mb = URIRef('http://linked.data.gov.au/meshblock/2016/' + deets[1]['object_id'])
+            mb = URIRef('http://linked.data.gov.au/meshblock/2011/' + deets[1]['object_id'])
             g.add((mb, RDF.type, ASGS.MeshBlock))
 
             # State - top-level register

@@ -42,31 +42,33 @@ xml_ns = {
 
 asgs_tag_map = {
     "{WFS}OBJECTID": "object_id",
-    "{WFS}AREA_ALBERS_SQKM": 'albers_area',
+    "{WFS}AREA_ALBERS_SQM": 'albers_area',
     "{WFS}Shape_Length": 'shape_length',
     "{WFS}Shape_Area": 'shape_area',
     "{WFS}Shape": 'shape',
 }
 
 mb_tag_map = {
-    "{WFS}MB_CODE_2016": 'code',
-    "{WFS}MB_CATEGORY_CODE_2016": "category",
-    "{WFS}MB_CATEGORY_NAME_2016": "category_name",
-    "{WFS}SA1_MAINCODE_2016": "sa1",
-    "{WFS}STATE_CODE_2016": "state",
-    "{WFS}DZN_CODE_2016": "dzn",
-    "{WFS}SSC_CODE_2016": "ssc",
-    "{WFS}NRMR_CODE_2016": "nrmr",
-    "{WFS}ADD_CODE_2016": "add"
+    "{WFS}MB_CODE_2011": 'code',
+    # "{WFS}MB_CATEGORY_CODE_2016": "category",
+    "{WFS}MB_CATEGORY_2011": "category_name",
+    "{WFS}SA1_MAINCODE_2011": "sa1",
+    "{WFS}STATE_CODE_2011": "state",    
+    # "{WFS}DZN_CODE_2016": "dzn",
+    # "{WFS}SSC_CODE_2016": "ssc",
+    # "{WFS}NRMR_CODE_2016": "nrmr",
+    # "{WFS}ADD_CODE_2016": "add",
+    "{WFS}GCCSA_CODE_2011": "gccsa_code",
 }
 mb_predicate_map = {
-    'code': [ASGS.mbCode2016],
+    'code': [ASGS.mbCode2011],
     'category_name': [ASGS.category],
     'sa1': INVERSE_TOKEN,
     'state': INVERSE_TOKEN,
     'dzn': INVERSE_TOKEN,
     'ssc': INVERSE_TOKEN,
     'nrmr': INVERSE_TOKEN,
+    'gccsa_code': [ASGS.gccsaCode2011]
 }
 
 sa1_tag_map = {
@@ -586,7 +588,7 @@ class ASGSFeature(ASGSModel):
         resp = requests.get(url)
         tree = etree.parse(BytesIO(resp.content)) #type lxml._ElementTree
         if asgs_type == 'MB':
-            propertyname = 'MB:MB_CODE_2016'
+            propertyname = 'MB:MB_CODE_2011'
         elif asgs_type == 'SA1':
             propertyname = 'SA1:SA1_MAINCODE_2016'
         elif asgs_type == 'SA2':
@@ -602,7 +604,7 @@ class ASGSFeature(ASGSModel):
         items = tree.xpath('//{}/text()'.format(propertyname), namespaces=tree.getroot().nsmap)
         return items
 
-    @classmethod
+    @classmethod 
     def construct_wfs_query_for_index(cls, asgs_type, startindex, count):
         uri_template = conf.WFS_SERVICE_BASE_URI +\
                        '?service=wfs&version=2.0.0&request=GetFeature&typeName={typename}' \
@@ -611,7 +613,7 @@ class ASGSFeature(ASGSModel):
         if asgs_type == 'MB':
             service = 'MB'
             typename = 'MB:MB'
-            propertyname = 'MB:MB_CODE_2016'
+            propertyname = 'MB:MB_CODE_2011'
         elif asgs_type == 'SA1':
             service = 'SA1'
             typename = 'SA1:SA1'
@@ -661,7 +663,7 @@ class ASGSFeature(ASGSModel):
         if asgs_type == 'MB':
             service = 'MB'
             typename = 'MB:MB'
-            propertyname = 'MB:MB_CODE_2016'
+            propertyname = 'MB:MB_CODE_2011'
         elif asgs_type == 'SA1':
             service = 'SA1'
             typename = 'SA1:SA1'
