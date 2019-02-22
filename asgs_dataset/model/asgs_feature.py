@@ -558,23 +558,23 @@ class ASGSFeature(ASGSModel):
 
     @staticmethod
     def total_meshblocks():
-        return MESHBLOCK_COUNT
+        return conf.MESHBLOCK_COUNT
 
     @staticmethod
     def total_sa1s():
-        return SA1_COUNT
+        return conf.SA1_COUNT
 
     @staticmethod
     def total_sa2s():
-        return SA2_COUNT
+        return conf.SA2_COUNT
 
     @staticmethod
     def total_sa3s():
-        return SA3_COUNT
+        return conf.SA3_COUNT
 
     @staticmethod
     def total_sa4s():
-        return SA4_COUNT
+        return conf.SA4_COUNT
 
     @staticmethod
     def total_states():
