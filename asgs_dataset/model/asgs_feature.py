@@ -19,12 +19,6 @@ from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
 from asgs_dataset.model import ASGSModel
 from asgs_dataset.model.lookups import *
 
-MESHBLOCK_COUNT = 358009
-SA1_COUNT = 57490
-SA2_COUNT = 2292
-SA3_COUNT = 340
-SA4_COUNT = 89
-
 INVERSE_TOKEN = object()
 
 RDF_INCLUDE_UNKNOWN_PREDICATES = False
@@ -42,7 +36,6 @@ xml_ns = {
 
 asgs_tag_map = {
     "{WFS}OBJECTID": "object_id",
-    "{WFS}AREA_ALBERS_SQM": 'albers_area',
     "{WFS}Shape_Length": 'shape_length',
     "{WFS}Shape_Area": 'shape_area',
     "{WFS}Shape": 'shape',
@@ -59,6 +52,7 @@ mb_tag_map = {
     # "{WFS}NRMR_CODE_2016": "nrmr",
     # "{WFS}ADD_CODE_2016": "add",
     "{WFS}GCCSA_CODE_2011": "gccsa_code",
+    "{WFS}AREA_ALBERS_SQM": 'albers_area',
 }
 mb_predicate_map = {
     'code': [ASGS.mbCode2011],
@@ -72,14 +66,14 @@ mb_predicate_map = {
 }
 
 sa1_tag_map = {
-    "{WFS}SA1_MAINCODE_2016": 'code',
-    "{WFS}SA2_MAINCODE_2016": "sa2",
-    "{WFS}STATE_CODE_2016": "state",
-    "{WFS}SA1_7DIGITCODE_2016": "seven_code",
+    "{WFS}SA1_MAIN": 'code',
+    # "{WFS}SA2_MAIN": "sa2",
+    "{WFS}STATE_CODE": "state",
+    # "{WFS}SA1_7DIGITCODE_2016": "seven_code",
 }
 sa1_predicate_map = {
-    'code': [ASGS.sa1Maincode2016, ASGS.statisticalArea1Sa111DigitCode],
-    'sa2': INVERSE_TOKEN,
+    'code': [ASGS.sa1Maincode2011],
+    # 'sa2': INVERSE_TOKEN,
     'state': INVERSE_TOKEN,
 }
 
@@ -506,8 +500,8 @@ class ASGSFeature(ASGSModel):
                     g.add((nrmr, ASGS.nrmrCode2016, nrmr_code))
             elif self.asgs_type == "SA1":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel1))
-                sa2 = URIRef(conf.URI_SA2_INSTANCE_BASE + deets['sa2'])
-                g.add((sa2, ASGS.isStatisticalAreaLevel2Of, feat))
+                # sa2 = URIRef(conf.URI_SA2_INSTANCE_BASE + deets['sa2'])
+                # g.add((sa2, ASGS.isStatisticalAreaLevel2Of, feat))
             elif self.asgs_type == "SA2":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel2))
                 sa3 = URIRef(conf.URI_SA3_INSTANCE_BASE + deets['sa3'])
@@ -590,9 +584,9 @@ class ASGSFeature(ASGSModel):
         if asgs_type == 'MB':
             propertyname = 'MB:MB_CODE_2011'
         elif asgs_type == 'SA1':
-            propertyname = 'SA1:SA1_MAINCODE_2016'
+            propertyname = 'SA1:SA1_MAIN'
         elif asgs_type == 'SA2':
-            propertyname = 'SA2:SA2_MAINCODE_2016'
+            propertyname = 'SA2:SA2_MAIN'
         elif asgs_type == 'SA3':
             propertyname = 'SA3:SA3_CODE_2016'
         elif asgs_type == 'SA4':
@@ -617,11 +611,11 @@ class ASGSFeature(ASGSModel):
         elif asgs_type == 'SA1':
             service = 'SA1'
             typename = 'SA1:SA1'
-            propertyname = 'SA1:SA1_MAINCODE_2016'
+            propertyname = 'SA1:SA1_MAIN'
         elif asgs_type == 'SA2':
             service = 'SA2'
             typename = 'SA2:SA2'
-            propertyname = 'SA2:SA2_MAINCODE_2016'
+            propertyname = 'SA2:SA2_MAIN'
         elif asgs_type == 'SA3':
             service = 'SA3'
             typename = 'SA3:SA3'
@@ -667,11 +661,11 @@ class ASGSFeature(ASGSModel):
         elif asgs_type == 'SA1':
             service = 'SA1'
             typename = 'SA1:SA1'
-            propertyname = 'SA1:SA1_MAINCODE_2016'
+            propertyname = 'SA1:SA1_MAIN'
         elif asgs_type == 'SA2':
             service = 'SA2'
             typename = 'SA2:SA2'
-            propertyname = 'SA2:SA2_MAINCODE_2016'
+            propertyname = 'SA2:SA2_MAIN'
         elif asgs_type == 'SA3':
             service = 'SA3'
             typename = 'SA3:SA3'
