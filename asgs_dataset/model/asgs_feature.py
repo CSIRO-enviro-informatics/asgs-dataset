@@ -78,42 +78,42 @@ sa1_predicate_map = {
 }
 
 sa2_tag_map = {
-    "{WFS}SA2_MAINCODE_2016": 'code',
-    "{WFS}SA2_NAME_2016": 'name',
-    "{WFS}SA3_CODE_2016": "sa3",
-    "{WFS}STATE_CODE_2016": "state",
+    "{WFS}SA2_MAIN": 'code',
+    "{WFS}SA2_NAME": 'name',
+    # "{WFS}SA3_CODE_2016": "sa3",
+    "{WFS}STATE_CODE": "state",
 }
 sa2_predicate_map = {
-    'code': [ASGS.sa2Maincode2016, ASGS.statisticalArea2Sa29DigitCode],
-    'name': [ASGS.sa2Name2016],
-    'sa3': INVERSE_TOKEN,
+    'code': [ASGS.sa2Maincode2011],
+    'name': [ASGS.sa2Name2011],
+    # 'sa3': INVERSE_TOKEN,
     'state': INVERSE_TOKEN,
 }
 
 sa3_tag_map = {
-    "{WFS}SA3_CODE_2016": 'code',
-    "{WFS}SA3_NAME_2016": 'name',
-    "{WFS}SA4_CODE_2016": "sa4",
-    "{WFS}STATE_CODE_2016": "state",
+    "{WFS}SA3_CODE": 'code',
+    "{WFS}SA3_NAME": 'name',
+    # "{WFS}SA4_CODE_2016": "sa4",
+    "{WFS}STATE_CODE": "state",
 }
 sa3_predicate_map = {
-    'code': [ASGS.sa3Code2016, ASGS.statisticalArea3Sa35DigitCode],
-    'name': [ASGS.sa3Name2016],
-    'sa4': INVERSE_TOKEN,
+    'code': [ASGS.sa3Code2011],
+    'name': [ASGS.sa3Name2011],
+    # 'sa4': INVERSE_TOKEN,
     'state': INVERSE_TOKEN,
 }
 
 sa4_tag_map = {
-    "{WFS}SA4_CODE_2016": 'code',
-    "{WFS}SA4_NAME_2016": 'name',
+    "{WFS}SA4_CODE": 'code',
+    "{WFS}SA4_NAME": 'name',
     "{WFS}GCCSA_CODE_2016": "gccsa",
-    "{WFS}STATE_CODE_2016": "state",
+    "{WFS}STATE_CODE": "state",
 }
 sa4_predicate_map = {
-    'code': [ASGS.sa4Code2016, ASGS.statisticalArea4Sa43DigitCode],
-    'name': [ASGS.sa4Name2016],
+    'code': [ASGS.sa4Code2011],
+    'name': [ASGS.sa4Name2011],
     'state': INVERSE_TOKEN,
-    'gccsa': INVERSE_TOKEN,
+    # 'gccsa': INVERSE_TOKEN,
 }
 
 
@@ -504,23 +504,23 @@ class ASGSFeature(ASGSModel):
                 # g.add((sa2, ASGS.isStatisticalAreaLevel2Of, feat))
             elif self.asgs_type == "SA2":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel2))
-                sa3 = URIRef(conf.URI_SA3_INSTANCE_BASE + deets['sa3'])
-                g.add((sa3, ASGS.isStatisticalAreaLevel3Of, feat))
+                # sa3 = URIRef(conf.URI_SA3_INSTANCE_BASE + deets['sa3'])
+                # g.add((sa3, ASGS.isStatisticalAreaLevel3Of, feat))
             elif self.asgs_type == "SA3":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel3))
-                sa4 = URIRef(conf.URI_SA4_INSTANCE_BASE + deets['sa4'])
-                g.add((sa4, ASGS.isStatisticalAreaLevel4Of, feat))
+                # sa4 = URIRef(conf.URI_SA4_INSTANCE_BASE + deets['sa4'])
+                # g.add((sa4, ASGS.isStatisticalAreaLevel4Of, feat))
             elif self.asgs_type == "SA4":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel4))
-                if 'gccsa' in deets:
-                    gccsa_type = URIRef(conf.DEF_URI_PREFIX+"#GreaterCapitalCityStatisticalArea")
-                    gccsa_code = Literal(str(deets['gccsa']))
-                    #TODO, give GCCSA's their own URIs, even their own register
-                    gccsa = BNode()
-                    g.add((gccsa, RDF_a, gccsa_type))
-                    g.add((gccsa, ASGS.isGreaterCapitalCityStatisticalAreaOf, feat))
-                    g.add((gccsa, ASGS.gccsaCode2016, gccsa_code))
-                    g.add((gccsa, ASGS.greaterCapitalCityStatisticalAreasGccsa5CharacterAlphanumericCode, gccsa_code))
+                # if 'gccsa' in deets:
+                #     gccsa_type = URIRef(conf.DEF_URI_PREFIX+"#GreaterCapitalCityStatisticalArea")
+                #     gccsa_code = Literal(str(deets['gccsa']))
+                #     #TODO, give GCCSA's their own URIs, even their own register
+                #     gccsa = BNode()
+                #     g.add((gccsa, RDF_a, gccsa_type))
+                #     g.add((gccsa, ASGS.isGreaterCapitalCityStatisticalAreaOf, feat))
+                #     g.add((gccsa, ASGS.gccsaCode2016, gccsa_code))
+                #     g.add((gccsa, ASGS.greaterCapitalCityStatisticalAreasGccsa5CharacterAlphanumericCode, gccsa_code))
             elif self.asgs_type == "STATE":
                 g.add((feat, RDF_a, ASGS.StateOrTerritory))
             else:
@@ -588,9 +588,9 @@ class ASGSFeature(ASGSModel):
         elif asgs_type == 'SA2':
             propertyname = 'SA2:SA2_MAIN'
         elif asgs_type == 'SA3':
-            propertyname = 'SA3:SA3_CODE_2016'
+            propertyname = 'SA3:SA3_CODE'
         elif asgs_type == 'SA4':
-            propertyname = 'SA4:SA4_CODE_2016'
+            propertyname = 'SA4:SA4_CODE'
         elif asgs_type == 'STATE':
             propertyname = 'STATE:STATE_NAME_ABBREV_2016'
         else:  # australia
@@ -619,11 +619,11 @@ class ASGSFeature(ASGSModel):
         elif asgs_type == 'SA3':
             service = 'SA3'
             typename = 'SA3:SA3'
-            propertyname = 'SA3:SA3_CODE_2016'
+            propertyname = 'SA3:SA3_CODE'
         elif asgs_type == 'SA4':
             service = 'SA4'
             typename = 'SA4:SA4'
-            propertyname = 'SA4:SA4_CODE_2016'
+            propertyname = 'SA4:SA4_CODE'
         elif asgs_type == 'STATE':
             service = 'STATE'
             typename = 'STATE:STATE'
@@ -669,11 +669,11 @@ class ASGSFeature(ASGSModel):
         elif asgs_type == 'SA3':
             service = 'SA3'
             typename = 'SA3:SA3'
-            propertyname = 'SA3:SA3_CODE_2016'
+            propertyname = 'SA3:SA3_CODE'
         elif asgs_type == 'SA4':
             service = 'SA4'
             typename = 'SA4:SA4'
-            propertyname = 'SA4:SA4_CODE_2016'
+            propertyname = 'SA4:SA4_CODE'
         elif asgs_type == 'STATE':  # state
             service = 'STATE'
             typename = 'STATE:STATE'
