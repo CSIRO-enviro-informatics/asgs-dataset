@@ -576,34 +576,8 @@ class ASGSFeature(ASGSModel):
     def total_states():
         return 9
 
-    @classmethod
-    def get_feature_index(cls, asgs_type, startindex, count):
-        url = cls.construct_wfs_query_for_index(asgs_type, startindex, count)
-        resp = requests.get(url)
-        tree = etree.parse(BytesIO(resp.content)) #type lxml._ElementTree
-        if asgs_type == 'MB':
-            propertyname = 'MB:MB_CODE_2011'
-        elif asgs_type == 'SA1':
-            propertyname = 'SA1:SA1_MAIN'
-        elif asgs_type == 'SA2':
-            propertyname = 'SA2:SA2_MAIN'
-        elif asgs_type == 'SA3':
-            propertyname = 'SA3:SA3_CODE'
-        elif asgs_type == 'SA4':
-            propertyname = 'SA4:SA4_CODE'
-        elif asgs_type == 'STATE':
-            propertyname = 'STATE:STATE_NAME_ABBREV_2016'
-        else:  # australia
-            propertyname = 'AUS:AUS_CODE_2016'
-        items = tree.xpath('//{}/text()'.format(propertyname), namespaces=tree.getroot().nsmap)
-        return items
-
-    @classmethod 
-    def construct_wfs_query_for_index(cls, asgs_type, startindex, count):
-        uri_template = conf.WFS_SERVICE_BASE_URI +\
-                       '?service=wfs&version=2.0.0&request=GetFeature&typeName={typename}' \
-                       '&propertyName={propertyname}' \
-                       '&sortBy={propertyname}&startIndex={startindex}&count={count}'
+    @staticmethod
+    def get_feature_properties(asgs_type):
         if asgs_type == 'MB':
             service = 'MB'
             typename = 'MB:MB'
@@ -632,6 +606,29 @@ class ASGSFeature(ASGSModel):
             service = 'AUS'
             typename = 'AUS:AUS'
             propertyname = 'AUS:AUS_CODE_2016'
+
+        return service, typename, propertyname
+
+
+    @classmethod
+    def get_feature_index(cls, asgs_type, startindex, count):
+        url = cls.construct_wfs_query_for_index(asgs_type, startindex, count)
+        resp = requests.get(url)
+        tree = etree.parse(BytesIO(resp.content)) #type lxml._ElementTree
+
+        service, typename, propertyname = ASGSFeature.get_feature_properties(asgs_type)
+
+        items = tree.xpath('//{}/text()'.format(propertyname), namespaces=tree.getroot().nsmap)
+        return items
+
+    @classmethod 
+    def construct_wfs_query_for_index(cls, asgs_type, startindex, count):
+        uri_template = conf.WFS_SERVICE_BASE_URI +\
+                       '?service=wfs&version=2.0.0&request=GetFeature&typeName={typename}' \
+                       '&propertyName={propertyname}' \
+                       '&sortBy={propertyname}&startIndex={startindex}&count={count}'
+
+        service, typename, propertyname = ASGSFeature.get_feature_properties(asgs_type)
 
         return uri_template.format(**{
             'service': service,
@@ -654,41 +651,14 @@ class ASGSFeature(ASGSModel):
                        '<ogc:Literal>{featureid}</ogc:Literal>' \
                        '</ogc:PropertyIsEqualTo></ogc:Filter>'
 
-        if asgs_type == 'MB':
-            service = 'MB'
-            typename = 'MB:MB'
-            propertyname = 'MB:MB_CODE_2011'
-        elif asgs_type == 'SA1':
-            service = 'SA1'
-            typename = 'SA1:SA1'
-            propertyname = 'SA1:SA1_MAIN'
-        elif asgs_type == 'SA2':
-            service = 'SA2'
-            typename = 'SA2:SA2'
-            propertyname = 'SA2:SA2_MAIN'
-        elif asgs_type == 'SA3':
-            service = 'SA3'
-            typename = 'SA3:SA3'
-            propertyname = 'SA3:SA3_CODE'
-        elif asgs_type == 'SA4':
-            service = 'SA4'
-            typename = 'SA4:SA4'
-            propertyname = 'SA4:SA4_CODE'
-        elif asgs_type == 'STATE':  # state
-            service = 'STATE'
-            typename = 'STATE:STATE'
-            propertyname = 'STATE:STATE_NAME_ABBREV_2016'
-        else:  # australia
-            service = 'AUS'
-            typename = 'AUS:AUS'
-            propertyname = 'AUS:AUS_CODE_2016'
+        service, typename, propertyname = ASGSFeature.get_feature_properties(asgs_type)
 
         return uri_template.format(**{
             'service': service,
             'typename': typename,
             'propertyname': propertyname,
             'featureid': identifier
-    })
+            })
 
 
 class Req:
