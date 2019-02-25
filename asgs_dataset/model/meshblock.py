@@ -139,8 +139,8 @@ class MeshBlock(ASGSModel):
             d = {
                 'wkt': '<http://www.opengis.net/def/crs/EPSG/0/3857>; POLYGON(({}))'.format(coords_wkt),
                 'object_id': root.xpath('//MB:MB/MB:MB_CODE_2011', namespaces={'MB': 'WFS'})[0].text,
-                # 'category': root.xpath('//MB:MB/MB:MB_CATEGORY_CODE_2016', namespaces={'MB': 'WFS'})[0].text,
-                'category_name': root.xpath('//MB:MB/MB:MB_CATEGORY_NAME_2016', namespaces={'MB': 'WFS'})[0].text,
+                # 'category': root.xpath('//MB:MB/MB:MB_CATEGORY_CODE_2011', namespaces={'MB': 'WFS'})[0].text,
+                'category_name': root.xpath('//MB:MB/MB:MB_CATEGORY_2011', namespaces={'MB': 'WFS'})[0].text,
                 'albers_area': root.xpath('//MB:MB/MB:AREA_ALBERS_SQKM', namespaces={'MB': 'WFS'})[0].text,
                 'sa1': root.xpath('//MB:MB/MB:SA1_MAINCODE_2011', namespaces={'MB': 'WFS'})[0].text,
                 'state': int(root.xpath('//MB:MB/MB:STATE_CODE_2011', namespaces={'MB': 'WFS'})[0].text),

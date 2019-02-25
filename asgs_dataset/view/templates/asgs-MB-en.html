@@ -3,7 +3,12 @@
 
 {% block content_fields %}
     {% if 'category_name' in deets %}
-        <li>Category: {{ deets['category_name'] }}&nbsp;({{ deets['category'] }})</li>
+        <li>
+            Category: {{ deets['category_name'] }}
+            {% if 'category' in deets %}
+                &nbsp;({{ deets['category'] }})
+            {% endif %}
+        </li>
     {% endif %}
     {% if 'sa1' in deets %}
         <li>Within SA1: <a href="{{ url_for("controller.redirect_sa1", sa1=deets['sa1']) }}">{{ deets['sa1'] }}</a></li>
