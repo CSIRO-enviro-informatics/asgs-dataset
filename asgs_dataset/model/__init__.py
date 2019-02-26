@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta, abstractmethod
 
+class NotFoundError(Exception):
+    def __init__(self, *args):
+        super(NotFoundError, self).__init__(*args)
+
 class ASGSModel:
     __metaclass__ = ABCMeta
 

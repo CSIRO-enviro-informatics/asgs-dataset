@@ -16,7 +16,7 @@ from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
     gml_extract_geom_to_geojson, gml_extract_geom_to_geosparql, RDF_a, \
     GEO, ASGS, GEO_Feature, GEO_hasGeometry, \
     wfs_extract_features_with_rdf_converter, calculate_bbox
-from asgs_dataset.model import ASGSModel
+from asgs_dataset.model import ASGSModel, NotFoundError
 from asgs_dataset.model.lookups import *
 
 MESHBLOCK_COUNT = 358009
@@ -348,6 +348,8 @@ def retrieve_asgs_feature(asgs_type, identifier, local=True):
             r = session.get(wfs_uri)
         except Exception as e:
             raise e
+        if r.status_code == 404:
+            raise NotFoundError()
         tree = etree.parse(BytesIO(r.content), parser=parser)
     return tree
 
@@ -427,8 +429,7 @@ class ASGSFeature(ASGSModel):
         try:
             asgs_feature = wfs_features['features'][0]
         except (AttributeError, KeyError, TypeError) as e:
-            print("No WFS feature found on uri: {}".format(self.uri))
-            return
+            raise NotFoundError()
         self.geometry = asgs_feature['geometry']
         self.properties = asgs_feature['properties']
 
