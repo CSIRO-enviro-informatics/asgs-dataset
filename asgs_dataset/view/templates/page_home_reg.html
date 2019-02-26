@@ -1,39 +1,28 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>G-NAF - as a Register of Registers</h1>
+    <h1>ASGS 2016 - as a Register of Registers</h1>
     <h2>About</h2>
-    <p>
-        This is a Register view of the Linked Data API delivering data from the
-        <a href="https://www.psma.com.au/products/g-naf">G-NAF, the Geocoded National Address File</a>.
-    </p>
+    <p>This is an API that delivers contents of the <a href="http://www.abs.gov.au/websitedbs/D3310114.nsf/home/Australian+Statistical+Geography+Standard+(ASGS)">Australian Statistical Geography Standard (ASGS) 2016 product</a> online as <a href="https://www.w3.org/standards/semanticweb/data">Linked Data</a>. To do this, the tool uses the <a href="http://linked.data.gov.au/def/asgs">ASGS Ontology</a> as its main data model and the series of public ASGS 2016 Web Feature Services, such as <a href="https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer?service=wfs&version=2.0.0&request=GetCapabilities">the one for Mesh Blocks</a> as its source of data.</p>
+	<p>This tool is currently still in beta testing mode and, while it is, it is operated by CSIRO's <a href="https://research.csiro.au/ei/">Environmental Informatics</a> team. In the medium term, the tool is liekly to be managed by the <a href="http://www.abs.gov.au">Australian Bureau of Statistics</a>.</p>
+
     <p>
         Here you see a 'Register of Registers', each of which contains classes of item from the Linked Data
-        representation of G-NAF content.
+        representation of ASGS-2016 content.
     </p>
     <h2>Register</h2>
     <ul>
         <li>
-            <a href="{{ url_for('classes.addresses') }}">Address Register</a>
+            <a href="{{ url_for('controller.meshblocks') }}">Meshblock Register</a> - the list of all Meshblocks, paged
             <ul>
-                <li><a href="{{ url_for('classes.address', address_id='GAACT714845933') }}">An Address</a> - example, GAACT714845933</li>
+                <li><a href="{{ url_for('controller.redirect_meshblock', mb='50031710000') }}">A Meshblock</a> - example, 50031710000</li>
             </ul>
         </li>
         <li>
-            <a href="{{ url_for('classes.streetLocalities') }}">Street Locality Register</a> - the list of all Addresses, paged
+            <a href="{{ url_for('controller.sa1s') }}">SA1 Register</a> - the list of all SA1s, paged
             <ul>
-                <li><a href="{{ url_for('classes.streetLocality', street_locality_id='NSW2856338') }}">A Street Locality</a> - example, NSW2856338</li>
+                <li><a href="{{ url_for('controller.redirect_sa1', sa1='12302144430') }}">A Statistical Area 1</a> - example, 12302144430</li>
             </ul>
         </li>
-        <li>
-            <a href="{{ url_for('classes.localities') }}">Locality Register</a> - the list of all Localities, paged
-            <ul>
-                <li><a href="{{ url_for('classes.locality', locality_id='198023') }}">A Locality</a> - example, 198023 (Argoon, Queensland)</li>
-            </ul>
-        </li>
-    </ul>
-    <h2>More information</h2>
-    <ul>
-        <li>See the <a href="{{ url_for('routes.about') }}">About page</a> for technical and project information.</li>
     </ul>
 {% endblock %}
