@@ -158,59 +158,6 @@ class MeshBlock(ASGSModel):
         except Exception as e:
             return False, str(e)
 
-    def _get_instance_rdf(self, profile='asgs'):  # fixed to asgs profile for now
-        deets = self._get_instance_details()
-        if not deets[0]:  # i.e. we have don't a result
-            return Response(deets[1], status=500, mimetype='text/plain')
-
-        if profile == 'asgs':
-            g = Graph()
-            ASGS = Namespace('http://linked.data.gov.au/def/asgs#')
-            g.bind('asgs', ASGS)
-            GEO = Namespace('http://www.opengis.net/ont/geosparql#')
-            g.bind('geo', GEO)
-
-            # ID & definition of the MB
-            mb = URIRef('http://linked.data.gov.au/meshblock/2011/' + deets[1]['object_id'])
-            g.add((mb, RDF.type, ASGS.MeshBlock))
-
-            # State - top-level register
-            g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/state/' + STATES[deets[1]['state']])))
-            # TODO: add hasState to ASGS ont as a subProperty of sfWithin wth fixed range value being an Aust state individual
-            g.add((mb, ASGS.hasState, URIRef('http://linked.data.gov.au/state/' + STATES[deets[1]['state']])))
-
-            # SA1 - 2nd level register
-            g.add((mb, GEO.sfWithin, URIRef('http://linked.data.gov.au/dataset/asgs/sa1/' + deets[1]['sa1'])))
-
-            # area
-            # TODO: check multiplier on m^2 or km^2
-            QUDT = Namespace('http://qudt.org/schema/qudt/')
-            g.bind('qudt', QUDT)
-
-            area = BNode()  # must be a qudt:QuantityValue as per QUDT
-            # qudt:Quantity qudt:quantityValue qudt:QuantityValue
-            #               qudt:QuantityKind
-            # qudt:QuantityKind qudt:symbol (max 1) xsd:string ($\\ohm$) -> owl:DatatypeProperty , qudt:latexMathString
-            # qudt:QuantityKind qudt:abbreviation (max 1) xsd:string (ohm) -> owl:DatatypeProperty
-            g.add((mb, ASGS.hasArea, area))
-            g.add((area, QUDT.numericValue, Literal(deets[1]['shape_area'], datatype=XSD.decimal)))
-            g.add((area, QUDT.unit, QUDT.SquareMeter))
-
-            # geometry
-            geom = BNode()
-            g.add((mb, GEO.hasGeometry, geom))
-            g.add((geom, RDF.type, GEO.Geometry))
-            g.add((geom, GEO.asWKT, Literal(deets[1]['wkt'], datatype=GEO.wktLiteral)))
-        # TODO: add in these other views
-        # elif profile == 'geosparql':
-        # elif profile == 'schemaorg':
-        # elif profile == 'wfs':
-
-        else:
-            return NotImplementedError(
-                "RDF Export for profile \"{}\" is not implemented.".
-                format(profile))
-        return g
 
     @staticmethod
     def total_meshblocks():
