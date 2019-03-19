@@ -117,8 +117,9 @@ sa4_predicate_map = {
 }
 
 
+#The state params stay the same as 2016 as they are read from disk, using 2016 data
 state_tag_map = {
-    "{WFS}STATE_CODE_2016": 'code',
+    "{WFS}STATE_CODE_2016": 'code', 
     "{WFS}STATE_NAME_2016": 'name',
     "{WFS}STATE_NAME_ABBREV_2016": 'name_abbrev'
 }
@@ -599,9 +600,9 @@ class ASGSFeature(ASGSModel):
             typename = 'SA4:SA4'
             propertyname = 'SA4:SA4_CODE'
         elif asgs_type == 'STATE':
-            service = 'STATE'
-            typename = 'STATE:STATE'
-            propertyname = 'STATE:STATE_NAME_ABBREV_2016'
+            service = 'STE'
+            typename = 'STE:STE'
+            propertyname = 'STE:STE_ABBR'
         else:  # australia
             service = 'AUS'
             typename = 'AUS:AUS'
