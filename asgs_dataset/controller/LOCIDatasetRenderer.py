@@ -12,7 +12,7 @@ class LOCIDatasetRenderer(pyldapi.Renderer):
     """
     def __init__(self, request, url=None, view=None, format=None):
 
-        views = {
+        views = { 
             'dcat': pyldapi.View(
                 'Dataset Catalog Vocabulary - DCAT',
                 'The DCAT view, according to DCATv2 (2018)',
@@ -46,6 +46,8 @@ class LOCIDatasetRenderer(pyldapi.Renderer):
 
         if format is not None:
             self.format = format
+        else: 
+            self.format = 'text/html'
 
     def render(self):
         if self.view == 'alternates':
