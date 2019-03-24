@@ -1,0 +1,46 @@
+# This is a template file for use in docker, that is injected with environment variables during build time
+
+# the upstream component nginx needs to connect to
+upstream asgs2011 {
+    server unix://${UWSGI_SOCKET_2011}; # for a file socket
+    # server backend:8001; # for a web port socket
+}
+
+# upstream asgs2016 {
+    # server unix://${UWSGI_SOCKET_2016}; # for a file socket
+    # server backend:8001; # for a web port socket
+# }
+
+# configuration of the server
+server {
+    # the port your site will be served on
+    listen      8000 default_server;
+    server_name ${SERVER_DOMAIN}; 
+    charset     utf-8;
+    error_log /dev/stderr info;
+    # max upload size
+    client_max_body_size 350M;   # adjust to taste
+
+    # Non-media API requests to the Django server.
+    location /2011/ {
+        #rewrite ^/2011/(.*) /$1 break;
+        include /etc/nginx/conf.d/uwsgi_params; # the uwsgi_params file
+        uwsgi_pass asgs2011;
+        #uwsgi_read_timeout 600s;
+        #sub_filter 'href="/' 'href="/2011/';
+        #sub_filter_once off;
+    }
+
+    #location /2016/ {
+    #    rewrite ^/2016/(.*) /$1 break;
+    #    include /etc/nginx/conf.d/uwsgi_params; # the uwsgi_params file
+    #    uwsgi_pass asgs2016;
+    #    uwsgi_read_timeout 600s;
+    #}
+
+    #location / {
+    #    alias ${PROJECT_HOME}/frontend/dist/;
+    #}
+    
+    
+}

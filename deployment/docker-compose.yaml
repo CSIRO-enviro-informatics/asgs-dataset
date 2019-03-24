@@ -1,0 +1,44 @@
+version: "3.4"
+
+services:            
+    asgs2011:
+        image: asgs/2011
+        build:
+            context: ..
+            dockerfile: ./deployment/asgs/Dockerfile
+            args: 
+                BRANCH_NAME: asgs2011
+        environment: 
+            - SERVER_DOMAIN
+            - UWSGI_SOCKET=${UWSGI_SOCKET_2011}
+        volumes:
+            - "/tmp:/tmp"
+            - type: volume
+              source: uwsgi_run
+              target: ${UWSGI_SOCKET_PATH}
+                          
+    server:
+        image: asgs/server
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile
+        depends_on:
+            - asgs2011
+            #- asgs2016
+        environment: 
+            - SERVER_DOMAIN
+            - PROJECT_HOME
+            - UWSGI_SOCKET_2011
+            - UWSGI_SOCKET_2016
+            - BACKEND_SERVE_ROUTE
+        volumes:
+            - "/tmp:/tmp"
+            - type: volume
+              source: uwsgi_run
+              target: ${UWSGI_SOCKET_PATH}
+        ports:
+            - "80:8000"
+
+volumes:
+    uwsgi_run:
+
