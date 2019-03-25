@@ -8,29 +8,52 @@ services:
             dockerfile: ./deployment/asgs/Dockerfile
             args: 
                 BRANCH_NAME: asgs2011
+        restart: always
         environment: 
             - SERVER_DOMAIN
             - UWSGI_SOCKET=${UWSGI_SOCKET_2011}
+            - SERVER_MOUNT_POINT=${SERVER_MOUNT_POINT_2011}
         volumes:
             - "/tmp:/tmp"
             - type: volume
               source: uwsgi_run
               target: ${UWSGI_SOCKET_PATH}
-                          
+
+    asgs2016:
+        image: asgs/2016
+        build:
+            context: ..
+            dockerfile: ./deployment/asgs/Dockerfile
+            args: 
+                BRANCH_NAME: master
+        restart: always
+        environment: 
+            - SERVER_DOMAIN
+            - UWSGI_SOCKET=${UWSGI_SOCKET_2016}
+            - SERVER_MOUNT_POINT=${SERVER_MOUNT_POINT_2016}
+        volumes:
+            - "/tmp:/tmp"
+            - type: volume
+              source: uwsgi_run
+              target: ${UWSGI_SOCKET_PATH}
+
     server:
         image: asgs/server
         build:
             context: ./nginx
             dockerfile: Dockerfile
+        restart: always
         depends_on:
             - asgs2011
-            #- asgs2016
+            - asgs2016
         environment: 
             - SERVER_DOMAIN
             - PROJECT_HOME
             - UWSGI_SOCKET_2011
             - UWSGI_SOCKET_2016
             - BACKEND_SERVE_ROUTE
+            - SERVER_MOUNT_POINT_2011
+            - SERVER_MOUNT_POINT_2016
         volumes:
             - "/tmp:/tmp"
             - type: volume

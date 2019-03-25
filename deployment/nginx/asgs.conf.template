@@ -3,13 +3,11 @@
 # the upstream component nginx needs to connect to
 upstream asgs2011 {
     server unix://${UWSGI_SOCKET_2011}; # for a file socket
-    # server backend:8001; # for a web port socket
 }
 
-# upstream asgs2016 {
-    # server unix://${UWSGI_SOCKET_2016}; # for a file socket
-    # server backend:8001; # for a web port socket
-# }
+upstream asgs2016 {
+    server unix://${UWSGI_SOCKET_2016}; # for a file socket
+}
 
 # configuration of the server
 server {
@@ -21,26 +19,18 @@ server {
     # max upload size
     client_max_body_size 350M;   # adjust to taste
 
-    # Non-media API requests to the Django server.
-    location /2011/ {
-        #rewrite ^/2011/(.*) /$1 break;
-        include /etc/nginx/conf.d/uwsgi_params; # the uwsgi_params file
-        uwsgi_pass asgs2011;
-        #uwsgi_read_timeout 600s;
-        #sub_filter 'href="/' 'href="/2011/';
-        #sub_filter_once off;
+    location =/ {
+        return 302 $scheme://$host/2016/ ;
     }
 
-    #location /2016/ {
-    #    rewrite ^/2016/(.*) /$1 break;
-    #    include /etc/nginx/conf.d/uwsgi_params; # the uwsgi_params file
-    #    uwsgi_pass asgs2016;
-    #    uwsgi_read_timeout 600s;
-    #}
+    location ${SERVER_MOUNT_POINT_2011}/ {
+        include /etc/nginx/conf.d/uwsgi_params; # the uwsgi_params file
+        uwsgi_pass asgs2011;
+    }
 
-    #location / {
-    #    alias ${PROJECT_HOME}/frontend/dist/;
-    #}
-    
-    
+    location ${SERVER_MOUNT_POINT_2016}/ {
+        include /etc/nginx/conf.d/uwsgi_params; # the uwsgi_params file
+        uwsgi_pass asgs2016;
+    }    
+
 }

@@ -4,6 +4,7 @@ LABEL maintainer="Shane Seaton <shane.seaton@csiro.au>"
 
 ARG BRANCH_NAME
 
+ENV SERVER_MOUNT_POINT=/
 ENV APP_HOME=/app
 ENV APP_DIR=${APP_HOME}/asgs_dataset/
 ENV UWSGI_SOCKET_PATH=/var/run/uwsgi
@@ -12,7 +13,6 @@ ENV SERVER_DOMAIN=localhost
 ENV PYTHON_ENV=${APP_HOME}/venv
 ENV PYTHONPATH=$APP_HOME
 ENV APPLICATION_ROOT=/2011/
-ENV SERVER_DIR=/
 
 RUN apk upgrade --update-cache --available
 RUN apk --no-cache add tini-static busybox-suid bash git ca-certificates tzdata build-base
@@ -32,4 +32,4 @@ RUN source ${PYTHON_ENV}/bin/activate && pip3 install --upgrade -r ./requirement
 
 ENTRYPOINT [ "/sbin/tini-static", "--"] 
 #CMD [ "bash", "-c", "/usr/sbin/uwsgi --socket ${UWSGI_SOCKET} --chmod-socket=776 --plugin python3  --virtualenv ${PYTHON_ENV} --wsgi-file ${APP_HOME}/asgs_dataset/app.py --callable app --max-requests=5000 --processes=3 -L" ]
-CMD [ "bash", "-c", "/usr/sbin/uwsgi --socket ${UWSGI_SOCKET} --chmod-socket=776 --plugin python3  --virtualenv ${PYTHON_ENV}  --callable app --manage-script-name --mount /2011=asgs_dataset/app.py --enable-threads --max-requests=5000 --processes=3 -L" ]
+CMD [ "bash", "-c", "/usr/sbin/uwsgi --socket ${UWSGI_SOCKET} --chmod-socket=776 --plugin python3  --virtualenv ${PYTHON_ENV}  --callable app --manage-script-name --mount ${SERVER_MOUNT_POINT}=asgs_dataset/app.py --enable-threads --max-requests=5000 --processes=3 -L" ]

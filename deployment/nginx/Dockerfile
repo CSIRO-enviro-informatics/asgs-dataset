@@ -9,7 +9,8 @@ ADD ./asgs.conf.template /etc/nginx/conf.d/
 ADD ./uwsgi_params /etc/nginx/conf.d/
 
 RUN mkdir -p /run/nginx
+RUN rm /etc/nginx/conf.d/default.conf
 
-EXPOSE 8000
+EXPOSE 80
 ENTRYPOINT [ "/sbin/tini-static", "--" ] 
-CMD ["sh", "-c", "env && envsubst < /etc/nginx/conf.d/asgs.conf.template > /etc/nginx/conf.d/asgs.conf && exec /usr/sbin/nginx -g 'daemon off;' -c /etc/nginx/nginx.conf" ]
+CMD ["sh", "-c", "env && envsubst \"$(env | sed -e 's/=.*//' -e 's/^/\\$/g')\" < /etc/nginx/conf.d/asgs.conf.template > /etc/nginx/conf.d/asgs.conf && exec /usr/sbin/nginx -g 'daemon off;' -c /etc/nginx/nginx.conf" ]
