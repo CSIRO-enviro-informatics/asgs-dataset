@@ -30,6 +30,8 @@ RUN python3 -m virtualenv -p /usr/bin/python3 venv
 WORKDIR $APP_HOME
 RUN source ${PYTHON_ENV}/bin/activate && pip3 install --upgrade -r ./requirements.txt
 
+#Checkout the correct branch
+RUN git checkout ${BRANCH_NAME} --force
+
 ENTRYPOINT [ "/sbin/tini-static", "--"] 
-#CMD [ "bash", "-c", "/usr/sbin/uwsgi --socket ${UWSGI_SOCKET} --chmod-socket=776 --plugin python3  --virtualenv ${PYTHON_ENV} --wsgi-file ${APP_HOME}/asgs_dataset/app.py --callable app --max-requests=5000 --processes=3 -L" ]
 CMD [ "bash", "-c", "/usr/sbin/uwsgi --socket ${UWSGI_SOCKET} --chmod-socket=776 --plugin python3  --virtualenv ${PYTHON_ENV}  --callable app --manage-script-name --mount ${SERVER_MOUNT_POINT}=asgs_dataset/app.py --enable-threads --max-requests=5000 --processes=3 -L" ]
