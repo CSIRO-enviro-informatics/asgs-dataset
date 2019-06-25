@@ -504,25 +504,25 @@ class ASGSFeature(ASGSModel):
                     g.add((nrmr, ASGS.contains, feat))
                     g.add((nrmr, ASGS.nrmrCode2016, nrmr_code))
                 # register
-                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), conf.URI_MESHBLOCK_INSTANCE_BASE))
+                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_MESHBLOCK_INSTANCE_BASE)))
             elif self.asgs_type == "SA1":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel1))
                 sa2 = URIRef(conf.URI_SA2_INSTANCE_BASE + deets['sa2'])
                 g.add((sa2, ASGS.isStatisticalAreaLevel2Of, feat))
                 # register
-                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), conf.URI_SA1_INSTANCE_BASE))
+                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_SA1_INSTANCE_BASE)))
             elif self.asgs_type == "SA2":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel2))
                 sa3 = URIRef(conf.URI_SA3_INSTANCE_BASE + deets['sa3'])
                 g.add((sa3, ASGS.isStatisticalAreaLevel3Of, feat))
                 # register
-                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), conf.URI_SA2_INSTANCE_BASE))
+                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_SA2_INSTANCE_BASE)))
             elif self.asgs_type == "SA3":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel3))
                 sa4 = URIRef(conf.URI_SA4_INSTANCE_BASE + deets['sa4'])
                 g.add((sa4, ASGS.isStatisticalAreaLevel4Of, feat))
                 # register
-                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), conf.URI_SA3_INSTANCE_BASE))
+                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_SA3_INSTANCE_BASE)))
             elif self.asgs_type == "SA4":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel4))
                 if 'gccsa' in deets:
@@ -535,15 +535,15 @@ class ASGSFeature(ASGSModel):
                     g.add((gccsa, ASGS.gccsaCode2016, gccsa_code))
                     g.add((gccsa, ASGS.greaterCapitalCityStatisticalAreasGccsa5CharacterAlphanumericCode, gccsa_code))
                 # register
-                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), conf.URI_SA4_INSTANCE_BASE))
+                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_SA4_INSTANCE_BASE)))
             elif self.asgs_type == "STATE":
                 g.add((feat, RDF_a, ASGS.StateOrTerritory))
                 # register
-                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), conf.URI_STATE_INSTANCE_BASE))
+                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_STATE_INSTANCE_BASE)))
             else:
                 g.add((feat, RDF_a, ASGS.Australia))
                 # register
-                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), conf.URI_AUS_INSTANCE_BASE))
+                g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_AUS_INSTANCE_BASE)))
             if self.asgs_type != "AUS" and self.asgs_type != "STATE":
                 if 'state' in deets:
                     state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + STATES[deets['state']])
