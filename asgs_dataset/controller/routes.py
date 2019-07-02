@@ -4,7 +4,7 @@ from pyldapi import RegisterOfRegistersRenderer
 from asgs_dataset.model.asgs_feature import ASGSFeature
 from asgs_dataset.view.ldapi import ASGSRegisterRenderer
 from asgs_dataset.view.ldapi.asgs_feature import ASGSFeatureRenderer
-import asgs_dataset._conf as conf
+import asgs_dataset._config as conf
 from asgs_dataset.model.meshblock import MeshBlock
 import asgs_dataset.controller.LOCIDatasetRenderer
 
