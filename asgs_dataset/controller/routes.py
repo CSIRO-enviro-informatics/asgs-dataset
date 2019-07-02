@@ -50,7 +50,7 @@ def states():
         'ACT',
         'NT',
         'NSW',
-        'NT',
+        'QLD',
         'OT',
         'SA',
         'TAS',
