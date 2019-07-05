@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
+
 import lxml
 
 import rdflib
@@ -7,9 +9,11 @@ from rdflib.namespace import RDF, RDFS, OWL, XSD
 from lxml import etree
 
 GEO = Namespace("http://www.opengis.net/ont/geosparql#")
+GEOX = Namespace("http://linked.data.gov.au/def/geox#")
 GML = Namespace("http://www.opengis.net/ont/gml#")
 OGC = Namespace("http://www.opengis.net/")
 ASGS = Namespace('http://linked.data.gov.au/def/asgs#')
+DATA = Namespace("http://linked.data.gov.au/def/datatype/")
 GEO_Geometry = GEO.term('Geometry')
 GEO_Feature = GEO.term('Feature')
 GEO_hasGeometry = GEO.term('hasGeometry')
@@ -166,6 +170,13 @@ def gml_extract_geom_to_geojson(node, recursion=0, parent_srs=None):
     else:
         raise NotImplementedError(
             "Don't know how to convert geom type: {}".format(geom.tag))
+
+def gml_extract_shapearea_to_geox_area(node):
+    val = str(node.text)
+    triples = set()
+    area = rdflib.BNode()
+    triples.add((area, DATA.value, rdflib.Literal(Decimal(val), datatype=XSD.decimal)))
+    return triples, area
 
 def gml_extract_geom_to_geosparql(node, recursion=0):
     """

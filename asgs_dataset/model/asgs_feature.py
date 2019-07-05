@@ -15,7 +15,8 @@ import os
 from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
     gml_extract_geom_to_geojson, gml_extract_geom_to_geosparql, RDF_a, \
     GEO, ASGS, GEO_Feature, GEO_hasGeometry, \
-    wfs_extract_features_with_rdf_converter, calculate_bbox
+    wfs_extract_features_with_rdf_converter, calculate_bbox, GEOX, \
+    gml_extract_shapearea_to_geox_area, DATA
 from asgs_dataset.model import ASGSModel, NotFoundError
 from asgs_dataset.model.lookups import *
 
@@ -129,7 +130,7 @@ state_tag_map = {
 state_predicate_map = {
     'code': [ASGS.stateCode2016, ASGS.stateOrTerritory1DigitCode],
     'name': [ASGS.stateName2016],
-    'name_abbrev': [ASGS.label],
+    'name_abbrev': [ASGS.label]
 }
 
 
@@ -207,13 +208,14 @@ def asgs_features_geosparql_converter(asgs_type, canonical_uri, wfs_features):
     if len(wfs_features) < 1:
         return None
     to_converter = {
-        'shape': gml_extract_geom_to_geosparql
+        'shape': gml_extract_geom_to_geosparql,
+        'shape_area': gml_extract_shapearea_to_geox_area,
     }
-    to_float = ('shape_length', 'shape_area', 'albers_area')
+    to_float = ('shape_length', 'albers_area')
     to_int = ('object_id', 'category', 'state')
     is_geom = ('shape',)
     predicate_map = {
-        #'nextdownid': HYF_lowerCatchment
+        'shape_area': [GEOX.hasAreaM2],
     }
     features_list = []
     if isinstance(wfs_features, (dict,)):
@@ -308,6 +310,8 @@ def extract_asgs_features_as_geosparql(asgs_type, canonical_uri, tree):
     g = rdflib.Graph()
     g.bind('asgs', ASGS)
     g.bind('geo', GEO)
+    g.bind('geox', GEOX)
+    g.bind('data', DATA)
     triples, features = wfs_extract_features_with_rdf_converter(
         tree, 'WFS', asgs_type,
         partial(asgs_features_geosparql_converter, asgs_type, canonical_uri))
@@ -548,19 +552,6 @@ class ASGSFeature(ASGSModel):
                 if 'state' in deets:
                     state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + STATES[deets['state']])
                     g.add((state_uri, ASGS.isStateOrTerritoryOf, feat))
-            # area
-            # TODO: check multiplier on m^2 or km^2
-            QUDT = Namespace('http://qudt.org/schema/qudt/')
-            g.bind('qudt', QUDT)
-
-            area = BNode()  # must be a qudt:QuantityValue as per QUDT
-            # qudt:Quantity qudt:quantityValue qudt:QuantityValue
-            #               qudt:QuantityKind
-            # qudt:QuantityKind qudt:symbol (max 1) xsd:string ($\\ohm$) -> owl:DatatypeProperty , qudt:latexMathString
-            # qudt:QuantityKind qudt:abbreviation (max 1) xsd:string (ohm) -> owl:DatatypeProperty
-            g.add((feat, ASGS.hasArea, area))
-            g.add((area, QUDT.numericValue, Literal(deets['shape_area'], datatype=XSD.decimal)))
-            g.add((area, QUDT.unit, QUDT.SquareMeter))
 
         # TODO: add in these other views
         # elif profile == 'schemaorg':
