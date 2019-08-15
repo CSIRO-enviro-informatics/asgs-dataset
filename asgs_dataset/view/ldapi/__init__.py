@@ -9,7 +9,7 @@ from asgs_dataset.model.asgs_feature import ASGSFeature
 
 ASGSView = pyldapi.View('ASGS',
     'Basic properties of a Mesh Block using the ASGS ontology and those it imports',
-    ['text/html'] + pyldapi.Renderer.RDF_MIMETYPES,
+    ['text/html', '_internal'] + pyldapi.Renderer.RDF_MIMETYPES,
     'text/turtle',
     languages=['en'],
     namespace='http://linked.data.gov.au/def/asgs#'
@@ -110,6 +110,8 @@ class ASGSClassRenderer(pyldapi.Renderer):
             return render_error(request, e)
 
     def _render_asgs_view(self):
+        if self.format == "_internal":
+            return self
         if self.format == 'text/html':
             return self._render_asgs_view_html()
         elif self.format in ASGSClassRenderer.RDF_MIMETYPES:

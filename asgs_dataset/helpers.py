@@ -14,6 +14,10 @@ GML = Namespace("http://www.opengis.net/ont/gml#")
 OGC = Namespace("http://www.opengis.net/")
 ASGS = Namespace('http://linked.data.gov.au/def/asgs#')
 DATA = Namespace("http://linked.data.gov.au/def/datatype/")
+CRS_OGC = Namespace("http://www.opengis.net/def/crs/OGC/1.3/")
+CRS_EPSG = Namespace("http://www.opengis.net/def/crs/EPSG/0/")
+QB4ST = Namespace("http://www.w3.org/ns/qb4st/")
+
 GEO_Geometry = GEO.term('Geometry')
 GEO_Feature = GEO.term('Feature')
 GEO_hasGeometry = GEO.term('hasGeometry')
@@ -171,11 +175,20 @@ def gml_extract_geom_to_geojson(node, recursion=0, parent_srs=None):
         raise NotImplementedError(
             "Don't know how to convert geom type: {}".format(geom.tag))
 
-def gml_extract_shapearea_to_geox_area(node):
+def gml_extract_shapearea_to_geox_area(node, extra_transform=None, crs=None):
     val = str(node.text)
     triples = set()
+    if extra_transform:
+        _trips, val = extra_transform(val)
+        for (s, p, o) in _trips:
+            triples.add((s, p, o))
     area = rdflib.BNode()
-    triples.add((area, DATA.value, rdflib.Literal(Decimal(val), datatype=XSD.decimal)))
+    triples.add((area, DATA.value, rdflib.Literal(str(Decimal(val)), datatype=XSD.decimal)))
+    if crs is not None:
+        if not isinstance(crs, (list, set, tuple)):
+            crs = [crs]
+        for _c in crs:
+           triples.add((area, QB4ST.crs, _c))
     return triples, area
 
 def gml_extract_geom_to_geosparql(node, recursion=0):

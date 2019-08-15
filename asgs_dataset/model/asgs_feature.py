@@ -16,7 +16,7 @@ from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
     gml_extract_geom_to_geojson, gml_extract_geom_to_geosparql, RDF_a, \
     GEO, ASGS, GEO_Feature, GEO_hasGeometry, \
     wfs_extract_features_with_rdf_converter, calculate_bbox, GEOX, \
-    gml_extract_shapearea_to_geox_area, DATA
+    gml_extract_shapearea_to_geox_area, DATA, CRS_EPSG
 from asgs_dataset.model import ASGSModel, NotFoundError
 from asgs_dataset.model.lookups import *
 
@@ -209,13 +209,15 @@ def asgs_features_geosparql_converter(asgs_type, canonical_uri, wfs_features):
         return None
     to_converter = {
         'shape': gml_extract_geom_to_geosparql,
-        'shape_area': gml_extract_shapearea_to_geox_area,
+        'shape_area': partial(gml_extract_shapearea_to_geox_area, crs=CRS_EPSG["3857"]), #cartesian area from asgs using "pseudo-mercator" projection
+        'albers_area': partial(gml_extract_shapearea_to_geox_area, extra_transform=lambda x: (set(), float(x)*1000000), crs=CRS_EPSG["3577"]) #cartesian GDA-94 CRS using "Albers_Conic_Equal_Area" projection
     }
-    to_float = ('shape_length', 'albers_area')
+    to_float = ('shape_length',)
     to_int = ('object_id', 'category', 'state')
     is_geom = ('shape',)
     predicate_map = {
         'shape_area': [GEOX.hasAreaM2],
+        'albers_area': [GEOX.hasAreaM2],
     }
     features_list = []
     if isinstance(wfs_features, (dict,)):
