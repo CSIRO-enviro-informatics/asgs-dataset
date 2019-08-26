@@ -420,14 +420,6 @@ class ASGSFeature(ASGSModel):
         self.uri = uri
         self.id = uri.split('/')[-1]
         self._assign_asgs_type()
-        if self.asgs_type == "STATE":
-            # State can sometimes be called by the code rather than the name
-            try:
-                state_int = int(self.id)
-                if 9 >= state_int >= 1:
-                    self.id = STATES[state_int]
-            except ValueError:
-                pass
         feature_xml_tree = retrieve_asgs_feature(self.asgs_type, self.id)
         self.xml_tree = feature_xml_tree
         wfs_features = extract_asgs_features_as_geojson(
@@ -552,7 +544,7 @@ class ASGSFeature(ASGSModel):
                 g.add((feat, URIRef('http://purl.org/linked-data/registry#register'), URIRef(conf.URI_AUS_INSTANCE_BASE)))
             if self.asgs_type != "AUS" and self.asgs_type != "STATE":
                 if 'state' in deets:
-                    state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + STATES[deets['state']])
+                    state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + str(deets['state']))
                     g.add((state_uri, ASGS.isStateOrTerritoryOf, feat))
 
         # TODO: add in these other views
@@ -689,7 +681,7 @@ class ASGSFeature(ASGSModel):
         elif asgs_type == 'STATE':  # state
             service = 'STATE'
             typename = 'STATE:STATE'
-            propertyname = 'STATE:STATE_NAME_ABBREV_2016'
+            propertyname = 'STATE:STATE_CODE_2016'
         else:  # australia
             service = 'AUS'
             typename = 'AUS:AUS'
