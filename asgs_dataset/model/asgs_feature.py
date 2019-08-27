@@ -18,7 +18,6 @@ from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
     wfs_extract_features_with_rdf_converter, calculate_bbox, GEOX, \
     gml_extract_shapearea_to_geox_area, DATA, CRS_EPSG
 from asgs_dataset.model import ASGSModel, NotFoundError
-from asgs_dataset.model.lookups import *
 
 MESHBLOCK_COUNT = 358009
 SA1_COUNT = 57490

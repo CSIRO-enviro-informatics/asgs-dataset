@@ -5,7 +5,6 @@ from asgs_dataset.model.asgs_feature import ASGSFeature
 from asgs_dataset.view.ldapi import ASGSRegisterRenderer
 from asgs_dataset.view.ldapi.asgs_feature import ASGSFeatureRenderer
 import asgs_dataset._config as conf
-from asgs_dataset.model.meshblock import MeshBlock
 import asgs_dataset.controller.LOCIDatasetRenderer
 
 
@@ -109,7 +108,7 @@ def meshblocks():
         'All the ASGS Meshblocks',
         [conf.URI_MESHBLOCK_CLASS],
         total,
-        MeshBlock,
+        ASGSFeature,
         super_register=conf.DATA_URI_PREFIX,
     ).render()
 
