@@ -1,0 +1,113 @@
+{
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "@type" : "Organization",
+    "name" : "data.gov.au"
+  }, {
+    "@id" : "_:b1",
+    "@type" : "Place",
+    "geo" : "_:b2"
+  }, {
+    "@id" : "_:b2",
+    "@type" : "GeoShape",
+    "box" : "-45.0 96.0 -9.0 168.0"
+  }, {
+    "@id" : "_:b3",
+    "@type" : "Organization",
+    "name" : "data.gov.au"
+  }, {
+    "@id" : "_:b4",
+    "@type" : "PropertyValue",
+    "propertyID" : "URL",
+    "value" : "http://data.gov.au/dataset/asgs-2016-edition-boundaries"
+  }, {
+    "@id" : "_:b5",
+    "@type" : "PropertyValue",
+    "propertyID" : "local",
+    "value" : "32adc1ef-5bac-4eaa-9521-a116792f32a1"
+  }, {
+    "@id" : "http://data.gov.au/dataset/asgs-2016-edition-boundaries",
+    "@type" : "Dataset",
+    "datePublished" : "2018-02-02",
+    "description" : "ASGS 2016 digital boundaries in GeoPackage format",
+    "identifier" : [ "_:b4", "_:b5" ],
+    "inLanguage" : "en",
+    "keywords" : " 2016, 2016 Census, ABS, ADD, ASGS, Australian Bureau of Statistics, Australian Drainage Division, Australian Statistical Geography Standard, CED, Census, Commonwealth Electoral Division, GCCSA, GeoPackage, Greater Capital City Statistical Area, IARE, ILOC, IREG, Indigenous Area, Indigenous Location, Indigenous Region, LGA, Local Government Area, MB, Mesh Block, NRMR, Natural Resource Management Region, POA, Post Code Area, RA, Remoteness Area, SA1, SA2, SA3, SA4, SED, SOS, SOSR, SSC, STE, SUA, Section of State, Section of State Range, Significant Urban Area, State, State Electoral Division, State Suburb, Statistical Area Level 1, Statistical Area Level 2, Statistical Area Level 3, Statistical Area Level 4, TR, Tourism Region, UCL, Urban Centre and Locality, boundaries",
+    "license" : [ "http://creativecommons.org/licenses/by/2.5/au/", "Creative Commons Attribution 2.5 Australia", "CC-BY-2.5" ],
+    "name" : "ASGS (2016 Edition) - Boundaries",
+    "publisher" : "_:b0",
+    "sourceOrganization" : "_:b3",
+    "spatialCoverage" : "_:b1",
+    "url" : "https://researchdata.ands.org.au/asgs-2016-edition-boundaries/1328605"
+  }, {
+    "@id" : "https://researchdata.ands.org.au/asgs-2016-edition-boundaries",
+    "@type" : "owl:Ontology",
+    "imports" : "http://schema.org/",
+    "versionInfo" : "Created with TopBraid Composer"
+  } ],
+  "@context" : {
+    "name" : {
+      "@id" : "http://schema.org/name"
+    },
+    "geo" : {
+      "@id" : "http://schema.org/geo",
+      "@type" : "@id"
+    },
+    "value" : {
+      "@id" : "http://schema.org/value"
+    },
+    "propertyID" : {
+      "@id" : "http://schema.org/propertyID"
+    },
+    "imports" : {
+      "@id" : "http://www.w3.org/2002/07/owl#imports",
+      "@type" : "@id"
+    },
+    "versionInfo" : {
+      "@id" : "http://www.w3.org/2002/07/owl#versionInfo"
+    },
+    "sourceOrganization" : {
+      "@id" : "http://schema.org/sourceOrganization",
+      "@type" : "@id"
+    },
+    "identifier" : {
+      "@id" : "http://schema.org/identifier",
+      "@type" : "@id"
+    },
+    "license" : {
+      "@id" : "http://schema.org/license"
+    },
+    "keywords" : {
+      "@id" : "http://schema.org/keywords"
+    },
+    "datePublished" : {
+      "@id" : "http://schema.org/datePublished",
+      "@type" : "http://www.w3.org/2001/XMLSchema#date"
+    },
+    "url" : {
+      "@id" : "http://schema.org/url"
+    },
+    "inLanguage" : {
+      "@id" : "http://schema.org/inLanguage"
+    },
+    "description" : {
+      "@id" : "http://schema.org/description"
+    },
+    "spatialCoverage" : {
+      "@id" : "http://schema.org/spatialCoverage",
+      "@type" : "@id"
+    },
+    "publisher" : {
+      "@id" : "http://schema.org/publisher",
+      "@type" : "@id"
+    },
+    "box" : {
+      "@id" : "http://schema.org/box"
+    },
+    "@vocab" : "http://schema.org/",
+    "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "owl" : "http://www.w3.org/2002/07/owl#",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"
+  }
+}
