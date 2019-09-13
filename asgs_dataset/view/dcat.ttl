@@ -115,6 +115,11 @@
   dct:description "A Linked Data API accessing all of the content of the Australian Bureau of Statistic's Web Feature Services for the Australian statistical Geography Standard, 2016, and delivering it according to an ASGS ontology" ;
   dct:license <http://creativecommons.org/licenses/by/4.0/> ;
   dct:publisher <http://catalogue.linked.data.gov.au/org/O-000928> ;
+  dct:spatial [
+      a dct:Location ;
+      locn:geometry "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
+      locn:geometry "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ;
+    ] ;
   dct:title "ASGS 2016 - distributed as Linked Data" ;
   dcat:conformsTo <http://linked.data.gov.au/def/asgs> ;
   dcat:contactPoint [
