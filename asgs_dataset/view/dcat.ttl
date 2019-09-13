@@ -143,6 +143,12 @@
   dcat:keyword "Statistical Area Level 3" ;
   dcat:keyword "Statistical Area Level 4" ;
   dcat:keyword "boundaries" ;
+  dcat:qualifiedRelation [
+      a dcat:Relationship ;
+      dct:relation <http://data.gov.au/dataset/asgs-2016-edition-boundaries> ;
+      rdfs:comment "Derived from ASGS 2016; converted to linked-data representation following the ASGS Ontology." ;
+      dcat:hadRole <http://www.iana.org/assignments/relation/original> ;
+    ] ;
   prov:wasDerivedFrom <http://data.gov.au/dataset/asgs-2016-edition-boundaries> ;
 .
 :
