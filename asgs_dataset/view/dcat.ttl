@@ -11,6 +11,7 @@
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -60,6 +61,7 @@
     ] ;
   dct:title "ASGS (2016 Edition) - Boundaries" ;
   dct:updated "2018-08-27"^^xsd:date ;
+  skos:editorialNote "SC got a bit carried away with someone else's metadata record here. Trying out a few DCAT patterns. In general this will just be a stub referring to the original catalogue record." ;
   dcat:contactPoint [
       a vcard:Organization ;
       vcard:fn "ABS Geospatial Solutions" ;
