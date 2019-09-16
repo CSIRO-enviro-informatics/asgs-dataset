@@ -30,7 +30,7 @@
   dct:publisher <https://www.directory.gov.au/portfolios/treasury/australian-bureau-statistics> ;
   dct:spatial [
       a dct:Location ;
-      locn:geometry "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
+      dcat:bbox "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
       locn:geometry "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ;
     ] ;
   dct:title "ASGS (2016 Edition) - Boundaries" ;
@@ -118,10 +118,6 @@
   dct:spatial [
       a dct:Location ;
       dcat:bbox "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
-    ] ;
-  dct:spatial [
-      a dct:Location ;
-      locn:geometry "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
       locn:geometry "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ;
     ] ;
   dct:title "ASGS 2016 - distributed as Linked Data" ;
