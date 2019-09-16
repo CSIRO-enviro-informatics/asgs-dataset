@@ -28,6 +28,31 @@
   dct:publisher <http://catalogue.linked.data.gov.au/org/abs> ;
   dct:publisher <https://ror.org/00ve6e186> ;
   dct:publisher <https://www.directory.gov.au/portfolios/treasury/australian-bureau-statistics> ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Indigenous Structure 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/cc04819d-e918-421e-8952-8d088d40f3ee/download/asgs2016absstructuresindigenousstructure.gpkg> ;
+    ] ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Main Structure and GCCSA 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/48a33591-0b0a-4712-a60b-39ef4b564f2b/download/asgs2016absstructuresmainstructureandgccsa.gpkg> ;
+    ] ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Remoteness Structure 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/ef716643-846d-4c75-8819-733d4952b843/download/asgs2016absstructuresremotenessstructure.gpkg> ;
+    ] ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Significant Urban Areas, Urban Centres and Localities, Section of State 2016 edition boundaries GeoPackage format" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/8487953f-bfe4-4672-8786-27d64e3e8b20/download/asgs2016absstructuressignificanturbanareasurbancentresandlocalitiessectionofstate.gpkg> ;
+    ] ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS Non ABS structures 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/b8d5f808-3294-4b8b-92b2-0e09e4fe1305/download/asgs2016nonabsstructures.gpkg> ;
+    ] ;
   dct:spatial [
       a dct:Location ;
       dcat:bbox "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
@@ -112,7 +137,7 @@
   dct:contributor <https://orcid.org/0000-0003-0590-0131> ;
   dct:creator <http://orcid.org/0000-0002-8742-7730> ;
   dct:creator <https://orcid.org/0000-0001-5075-6234> ;
-  dct:description "A Linked Data API accessing all of the content of the Australian Bureau of Statistic's Web Feature Services for the Australian statistical Geography Standard, 2016, and delivering it according to an ASGS ontology" ;
+  dct:description "A Linked Data representation of the Australian statistical Geography Standard, 2016, represented according to an ASGS ontology. This is based on the Australian Bureau of Statistics Web Feature Services representation. " ;
   dct:license <http://creativecommons.org/licenses/by/4.0/> ;
   dct:publisher <http://catalogue.linked.data.gov.au/org/O-000928> ;
   dct:spatial [
