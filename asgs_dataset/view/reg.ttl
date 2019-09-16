@@ -1,4 +1,3 @@
-@prefix ereg: <https://promsns.org/def/eregistry#> .
 @prefix reg: <http://purl.org/linked-data/registry#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -9,37 +8,43 @@
     rdfs:label "Mesh Block Register"^^xsd:string ;
     reg:containedItemClass <http://linked.data.gov.au/def/asgs#MeshBlock> ;
     rdfs:comment "Register of all ASGS Mesh Blocks"^^xsd:string ;
-    ereg:superregister <http://linked.data.gov.au/dataset/asgs2016> .
+    reg:register <http://linked.data.gov.au/dataset/asgs2016> .
 
 <http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel1/> a reg:Register ;
     rdfs:label "Statistical Area Level 1 Register"^^xsd:string ;
     reg:containedItemClass <http://linked.data.gov.au/def/asgs#StatisticalAreaLevel1> ;
     rdfs:comment "Register of all Statistical Area Level 1s"^^xsd:string ;
-    ereg:superregister <http://linked.data.gov.au/dataset/asgs2016> .
+    reg:register <http://linked.data.gov.au/dataset/asgs2016> .
 
 <http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel2/> a reg:Register ;
     rdfs:label "Statistical Area Level 2 Register"^^xsd:string ;
     reg:containedItemClass <http://linked.data.gov.au/def/asgs#StatisticalAreaLevel2> ;
     rdfs:comment "Register of all Statistical Area Level 2s"^^xsd:string ;
-    ereg:superregister <http://linked.data.gov.au/dataset/asgs2016> .
+    reg:register <http://linked.data.gov.au/dataset/asgs2016> .
 
 <http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel3/> a reg:Register ;
     rdfs:label "Statistical Area Level 3 Register"^^xsd:string ;
     reg:containedItemClass <http://linked.data.gov.au/def/asgs#StatisticalAreaLevel3> ;
     rdfs:comment "Register of all Statistical Area Level 3s"^^xsd:string ;
-    ereg:superregister <http://linked.data.gov.au/dataset/asgs2016> .
+    reg:register <http://linked.data.gov.au/dataset/asgs2016> .
 
 <http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel4/> a reg:Register ;
     rdfs:label "Statistical Area Level 4 Register"^^xsd:string ;
     reg:containedItemClass <http://linked.data.gov.au/def/asgs#StatisticalAreaLevel4> ;
     rdfs:comment "Register of all Statistical Area Level 4s"^^xsd:string ;
-    ereg:superregister <http://linked.data.gov.au/dataset/asgs2016> .
+    reg:register <http://linked.data.gov.au/dataset/asgs2016> .
 
 <http://linked.data.gov.au/dataset/asgs2016/stateorterritory/> a reg:Register ;
     rdfs:label "State Or Territory Register"^^xsd:string ;
     reg:containedItemClass <http://linked.data.gov.au/def/asgs#StateOrTerritory> ;
     rdfs:comment "Register of all States or Territories"^^xsd:string ;
-    ereg:superregister <http://linked.data.gov.au/dataset/asgs2016> .
+    reg:register <http://linked.data.gov.au/dataset/asgs2016> .
+
+<http://linked.data.gov.au/dataset/asgs2016/australia/> a reg:Register ;
+    rdfs:label "Commonwealth of Australia Register"^^xsd:string ;
+    reg:containedItemClass <http://linked.data.gov.au/def/asgs#Country> ;
+    rdfs:comment "Register of all Countries"^^xsd:string ;
+    reg:register <http://linked.data.gov.au/dataset/asgs2016> .
 
 <http://linked.data.gov.au/dataset/asgs2016> a reg:Register ;
     rdfs:label "The ASGS's Register of Registers"^^xsd:string ;
@@ -50,4 +55,5 @@
         <http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel2/> ,
         <http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel3/> ,
         <http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel4/> ,
-        <http://linked.data.gov.au/dataset/asgs2016/stateorterritory/> .
+        <http://linked.data.gov.au/dataset/asgs2016/stateorterritory/> ,
+        <http://linked.data.gov.au/dataset/asgs2016/australia/> .
