@@ -148,10 +148,11 @@
   dc:creator "Joseph Abhayaratna" ;
   dc:creator "Nicholas Car" ;
   dc:publisher "Australian Bureau of Statistics" ;
+  dct:conformsTo <http://linked.data.gov.au/def/asgs> ;
   dct:contributor <https://orcid.org/0000-0003-0590-0131> ;
   dct:creator <https://orcid.org/0000-0001-5075-6234> ;
   dct:creator <https://orcid.org/0000-0002-8742-7730> ;
-  dct:description "A Linked Data representation of the Australian statistical Geography Standard, 2016, represented according to an ASGS ontology. This is based on the Australian Bureau of Statistics Web Feature Services representation. " ;
+  dct:description "A Linked Data representation of the Australian Statistical Geography Standard, 2016, represented according to an ASGS ontology. This is derived from the Australian Bureau of Statistics Web Feature Services representation. " ;
   dct:license <http://creativecommons.org/licenses/by/4.0/> ;
   dct:publisher <agor:O-000928> ;
   dct:publisher <http://catalogue.linked.data.gov.au/org/abs> ;
@@ -164,7 +165,6 @@
     ] ;
   dct:title "ASGS 2016 - distributed as Linked Data" ;
   skos:editorialNote "Much of the descriptive metadata in this record is copied over from the source. The set of keywords has been trimmed to reflect the fact that some feature-types from the source have not (yet) been included in the linked-data representation. " ;
-  dcat:conformsTo <http://linked.data.gov.au/def/asgs> ;
   dcat:contactPoint [
       a vcard:Individual ;
       vcard:fn "Ashley Sommer" ;
