@@ -1,109 +1,263 @@
+# baseURI: http://linked.data.gov.au/dataset/asgs2016/
+# imports: http://purl.org/pav
+# imports: http://www.w3.org/ns/dcat
+
 @prefix : <http://linked.data.gov.au/dataset/asgs2016/> .
+@prefix asgs: <http://linked.data.gov.au/def/asgs#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dct: <http://purl.org/dc/terms/> .
-@prefix asgs: <http://linked.data.gov.au/def/asgs#> .
+@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
+@prefix locn: <http://www.w3.org/ns/locn#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix locn: <http://www.w3.org/ns/locn#> .
-@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
 
-
-<http://linked.data.gov.au/dataset/asgs2016> a dcat:DataDistributionService ;
-    dc:contributor "Ashley Sommer" ;
-    dc:creator "Joseph Abhayaratna",
-        "Nicholas Car"@en ;
-    dct:creator <http://orcid.org/0000-0002-8742-7730> ;
-    dct:description "A Linked Data API accessing all of the content of the Australian Bureau of Statistic's Web Feature Services for the Australian statistical Geography Standard, 2016, and delivering it according to an ASGS ontology" ;
-    dct:license <http://creativecommons.org/licenses/by/4.0/> ;
-    dct:title "ASGS 2016 - distributed as Linked Data" ;
-    dcat:contactPoint _:ncar ;
-    dcat:endpointDescription <http://linked.data.gov.au/dataset/asgs2016.ttl> ;
-    dcat:endpointURL <http://linked.data.gov.au/dataset/asgs2016> ;
-    dcat:servesDataset <https://data.gov.au/dataset/asgs-2016-edition-boundaries> ;
-    dct:publisher <http://catalogue.linked.data.gov.au/org/O-000928> ;
-    dc:publisher "Australian Bureau of Statistics" .
-
-# a SPARQL service distribution will be added shortly
-
-<https://data.gov.au/dataset/geocoded-national-address-file-g-naf> a dcat:Dataset ;
-    dct:description """ASGS 2016 digital boundaries in GeoPackage format""";
-    dct:identifier "32adc1ef-5bac-4eaa-9521-a116792f32a1" ;
-    dct:issued "2018-02-02T00:50:47.250740"^^xsd:dateTime ;
-    dct:modified "2018-05-16T00:00:58.771059"^^xsd:dateTime ;
-    dct:publisher <https://data.gov.au/organization/760c24b1-3c3d-4ccb-8196-41530fcdebd5> , <http://catalogue.linked.data.gov.au/org/O-000928> ;
-    dc:publisher "Australian Bureau of Statistics" ;
-    dct:spatial [ a dct:Location ;
-            locn:geometry "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral,
-                "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ] ;
-    dct:landingPage <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1> ;
-    dct:title "ASGS (2016 Edition) - Boundaries" ;
-    dct:updated "2018-08-27"^^xsd:date ;
-    dcat:contactPoint [ a vcard:Organization ;
-            vcard:fn "ABS Geospatial Solutions" ;
-            vcard:hasEmail <geography@abs.gov.au> ;
-            vcard:hasTelephone [vcard:hasValue <tel:+611300135070> ] ;
+<http://data.gov.au/dataset/asgs-2011-edition-boundaries>
+  a dcat:Dataset ;
+  dct:title "ASGS (2011 Edition) - Boundaries" ;
+  pav:version "2011" ;
+.
+<http://data.gov.au/dataset/asgs-2016-edition-boundaries>
+  a dcat:Dataset ;
+  dc:publisher "Australian Bureau of Statistics" ;
+  dct:conformsTo <https://www.geopackage.org/> ;
+  dct:description "ASGS 2016 digital boundaries in GeoPackage format" ;
+  dct:identifier "32adc1ef-5bac-4eaa-9521-a116792f32a1" ;
+  dct:issued "2018-02-02T00:50:47.250740"^^xsd:dateTime ;
+  dct:landingPage <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1> ;
+  dct:modified "2018-05-16T00:00:58.771059"^^xsd:dateTime ;
+  dct:publisher <agor:O-000928> ;
+  dct:publisher <http://catalogue.linked.data.gov.au/org/abs> ;
+  dct:publisher <https://ror.org/00ve6e186> ;
+  dct:publisher <https://www.directory.gov.au/portfolios/treasury/australian-bureau-statistics> ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Indigenous Structure 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/cc04819d-e918-421e-8952-8d088d40f3ee/download/asgs2016absstructuresindigenousstructure.gpkg> ;
     ] ;
-    dcat:keyword "2016",
-        "2016 Census",
-        "ABS",
-        "ADD",
-        "ASGS",
-        "Australian Bureau of Statistics",
-        "Australian Drainage Division",
-        "Australian Statistical Geography Standard",
-        "CED",
-        "Census",
-        "Commonwealth Electoral Division",
-        "GCCSA",
-        "GeoPackage",
-        "Greater Capital City Statistical Area",
-        "IARE",
-        "ILOC",
-        "IREG",
-        "Indigenous Area",
-        "Indigenous Location",
-        "Indigenous Region",
-        "LGA",
-        "Local Government Area",
-        "MB",
-        "Mesh Block",
-        "NRMR",
-        "Natural Resource Management Region",
-        "POA",
-        "Post Code Area",
-        "RA",
-        "Remoteness Area",
-        "SA1",
-        "SA2",
-        "SA3",
-        "SA4",
-        "SED",
-        "SOS",
-        "SOSR",
-        "SSC",
-        "STE",
-        "SUA",
-        "Section of State",
-        "Section of State Range",
-        "Significant Urban Area",
-        "State",
-        "State Electoral Division",
-        "State Suburb",
-        "Statistical Area Level 1",
-        "Statistical Area Level 2",
-        "Statistical Area Level 3",
-        "Statistical Area Level 4",
-        "TR",
-        "Tourism Region",
-        "UCL",
-        "Urban Centre and Locality",
-        "boundaries" .
-
-_:ncar a vcard:Individual ;
-    vcard:fn "Nicholas Car" ;
-    vcard:hasEmail <mailto:nicholas.car@csiro.au> ;
-vcard:hasTelephone [ vcard:hasValue <tel:+61738335632> ] .
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Main Structure and GCCSA 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/48a33591-0b0a-4712-a60b-39ef4b564f2b/download/asgs2016absstructuresmainstructureandgccsa.gpkg> ;
+    ] ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Remoteness Structure 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/ef716643-846d-4c75-8819-733d4952b843/download/asgs2016absstructuresremotenessstructure.gpkg> ;
+    ] ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS ABS Structures Significant Urban Areas, Urban Centres and Localities, Section of State 2016 edition boundaries GeoPackage format" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/8487953f-bfe4-4672-8786-27d64e3e8b20/download/asgs2016absstructuressignificanturbanareasurbancentresandlocalitiessectionofstate.gpkg> ;
+    ] ;
+  dct:relation [
+      a dcat:Distribution ;
+      dct:title "ASGS Non ABS structures 2016 edition boundaries GeoPackage" ;
+      dcat:downloadURL <https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/b8d5f808-3294-4b8b-92b2-0e09e4fe1305/download/asgs2016nonabsstructures.gpkg> ;
+    ] ;
+  dct:spatial [
+      a dct:Location ;
+      dcat:bbox "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
+      locn:geometry "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ;
+    ] ;
+  dct:title "ASGS (2016 Edition) - Boundaries" ;
+  dct:updated "2018-08-27"^^xsd:date ;
+  pav:previousVersion <http://data.gov.au/dataset/asgs-2011-edition-boundaries> ;
+  pav:version "2016" ;
+  skos:editorialNote "SC got a bit carried away with someone else's metadata record here. Trying out a few DCAT patterns. In general this will just be a stub referring to the original catalogue record." ;
+  dcat:contactPoint [
+      a vcard:Organization ;
+      vcard:fn "ABS Geospatial Solutions" ;
+      vcard:hasEmail <mailto:geography@abs.gov.au> ;
+      vcard:hasTelephone [
+          vcard:hasValue <tel:+611300135070> ;
+        ] ;
+    ] ;
+  dcat:keyword "2016 Census" ;
+  dcat:keyword "2016" ;
+  dcat:keyword "ABS" ;
+  dcat:keyword "ADD" ;
+  dcat:keyword "ASGS" ;
+  dcat:keyword "Australian Bureau of Statistics" ;
+  dcat:keyword "Australian Drainage Division" ;
+  dcat:keyword "Australian Statistical Geography Standard" ;
+  dcat:keyword "CED" ;
+  dcat:keyword "Census" ;
+  dcat:keyword "Commonwealth Electoral Division" ;
+  dcat:keyword "GCCSA" ;
+  dcat:keyword "GeoPackage" ;
+  dcat:keyword "Greater Capital City Statistical Area" ;
+  dcat:keyword "IARE" ;
+  dcat:keyword "ILOC" ;
+  dcat:keyword "IREG" ;
+  dcat:keyword "Indigenous Area" ;
+  dcat:keyword "Indigenous Location" ;
+  dcat:keyword "Indigenous Region" ;
+  dcat:keyword "LGA" ;
+  dcat:keyword "Local Government Area" ;
+  dcat:keyword "MB" ;
+  dcat:keyword "Mesh Block" ;
+  dcat:keyword "NRMR" ;
+  dcat:keyword "Natural Resource Management Region" ;
+  dcat:keyword "POA" ;
+  dcat:keyword "Post Code Area" ;
+  dcat:keyword "RA" ;
+  dcat:keyword "Remoteness Area" ;
+  dcat:keyword "SA1" ;
+  dcat:keyword "SA2" ;
+  dcat:keyword "SA3" ;
+  dcat:keyword "SA4" ;
+  dcat:keyword "SED" ;
+  dcat:keyword "SOS" ;
+  dcat:keyword "SOSR" ;
+  dcat:keyword "SSC" ;
+  dcat:keyword "STE" ;
+  dcat:keyword "SUA" ;
+  dcat:keyword "Section of State Range" ;
+  dcat:keyword "Section of State" ;
+  dcat:keyword "Significant Urban Area" ;
+  dcat:keyword "State Electoral Division" ;
+  dcat:keyword "State Suburb" ;
+  dcat:keyword "State" ;
+  dcat:keyword "Statistical Area Level 1" ;
+  dcat:keyword "Statistical Area Level 2" ;
+  dcat:keyword "Statistical Area Level 3" ;
+  dcat:keyword "Statistical Area Level 4" ;
+  dcat:keyword "TR" ;
+  dcat:keyword "Tourism Region" ;
+  dcat:keyword "UCL" ;
+  dcat:keyword "Urban Centre and Locality" ;
+  dcat:keyword "boundaries" ;
+  dcat:landingPage <https://data.gov.au/dataset/ds-dga-32adc1ef-5bac-4eaa-9521-a116792f32a1/details> ;
+  dcat:spatialResolutionInMeters 0.1 ;
+  prov:qualifiedAttribution [
+      dcat:hadRole <http://registry.it.csiro.au/def/isotc211/CI_RoleCode/processor> ;
+      prov:agent <https://data.gov.au/organization/760c24b1-3c3d-4ccb-8196-41530fcdebd5> ;
+    ] ;
+.
+<http://linked.data.gov.au/dataset/asgs2016>
+  a dcat:Dataset ;
+  dc:contributor "Ashley Sommer" ;
+  dc:creator "Joseph Abhayaratna" ;
+  dc:creator "Nicholas Car" ;
+  dc:publisher "Australian Bureau of Statistics" ;
+  dct:conformsTo <http://linked.data.gov.au/def/asgs> ;
+  dct:contributor <https://orcid.org/0000-0003-0590-0131> ;
+  dct:creator <https://orcid.org/0000-0001-5075-6234> ;
+  dct:creator <https://orcid.org/0000-0002-8742-7730> ;
+  dct:description "A Linked Data representation of the Australian Statistical Geography Standard, 2016, represented according to an ASGS ontology. This is derived from the Australian Bureau of Statistics Web Feature Services representation. " ;
+  dct:license <http://creativecommons.org/licenses/by/4.0/> ;
+  dct:publisher <agor:O-000928> ;
+  dct:publisher <http://catalogue.linked.data.gov.au/org/abs> ;
+  dct:publisher <https://ror.org/00ve6e186> ;
+  dct:publisher <https://www.directory.gov.au/portfolios/treasury/australian-bureau-statistics> ;
+  dct:spatial [
+      a dct:Location ;
+      dcat:bbox "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))"^^gsp:wktLiteral ;
+      locn:geometry "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ;
+    ] ;
+  dct:title "ASGS 2016 - distributed as Linked Data" ;
+  skos:editorialNote "Much of the descriptive metadata in this record is copied over from the source. The set of keywords has been trimmed to reflect the fact that some feature-types from the source have not (yet) been included in the linked-data representation. " ;
+  dcat:contactPoint [
+      a vcard:Individual ;
+      vcard:fn "Ashley Sommer" ;
+      vcard:hasEmail <mailto:ashley.sommer@csiro.au> ;
+      vcard:hasTelephone [
+          vcard:hasValue <tel:+61738335673> ;
+        ] ;
+    ] ;
+  dcat:distribution [
+      a dcat:Distribution ;
+      dcat:accessService <https://asgsld.net/2016/> ;
+      dcat:mediaType <https://www.iana.org/assignments/media-types/application/ld+json> ;
+    ] ;
+  dcat:distribution [
+      a dcat:Distribution ;
+      dcat:accessService <https://asgsld.net/2016/> ;
+      dcat:mediaType <https://www.iana.org/assignments/media-types/application/n-triples> ;
+    ] ;
+  dcat:distribution [
+      a dcat:Distribution ;
+      dcat:accessService <https://asgsld.net/2016/> ;
+      dcat:mediaType <https://www.iana.org/assignments/media-types/application/rdf+xml> ;
+    ] ;
+  dcat:distribution [
+      a dcat:Distribution ;
+      dcat:accessService <https://asgsld.net/2016/> ;
+      dcat:mediaType <https://www.iana.org/assignments/media-types/text/html> ;
+    ] ;
+  dcat:distribution [
+      a dcat:Distribution ;
+      dcat:accessService <https://asgsld.net/2016/> ;
+      dcat:mediaType <https://www.iana.org/assignments/media-types/text/n3> ;
+    ] ;
+  dcat:distribution [
+      a dcat:Distribution ;
+      dcat:accessService <https://asgsld.net/2016/> ;
+      dcat:mediaType <https://www.iana.org/assignments/media-types/text/turtle> ;
+    ] ;
+  dcat:keyword "2016 Census" ;
+  dcat:keyword "2016" ;
+  dcat:keyword "ABS" ;
+  dcat:keyword "ASGS" ;
+  dcat:keyword "Australian Bureau of Statistics" ;
+  dcat:keyword "Australian Statistical Geography Standard" ;
+  dcat:keyword "MB" ;
+  dcat:keyword "Mesh Block" ;
+  dcat:keyword "SA1" ;
+  dcat:keyword "SA2" ;
+  dcat:keyword "SA3" ;
+  dcat:keyword "SA4" ;
+  dcat:keyword "State" ;
+  dcat:keyword "Statistical Area Level 1" ;
+  dcat:keyword "Statistical Area Level 2" ;
+  dcat:keyword "Statistical Area Level 3" ;
+  dcat:keyword "Statistical Area Level 4" ;
+  dcat:keyword "boundaries" ;
+  dcat:landingPage <https://asgsld.net/2016/> ;
+  dcat:qualifiedRelation [
+      a dcat:Relationship ;
+      dct:relation <http://data.gov.au/dataset/asgs-2016-edition-boundaries> ;
+      rdfs:comment "Derived from ASGS 2016; converted to a linked-data representation conforming to the ASGS Ontology." ;
+      dcat:hadRole <http://www.iana.org/assignments/relation/original> ;
+    ] ;
+  dcat:spatialResolutionInMeters 0.1 ;
+  prov:wasDerivedFrom <http://data.gov.au/dataset/asgs-2016-edition-boundaries> ;
+  prov:wasGeneratedBy [
+      a prov:Activity ;
+      skos:editorialNote "Much of the descriptive metadata in this record is copied over from the source. The set of keywords has been trimmed to reflect the fact that some feature-types from the source have not (yet) been included in the linked-data representation. " ;
+      prov:endedAtTime "2019-06-01T00:00:00.00"^^xsd:dateTime ;
+      prov:used <http://data.gov.au/dataset/asgs-2016-edition-boundaries> ;
+      prov:used [
+          a prov:Entity ;
+          rdfs:comment "Ashley's awsome ETL system" ;
+        ] ;
+    ] ;
+.
+:
+  a owl:Ontology ;
+  owl:imports <http://purl.org/pav> ;
+  owl:imports <http://www.w3.org/ns/dcat> ;
+.
+<https://asgsld.net/2016/>
+  a dcat:DataService ;
+  dc:publisher "Australian Bureau of Statistics" ;
+  dct:conformsTo <https://github.com/UKGovLD/linked-data-api/blob/wiki/Specification.md> ;
+  dcat:endpointDescription "Link to Swagger description here Ashley" ;
+  dcat:endpointURL <https://asgsld.net/2016/> ;
+  dcat:servesDataset <http://linked.data.gov.au/dataset/asgs2016> ;
+  prov:qualifiedAttribution [
+      a prov:Attribution ;
+      dcat:hadRole <http://registry.it.csiro.au/def/isotc211/CI_RoleCode/originator> ;
+      prov:agent <http://catalogue.linked.data.gov.au/org/csiro> ;
+      prov:agent <https://ror.org/03qn8fb07> ;
+      prov:agent <https://www.directory.gov.au/portfolios/industry-innovation-and-science/commonwealth-scientific-and-industrial-research-organisation> ;
+    ] ;
+.

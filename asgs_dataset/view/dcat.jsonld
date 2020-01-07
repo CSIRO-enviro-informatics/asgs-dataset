@@ -1,0 +1,359 @@
+{
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "@type" : "dcat:Distribution",
+    "accessService" : "https://asgsld.net/2016/",
+    "mediaType" : "https://www.iana.org/assignments/media-types/application/n-triples"
+  }, {
+    "@id" : "_:b1",
+    "@type" : "dcat:Distribution",
+    "title" : "ASGS ABS Structures Indigenous Structure 2016 edition boundaries GeoPackage",
+    "downloadURL" : "https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/cc04819d-e918-421e-8952-8d088d40f3ee/download/asgs2016absstructuresindigenousstructure.gpkg"
+  }, {
+    "@id" : "_:b10",
+    "@type" : "dcat:Distribution",
+    "title" : "ASGS ABS Structures Significant Urban Areas, Urban Centres and Localities, Section of State 2016 edition boundaries GeoPackage format",
+    "downloadURL" : "https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/8487953f-bfe4-4672-8786-27d64e3e8b20/download/asgs2016absstructuressignificanturbanareasurbancentresandlocalitiessectionofstate.gpkg"
+  }, {
+    "@id" : "_:b11",
+    "@type" : "dct:Location",
+    "bbox" : "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))",
+    "geometry" : "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"
+  }, {
+    "@id" : "_:b12",
+    "@type" : "dcat:Relationship",
+    "relation" : "http://data.gov.au/dataset/asgs-2016-edition-boundaries",
+    "comment" : "Derived from ASGS 2016; converted to a linked-data representation conforming to the ASGS Ontology.",
+    "hadRole" : "http://www.iana.org/assignments/relation/original"
+  }, {
+    "@id" : "_:b13",
+    "@type" : "dct:Location",
+    "bbox" : "POLYGON ((96.0000 -45.0000, 96.0000 -9.0000, 168.0000 -9.0000, 168.0000 -45.0000, 96.0000 -45.0000))",
+    "geometry" : "{\"type\": \"Polygon\", \"coordinates\": [[ [96.0,-45.0],[96.0,-9.0], [168.0,-9.0], [168.0,-45.0], [96.0,-45.0]]]}"
+  }, {
+    "@id" : "_:b14",
+    "@type" : "dcat:Distribution",
+    "title" : "ASGS Non ABS structures 2016 edition boundaries GeoPackage",
+    "downloadURL" : "https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/b8d5f808-3294-4b8b-92b2-0e09e4fe1305/download/asgs2016nonabsstructures.gpkg"
+  }, {
+    "@id" : "_:b15",
+    "@type" : "dcat:Distribution",
+    "accessService" : "https://asgsld.net/2016/",
+    "mediaType" : "https://www.iana.org/assignments/media-types/application/ld+json"
+  }, {
+    "@id" : "_:b16",
+    "@type" : "dcat:Distribution",
+    "accessService" : "https://asgsld.net/2016/",
+    "mediaType" : "https://www.iana.org/assignments/media-types/text/turtle"
+  }, {
+    "@id" : "_:b17",
+    "@type" : "dcat:Distribution",
+    "accessService" : "https://asgsld.net/2016/",
+    "mediaType" : "https://www.iana.org/assignments/media-types/text/html"
+  }, {
+    "@id" : "_:b18",
+    "@type" : "dcat:Distribution",
+    "accessService" : "https://asgsld.net/2016/",
+    "mediaType" : "https://www.iana.org/assignments/media-types/application/rdf+xml"
+  }, {
+    "@id" : "_:b19",
+    "@type" : "prov:Attribution",
+    "hadRole" : "http://registry.it.csiro.au/def/isotc211/CI_RoleCode/originator",
+    "agent" : [ "https://www.directory.gov.au/portfolios/industry-innovation-and-science/commonwealth-scientific-and-industrial-research-organisation", "https://ror.org/03qn8fb07", "http://catalogue.linked.data.gov.au/org/csiro" ]
+  }, {
+    "@id" : "_:b2",
+    "hadRole" : "http://registry.it.csiro.au/def/isotc211/CI_RoleCode/processor",
+    "agent" : "https://data.gov.au/organization/760c24b1-3c3d-4ccb-8196-41530fcdebd5"
+  }, {
+    "@id" : "_:b20",
+    "@type" : "dcat:Distribution",
+    "title" : "ASGS ABS Structures Main Structure and GCCSA 2016 edition boundaries GeoPackage",
+    "downloadURL" : "https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/48a33591-0b0a-4712-a60b-39ef4b564f2b/download/asgs2016absstructuresmainstructureandgccsa.gpkg"
+  }, {
+    "@id" : "_:b21",
+    "@type" : "dcat:Distribution",
+    "title" : "ASGS ABS Structures Remoteness Structure 2016 edition boundaries GeoPackage",
+    "downloadURL" : "https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1/resource/ef716643-846d-4c75-8819-733d4952b843/download/asgs2016absstructuresremotenessstructure.gpkg"
+  }, {
+    "@id" : "_:b3",
+    "@type" : "prov:Entity",
+    "comment" : "Ashley's awsome ETL system"
+  }, {
+    "@id" : "_:b4",
+    "@type" : "vcard:Individual",
+    "fn" : "Ashley Sommer",
+    "hasEmail" : "mailto:ashley.sommer@csiro.au",
+    "hasTelephone" : "_:b5"
+  }, {
+    "@id" : "_:b5",
+    "hasValue" : "tel:+61738335673"
+  }, {
+    "@id" : "_:b6",
+    "@type" : "vcard:Organization",
+    "fn" : "ABS Geospatial Solutions",
+    "hasEmail" : "mailto:geography@abs.gov.au",
+    "hasTelephone" : "_:b7"
+  }, {
+    "@id" : "_:b7",
+    "hasValue" : "tel:+611300135070"
+  }, {
+    "@id" : "_:b8",
+    "@type" : "dcat:Distribution",
+    "accessService" : "https://asgsld.net/2016/",
+    "mediaType" : "https://www.iana.org/assignments/media-types/text/n3"
+  }, {
+    "@id" : "_:b9",
+    "@type" : "prov:Activity",
+    "editorialNote" : "Much of the descriptive metadata in this record is copied over from the source. The set of keywords has been trimmed to reflect the fact that some feature-types from the source have not (yet) been included in the linked-data representation. ",
+    "endedAtTime" : "2019-06-01T00:00:00.00",
+    "used" : [ "_:b3", "http://data.gov.au/dataset/asgs-2016-edition-boundaries" ]
+  }, {
+    "@id" : "http://data.gov.au/dataset/asgs-2011-edition-boundaries",
+    "@type" : "dcat:Dataset",
+    "title" : "ASGS (2011 Edition) - Boundaries",
+    "version" : "2011"
+  }, {
+    "@id" : "http://data.gov.au/dataset/asgs-2016-edition-boundaries",
+    "@type" : "dcat:Dataset",
+    "dc:publisher" : "Australian Bureau of Statistics",
+    "conformsTo" : "https://www.geopackage.org/",
+    "description" : "ASGS 2016 digital boundaries in GeoPackage format",
+    "identifier" : "32adc1ef-5bac-4eaa-9521-a116792f32a1",
+    "issued" : "2018-02-02T00:50:47.250740",
+    "dct:landingPage" : {
+      "@id" : "https://data.gov.au/dataset/32adc1ef-5bac-4eaa-9521-a116792f32a1"
+    },
+    "modified" : "2018-05-16T00:00:58.771059",
+    "publisher" : [ "http://catalogue.linked.data.gov.au/org/abs", "https://www.directory.gov.au/portfolios/treasury/australian-bureau-statistics", "https://ror.org/00ve6e186", "agor:O-000928" ],
+    "relation" : [ "_:b20", "_:b21", "_:b14", "_:b10", "_:b1" ],
+    "spatial" : "_:b13",
+    "title" : "ASGS (2016 Edition) - Boundaries",
+    "updated" : "2018-08-27",
+    "previousVersion" : "http://data.gov.au/dataset/asgs-2011-edition-boundaries",
+    "version" : "2016",
+    "editorialNote" : "SC got a bit carried away with someone else's metadata record here. Trying out a few DCAT patterns. In general this will just be a stub referring to the original catalogue record.",
+    "contactPoint" : "_:b6",
+    "keyword" : [ "Urban Centre and Locality", "Post Code Area", "Census", "GCCSA", "State", "RA", "STE", "Section of State", "Significant Urban Area", "UCL", "SA2", "Statistical Area Level 2", "POA", "CED", "Statistical Area Level 4", "Indigenous Location", "ADD", "Australian Drainage Division", "Mesh Block", "SOS", "MB", "Indigenous Area", "SED", "Greater Capital City Statistical Area", "State Electoral Division", "IARE", "SA1", "State Suburb", "Statistical Area Level 1", "GeoPackage", "SOSR", "Remoteness Area", "Australian Statistical Geography Standard", "Natural Resource Management Region", "NRMR", "Australian Bureau of Statistics", "SA3", "Statistical Area Level 3", "2016 Census", "Section of State Range", "Indigenous Region", "SSC", "Tourism Region", "ILOC", "LGA", "SUA", "ASGS", "ABS", "boundaries", "SA4", "Commonwealth Electoral Division", "TR", "2016", "IREG", "Local Government Area" ],
+    "landingPage" : "https://data.gov.au/dataset/ds-dga-32adc1ef-5bac-4eaa-9521-a116792f32a1/details",
+    "spatialResolutionInMeters" : "0.1",
+    "qualifiedAttribution" : "_:b2"
+  }, {
+    "@id" : "http://linked.data.gov.au/dataset/asgs2016",
+    "@type" : "dcat:Dataset",
+    "contributor" : "Ashley Sommer",
+    "dc:creator" : [ "Joseph Abhayaratna", "Nicholas Car" ],
+    "dc:publisher" : "Australian Bureau of Statistics",
+    "conformsTo" : "http://linked.data.gov.au/def/asgs",
+    "dct:contributor" : {
+      "@id" : "https://orcid.org/0000-0003-0590-0131"
+    },
+    "creator" : [ "https://orcid.org/0000-0002-8742-7730", "https://orcid.org/0000-0001-5075-6234" ],
+    "description" : "A Linked Data representation of the Australian Statistical Geography Standard, 2016, represented according to an ASGS ontology. This is derived from the Australian Bureau of Statistics Web Feature Services representation. ",
+    "license" : "http://creativecommons.org/licenses/by/4.0/",
+    "publisher" : [ "https://www.directory.gov.au/portfolios/treasury/australian-bureau-statistics", "https://ror.org/00ve6e186", "http://catalogue.linked.data.gov.au/org/abs", "agor:O-000928" ],
+    "spatial" : "_:b11",
+    "title" : "ASGS 2016 - distributed as Linked Data",
+    "editorialNote" : "Much of the descriptive metadata in this record is copied over from the source. The set of keywords has been trimmed to reflect the fact that some feature-types from the source have not (yet) been included in the linked-data representation. ",
+    "contactPoint" : "_:b4",
+    "distribution" : [ "_:b0", "_:b15", "_:b8", "_:b16", "_:b17", "_:b18" ],
+    "keyword" : [ "2016 Census", "2016", "SA2", "Statistical Area Level 2", "MB", "Mesh Block", "boundaries", "Australian Bureau of Statistics", "SA3", "SA1", "ASGS", "Statistical Area Level 1", "Statistical Area Level 4", "State", "Statistical Area Level 3", "SA4", "Australian Statistical Geography Standard", "ABS" ],
+    "landingPage" : "https://asgsld.net/2016/",
+    "qualifiedRelation" : "_:b12",
+    "spatialResolutionInMeters" : "0.1",
+    "wasDerivedFrom" : "http://data.gov.au/dataset/asgs-2016-edition-boundaries",
+    "wasGeneratedBy" : "_:b9"
+  }, {
+    "@id" : "http://linked.data.gov.au/dataset/asgs2016/",
+    "@type" : "owl:Ontology",
+    "imports" : [ "http://www.w3.org/ns/dcat", "http://purl.org/pav" ]
+  }, {
+    "@id" : "https://asgsld.net/2016/",
+    "@type" : "dcat:DataService",
+    "dc:publisher" : "Australian Bureau of Statistics",
+    "conformsTo" : "https://github.com/UKGovLD/linked-data-api/blob/wiki/Specification.md",
+    "endpointDescription" : "Link to Swagger description here Ashley",
+    "endpointURL" : "https://asgsld.net/2016/",
+    "servesDataset" : "http://linked.data.gov.au/dataset/asgs2016",
+    "qualifiedAttribution" : "_:b19"
+  } ],
+  "@context" : {
+    "mediaType" : {
+      "@id" : "http://www.w3.org/ns/dcat#mediaType",
+      "@type" : "@id"
+    },
+    "accessService" : {
+      "@id" : "http://www.w3.org/ns/dcat#accessService",
+      "@type" : "@id"
+    },
+    "downloadURL" : {
+      "@id" : "http://www.w3.org/ns/dcat#downloadURL",
+      "@type" : "@id"
+    },
+    "title" : {
+      "@id" : "http://purl.org/dc/terms/title"
+    },
+    "agent" : {
+      "@id" : "http://www.w3.org/ns/prov#agent",
+      "@type" : "@id"
+    },
+    "hadRole" : {
+      "@id" : "http://www.w3.org/ns/dcat#hadRole",
+      "@type" : "@id"
+    },
+    "comment" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#comment"
+    },
+    "hasTelephone" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasTelephone",
+      "@type" : "@id"
+    },
+    "hasEmail" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasEmail",
+      "@type" : "@id"
+    },
+    "fn" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#fn"
+    },
+    "used" : {
+      "@id" : "http://www.w3.org/ns/prov#used",
+      "@type" : "@id"
+    },
+    "endedAtTime" : {
+      "@id" : "http://www.w3.org/ns/prov#endedAtTime",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "editorialNote" : {
+      "@id" : "http://www.w3.org/2004/02/skos/core#editorialNote"
+    },
+    "imports" : {
+      "@id" : "http://www.w3.org/2002/07/owl#imports",
+      "@type" : "@id"
+    },
+    "geometry" : {
+      "@id" : "http://www.w3.org/ns/locn#geometry",
+      "@type" : "https://www.iana.org/assignments/media-types/application/vnd.geo+json"
+    },
+    "bbox" : {
+      "@id" : "http://www.w3.org/ns/dcat#bbox",
+      "@type" : "http://www.opengis.net/ont/geosparql#wktLiteral"
+    },
+    "relation" : {
+      "@id" : "http://purl.org/dc/terms/relation",
+      "@type" : "@id"
+    },
+    "distribution" : {
+      "@id" : "http://www.w3.org/ns/dcat#distribution",
+      "@type" : "@id"
+    },
+    "keyword" : {
+      "@id" : "http://www.w3.org/ns/dcat#keyword"
+    },
+    "contributor" : {
+      "@id" : "http://purl.org/dc/elements/1.1/contributor"
+    },
+    "wasDerivedFrom" : {
+      "@id" : "http://www.w3.org/ns/prov#wasDerivedFrom",
+      "@type" : "@id"
+    },
+    "publisher" : {
+      "@id" : "http://purl.org/dc/terms/publisher",
+      "@type" : "@id"
+    },
+    "wasGeneratedBy" : {
+      "@id" : "http://www.w3.org/ns/prov#wasGeneratedBy",
+      "@type" : "@id"
+    },
+    "qualifiedRelation" : {
+      "@id" : "http://www.w3.org/ns/dcat#qualifiedRelation",
+      "@type" : "@id"
+    },
+    "landingPage" : {
+      "@id" : "http://www.w3.org/ns/dcat#landingPage",
+      "@type" : "@id"
+    },
+    "description" : {
+      "@id" : "http://purl.org/dc/terms/description"
+    },
+    "creator" : {
+      "@id" : "http://purl.org/dc/terms/creator",
+      "@type" : "@id"
+    },
+    "contactPoint" : {
+      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
+      "@type" : "@id"
+    },
+    "spatialResolutionInMeters" : {
+      "@id" : "http://www.w3.org/ns/dcat#spatialResolutionInMeters",
+      "@type" : "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    "license" : {
+      "@id" : "http://purl.org/dc/terms/license",
+      "@type" : "@id"
+    },
+    "spatial" : {
+      "@id" : "http://purl.org/dc/terms/spatial",
+      "@type" : "@id"
+    },
+    "conformsTo" : {
+      "@id" : "http://purl.org/dc/terms/conformsTo",
+      "@type" : "@id"
+    },
+    "hasValue" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasValue",
+      "@type" : "@id"
+    },
+    "qualifiedAttribution" : {
+      "@id" : "http://www.w3.org/ns/prov#qualifiedAttribution",
+      "@type" : "@id"
+    },
+    "servesDataset" : {
+      "@id" : "http://www.w3.org/ns/dcat#servesDataset",
+      "@type" : "@id"
+    },
+    "endpointURL" : {
+      "@id" : "http://www.w3.org/ns/dcat#endpointURL",
+      "@type" : "@id"
+    },
+    "endpointDescription" : {
+      "@id" : "http://www.w3.org/ns/dcat#endpointDescription"
+    },
+    "version" : {
+      "@id" : "http://purl.org/pav/version"
+    },
+    "issued" : {
+      "@id" : "http://purl.org/dc/terms/issued",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "modified" : {
+      "@id" : "http://purl.org/dc/terms/modified",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "identifier" : {
+      "@id" : "http://purl.org/dc/terms/identifier"
+    },
+    "updated" : {
+      "@id" : "http://purl.org/dc/terms/updated",
+      "@type" : "http://www.w3.org/2001/XMLSchema#date"
+    },
+    "previousVersion" : {
+      "@id" : "http://purl.org/pav/previousVersion",
+      "@type" : "@id"
+    },
+    "@vocab" : "http://linked.data.gov.au/dataset/asgs2016/",
+    "pav" : "http://purl.org/pav/",
+    "gsp" : "http://www.opengis.net/ont/geosparql#",
+    "owl" : "http://www.w3.org/2002/07/owl#",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#",
+    "skos" : "http://www.w3.org/2004/02/skos/core#",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#",
+    "vcard" : "http://www.w3.org/2006/vcard/ns#",
+    "asgs" : "http://linked.data.gov.au/def/asgs#",
+    "dct" : "http://purl.org/dc/terms/",
+    "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "xml" : "http://www.w3.org/XML/1998/namespace",
+    "dcat" : "http://www.w3.org/ns/dcat#",
+    "locn" : "http://www.w3.org/ns/locn#",
+    "prov" : "http://www.w3.org/ns/prov#",
+    "dc" : "http://purl.org/dc/elements/1.1/"
+  }
+}

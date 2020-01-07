@@ -1,0 +1,51 @@
+# baseURI: https://researchdata.ands.org.au/asgs-2016-edition-boundaries
+# imports: http://schema.org/
+
+@prefix : <http://schema.org/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://data.gov.au/dataset/asgs-2016-edition-boundaries>
+  a :Dataset ;
+  :datePublished "2018-02-02"^^xsd:date ;
+  :description "ASGS 2016 digital boundaries in GeoPackage format" ;
+  :identifier [
+      a :PropertyValue ;
+      :propertyID "URL" ;
+      :value "http://data.gov.au/dataset/asgs-2016-edition-boundaries" ;
+    ] ;
+  :identifier [
+      a :PropertyValue ;
+      :propertyID "local" ;
+      :value "32adc1ef-5bac-4eaa-9521-a116792f32a1" ;
+    ] ;
+  :inLanguage "en" ;
+  :keywords " 2016, 2016 Census, ABS, ADD, ASGS, Australian Bureau of Statistics, Australian Drainage Division, Australian Statistical Geography Standard, CED, Census, Commonwealth Electoral Division, GCCSA, GeoPackage, Greater Capital City Statistical Area, IARE, ILOC, IREG, Indigenous Area, Indigenous Location, Indigenous Region, LGA, Local Government Area, MB, Mesh Block, NRMR, Natural Resource Management Region, POA, Post Code Area, RA, Remoteness Area, SA1, SA2, SA3, SA4, SED, SOS, SOSR, SSC, STE, SUA, Section of State, Section of State Range, Significant Urban Area, State, State Electoral Division, State Suburb, Statistical Area Level 1, Statistical Area Level 2, Statistical Area Level 3, Statistical Area Level 4, TR, Tourism Region, UCL, Urban Centre and Locality, boundaries" ;
+  :license "CC-BY-2.5" ;
+  :license "Creative Commons Attribution 2.5 Australia" ;
+  :license "http://creativecommons.org/licenses/by/2.5/au/" ;
+  :name "ASGS (2016 Edition) - Boundaries" ;
+  :publisher [
+      a :Organization ;
+      :name "data.gov.au" ;
+    ] ;
+  :sourceOrganization [
+      a :Organization ;
+      :name "data.gov.au" ;
+    ] ;
+  :spatialCoverage [
+      a :Place ;
+      :geo [
+          a :GeoShape ;
+          :box "-45.0 96.0 -9.0 168.0" ;
+        ] ;
+    ] ;
+  :url "https://researchdata.ands.org.au/asgs-2016-edition-boundaries/1328605" ;
+.
+<https://researchdata.ands.org.au/asgs-2016-edition-boundaries>
+  a owl:Ontology ;
+  owl:imports : ;
+  owl:versionInfo "Created with TopBraid Composer" ;
+.

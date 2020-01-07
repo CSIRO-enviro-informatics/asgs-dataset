@@ -5,7 +5,6 @@ from asgs_dataset.model.asgs_feature import ASGSFeature
 from asgs_dataset.view.ldapi import ASGSRegisterRenderer
 from asgs_dataset.view.ldapi.asgs_feature import ASGSFeatureRenderer
 import asgs_dataset._config as conf
-from asgs_dataset.model.meshblock import MeshBlock
 import asgs_dataset.controller.LOCIDatasetRenderer
 
 
@@ -46,17 +45,7 @@ def states():
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
     # get page of MB URIs from ABS Web Service
-    register_states = [
-        'ACT',
-        'NT',
-        'NSW',
-        'QLD',
-        'OT',
-        'SA',
-        'TAS',
-        'VIC',
-        'WA'
-    ]
+    register_states = [str(i) for i in range(1,10)]
 
     register_renderer = ASGSRegisterRenderer(
         request,
@@ -119,7 +108,7 @@ def meshblocks():
         'All the ASGS Meshblocks',
         [conf.URI_MESHBLOCK_CLASS],
         total,
-        MeshBlock,
+        ASGSFeature,
         super_register=conf.DATA_URI_PREFIX,
     ).render()
 
