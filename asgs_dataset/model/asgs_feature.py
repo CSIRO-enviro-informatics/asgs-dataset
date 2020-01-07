@@ -1,14 +1,13 @@
 from datetime import datetime
 from functools import lru_cache, partial
-
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 import rdflib
 from flask import Response, render_template, redirect, url_for
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
-from requests import Session
 
 import asgs_dataset._config as conf
 from lxml import etree
-import requests
 from io import StringIO, BytesIO
 import os
 
@@ -344,23 +343,30 @@ def retrieve_asgs_feature(asgs_type, identifier, local=True):
             tree = None
         except Exception as e:
             print(e)
+            raise
     if tree is None:
         wfs_uri = ASGSFeature.construct_wfs_query_for_feature_type(
             asgs_type, identifier)
-        session = retrieve_asgs_feature.session
-        if session is None:
-            session = retrieve_asgs_feature.session = Session()
         try:
-            r = session.get(wfs_uri)
+            r = Request(wfs_uri, method='GET')
+            with urlopen(r) as resp:
+                if not (200 <= resp.status <= 299):
+                    if resp.status == 404:
+                        raise NotFoundError()
+                    raise RuntimeError(
+                        "Cannot get feature index from WFS backend.")
+                try:
+                    tree = etree.parse(resp, parser=parser)
+                except Exception:
+                    raise RuntimeError("Cannot decode XML from WFS endpoint")
+        except HTTPError as he:
+            if he.code == 404:
+                raise NotFoundError()
+            raise
         except Exception as e:
-            raise e
-        if r.status_code == 404:
-            raise NotFoundError()
-        tree = etree.parse(BytesIO(r.content), parser=parser)
+            print(e)
+            raise
     return tree
-
-
-retrieve_asgs_feature.session = None
 
 
 class ASGSFeature(ASGSModel):
@@ -591,8 +597,11 @@ class ASGSFeature(ASGSModel):
     @classmethod
     def get_feature_index(cls, asgs_type, startindex, count):
         url = cls.construct_wfs_query_for_index(asgs_type, startindex, count)
-        resp = requests.get(url)
-        tree = etree.parse(BytesIO(resp.content)) #type lxml._ElementTree
+        req = Request(url, method='GET')
+        with urlopen(req) as resp:
+            if not (200 <= resp.status <= 299):
+                raise RuntimeError("Cannot get feature index from WFS backend.")
+            tree = etree.parse(resp) #type lxml._ElementTree
         if asgs_type == 'MB':
             propertyname = 'MB:MB_CODE_2016'
         elif asgs_type == 'SA1':

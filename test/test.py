@@ -1,7 +1,7 @@
 from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
 from lxml import etree
 import os
-import requests
+from urllib.request import Request, urlopen
 from io import StringIO
 from model.lookups import *
 
@@ -154,10 +154,10 @@ def _get_instance_details(uri, from_local_file=True):
             root = etree.parse(xml_file)
         else:
             wfs_uri = get_wfs_query_for_feature_type()
-            r = requests.get(wfs_uri)
-
-            # check we have a valid result with an XPath to get the posList (polygon coordinates)
-            root = etree.parse(StringIO(r.text))
+            r = Request(wfs_uri, method='GET')
+            with urlopen(r) as resp:
+                # check we have a valid result with an XPath to get the posList (polygon coordinates)
+                root = etree.parse(resp)
         try:
             coords = root.xpath('//gml:posList', namespaces={'gml': 'http://www.opengis.net/gml/3.2'})
         except IndexError as e:
