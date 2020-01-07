@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, url_for, Response
 from pyldapi import RegisterOfRegistersRenderer
-
+from flask_cors import CORS
 from asgs_dataset.model.asgs_feature import ASGSFeature
 from asgs_dataset.view.ldapi import ASGSRegisterRenderer
 from asgs_dataset.view.ldapi.asgs_feature import ASGSFeatureRenderer
@@ -9,7 +9,7 @@ import asgs_dataset.controller.LOCIDatasetRenderer
 
 
 routes = Blueprint('controller', __name__)
-
+CORS(routes, automatic_options=True)
 
 #
 #   pages
