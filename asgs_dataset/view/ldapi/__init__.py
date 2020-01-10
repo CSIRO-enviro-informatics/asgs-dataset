@@ -8,11 +8,18 @@ from asgs_dataset.model import ASGSModel
 from asgs_dataset.model.asgs_feature import ASGSFeature
 
 ASGSView = pyldapi.View('ASGS',
-    'Basic properties of a Mesh Block using the ASGS ontology and those it imports',
+    'View of an ASGS Feature using the ASGS ontology and those it imports',
     ['text/html', '_internal'] + pyldapi.Renderer.RDF_MIMETYPES,
     'text/turtle',
     languages=['en'],
     namespace='http://linked.data.gov.au/def/asgs#'
+)
+LOCIView = pyldapi.View('LOCI',
+    'View of an ASGS Feature using a mixture of ASGS ontology and LOCI harmonised properties',
+    ['text/html', '_internal'] + pyldapi.Renderer.RDF_MIMETYPES,
+    'text/turtle',
+    languages=['en'],
+    namespace='http://linked.data.gov.au/def/loci#'
 )
 GEOSparqlView = pyldapi.View('GeoSPARQL',
     'A view of GeoSPARQL ontology properties and those of ontologies it imports only',
@@ -22,7 +29,7 @@ GEOSparqlView = pyldapi.View('GeoSPARQL',
     namespace='http://www.opengis.net/ont/geosparql#'
 )
 WFSView = pyldapi.View('Web Feature Service',
-    'An OGC Web Feature Service (WFS) view of a Mesh Block.\n'
+    'An OGC Web Feature Service (WFS) view of an ASGS Feature.\n'
     'The ASGS-specific properties are defined in the ASGS product guide.',
     ['application/xml', 'text/xml'],
     'text/xml',
@@ -33,6 +40,7 @@ WFSView = pyldapi.View('Web Feature Service',
 
 def render_error(request, e):
     try:
+        print(e)
         import traceback
         traceback.print_tb(e.__traceback__)
     except Exception:
@@ -73,13 +81,13 @@ class ASGSClassRenderer(pyldapi.Renderer):
         _views = views or {}
         self._add_default_asgs_views(_views)
         if default_view_token is None:
-            default_view_token = 'asgs'
+            default_view_token = 'loci'
         super(ASGSClassRenderer, self).__init__(request, uri, _views, default_view_token, *args, **kwargs)
         try:
             vf_error = self.vf_error
             if vf_error:
                 if not hasattr(self, 'view') or not self.view:
-                    self.view = 'asgs'
+                    self.view = 'loci'
                 if not hasattr(self, 'format') or not self.format:
                     self.format = 'text/html'
         except AttributeError:
@@ -93,7 +101,7 @@ class ASGSClassRenderer(pyldapi.Renderer):
         if response is not None:
             return response
         try:
-            if self.view == 'asgs':
+            if self.view in {'asgs', 'loci'}:
                 return self._render_asgs_view()
             elif self.view == 'wfs':
                 return self._render_wfs_view()
@@ -117,9 +125,11 @@ class ASGSClassRenderer(pyldapi.Renderer):
         elif self.format in ASGSClassRenderer.RDF_MIMETYPES:
             return self._render_asgs_view_rdf()
         else:
-            raise RuntimeError("Cannot render 'asgs' View with format '{}'.".format(self.format))
+            profile = self.view
+            raise RuntimeError("Cannot render '{}' View with format '{}'.".format(profile, self.format))
 
     def _render_asgs_view_html(self, template_context=None):
+        # Renders both the 'asgs' view or the 'loci' view
         geometry = self.instance.geometry
         if len(geometry) > 0:
             (w, s, e, n) = self.instance.get_bbox()  # (minx, miny, maxx, maxy)
@@ -141,8 +151,10 @@ class ASGSClassRenderer(pyldapi.Renderer):
             headers=self.headers)
 
     def _render_asgs_view_rdf(self):
-        g = self.instance._get_instance_rdf(profile='asgs')
-        if self.format in ['application/ld+json', 'application/json']:
+        # Renders both the 'asgs' view or the 'loci' view
+        profile = self.view
+        g = self.instance._get_instance_rdf(profile=profile)
+        if self.format in {'application/ld+json', 'application/json'}:
             serial_format = 'json-ld'
         elif self.format in self.RDF_MIMETYPES:
             serial_format = self.format
@@ -172,7 +184,7 @@ class ASGSClassRenderer(pyldapi.Renderer):
 
     def _render_geosparql_view_rdf(self):
         g = self.instance._get_instance_rdf(profile='geosparql')
-        if self.format in ['application/ld+json', 'application/json']:
+        if self.format in {'application/ld+json', 'application/json'}:
             serial_format = 'json-ld'
         elif self.format in self.RDF_MIMETYPES:
             serial_format = self.format
@@ -189,6 +201,10 @@ class ASGSClassRenderer(pyldapi.Renderer):
             raise pyldapi.ViewsFormatsException(
                  'You must not manually add a view with token \'asgs\' as this is auto-created.'
             )
+        if 'loci' in _views.keys():
+            raise pyldapi.ViewsFormatsException(
+                 'You must not manually add a view with token \'loci\' as this is auto-created.'
+            )
         if 'geosparql' in _views.keys():
             raise pyldapi.ViewsFormatsException(
                 'You must not manually add a view with token \'geosparql\' as this is auto-created.'
@@ -198,6 +214,7 @@ class ASGSClassRenderer(pyldapi.Renderer):
                 'You must not manually add a view with token \'wfs\' as this is auto-created.'
             )
         _views['asgs'] = ASGSView
+        _views['loci'] = LOCIView
         _views['geosparql'] = GEOSparqlView
         _views['wfs'] = WFSView
 

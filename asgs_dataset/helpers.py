@@ -12,11 +12,14 @@ GEO = Namespace("http://www.opengis.net/ont/geosparql#")
 GEOX = Namespace("http://linked.data.gov.au/def/geox#")
 GML = Namespace("http://www.opengis.net/ont/gml#")
 OGC = Namespace("http://www.opengis.net/")
-ASGS = Namespace('http://linked.data.gov.au/def/asgs#')
+ASGS = Namespace("http://linked.data.gov.au/def/asgs#")
 DATA = Namespace("http://linked.data.gov.au/def/datatype/")
 CRS_OGC = Namespace("http://www.opengis.net/def/crs/OGC/1.3/")
 CRS_EPSG = Namespace("http://www.opengis.net/def/crs/EPSG/0/")
 QB4ST = Namespace("http://www.w3.org/ns/qb4st/")
+LOCI = Namespace("http://linked.data.gov.au/def/loci#")
+ASGS_CAT = Namespace("http://linked.data.gov.au/def/asgs-cat/")
+ASGS_ID = Namespace("http://linked.data.gov.au/def/asgs/id#")
 
 GEO_Geometry = GEO.term('Geometry')
 GEO_Feature = GEO.term('Feature')
@@ -27,6 +30,8 @@ GEO_spatialDimension = GEO.term('spatialDimension')  # overrides coordinateDimen
 GEO_isEmpty = GEO.term('isEmpty')
 GEO_isSimple = GEO.term('isSimple')
 GEO_hasDefaultGeometry = GEO.term('hasDefaultGeometry')
+GEO_within = GEO.term('sfWithin')
+GEO_contains = GEO.term('sfContains')
 RDF_a = RDF.term('type')
 
 
@@ -267,6 +272,7 @@ def wfs_find_features(tree, feature_ns, feature_type):
             key = object_id
         features[key] = member_object
     return features
+
 
 def wfs_extract_features_as_geojson(tree, feature_ns, feature_type, class_converter=None):
     """
