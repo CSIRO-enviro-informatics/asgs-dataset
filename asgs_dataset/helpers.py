@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import namedtuple
 from decimal import Decimal
 
 import lxml
@@ -40,6 +41,13 @@ def chunks(source, length):
     for i in range(0, len(source), length):
         yield source[i:i + length]
 
+AsgsWfsTypeTuple = namedtuple('AsgsWfsType', ['service', 'typename', 'propertyname'])
+class AsgsWfsType(AsgsWfsTypeTuple):
+    __slots__ = ()
+
+    def populate_string(self, string, **kwargs):
+        service, typename, propertyname = self
+        return str(string).format(**locals(), **kwargs)
 
 ns = {
     'wfs': 'http://www.opengis.net/wfs/2.0',

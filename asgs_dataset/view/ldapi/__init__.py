@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from flask import render_template, Response, redirect
+
 import pyldapi
-from flask_paginate import Pagination
-import asgs_dataset._config as config
-from asgs_dataset.model import ASGSModel
+from asgs_dataset.model import ASGSModel, NotFoundError
 from asgs_dataset.model.asgs_feature import ASGSFeature
 
 ASGSView = pyldapi.View('ASGS',
@@ -49,6 +48,10 @@ def render_error(request, e):
         error_type = 'Internal View Format Error'
         error_code = 406
         error_message = e.args[0] or "No message"
+    elif isinstance(e, NotFoundError):
+        error_type = 'Feature Not Found'
+        error_code = 404
+        error_message = "Feature Not Found"
     elif isinstance(e, NotImplementedError):
         error_type = 'Not Implemented'
         error_code = 406
@@ -101,6 +104,15 @@ class ASGSClassRenderer(pyldapi.Renderer):
         if response is not None:
             return response
         try:
+            instance = self.instance
+            if instance is None:
+                instance = NotFoundError()
+            if isinstance(instance, Exception):
+                from flask import request
+                return render_error(request, instance)
+        except AttributeError:
+            pass
+        try:
             if self.view in {'asgs', 'loci'}:
                 return self._render_asgs_view()
             elif self.view == 'wfs':
@@ -130,17 +142,8 @@ class ASGSClassRenderer(pyldapi.Renderer):
 
     def _render_asgs_view_html(self, template_context=None):
         # Renders both the 'asgs' view or the 'loci' view
-        geometry = self.instance.geometry
-        if len(geometry) > 0:
-            (w, s, e, n) = self.instance.get_bbox()  # (minx, miny, maxx, maxy)
-            bbox = [[w,s],[e,n]]
-        else:
-            bbox = None
         _template_context = {
             'uri': self.uri,
-            'geometry': geometry,
-            'bbox': bbox,
-            'instance_id': self.identifier
         }
         if template_context is not None and len(template_context) > 0:
             _template_context.update(template_context)
@@ -150,10 +153,15 @@ class ASGSClassRenderer(pyldapi.Renderer):
             ),
             headers=self.headers)
 
-    def _render_asgs_view_rdf(self):
+    def _render_asgs_view_rdf(self, g=None):
         # Renders both the 'asgs' view or the 'loci' view
-        profile = self.view
-        g = self.instance._get_instance_rdf(profile=profile)
+        if g is None:
+            profile = self.view
+            try:
+                i = self.instance
+                g = i._get_instance_rdf(profile=profile)
+            except AttributeError:
+                raise RuntimeError("ASGS RDF Renderer doesn't know which graph to render")
         if self.format in {'application/ld+json', 'application/json'}:
             serial_format = 'json-ld'
         elif self.format in self.RDF_MIMETYPES:
@@ -182,8 +190,15 @@ class ASGSClassRenderer(pyldapi.Renderer):
         else:
             raise RuntimeError("Cannot render 'geosparql' View with format '{}'.".format(self.format))
 
-    def _render_geosparql_view_rdf(self):
-        g = self.instance._get_instance_rdf(profile='geosparql')
+    def _render_geosparql_view_rdf(self, g=None):
+        if g is None:
+            profile = 'geosparql'
+            try:
+                i = self.instance
+                g = i._get_instance_rdf(profile=profile)
+            except AttributeError:
+                raise RuntimeError("Geosparql RDF Renderer doesn't know which graph to render")
+
         if self.format in {'application/ld+json', 'application/json'}:
             serial_format = 'json-ld'
         elif self.format in self.RDF_MIMETYPES:
@@ -260,18 +275,16 @@ class ASGSRegisterRenderer(pyldapi.RegisterRenderer):
 
     def _render_reg_view_html(self, template_context=None):
         if self.asgs_model_class:
+            make_local_url = self.asgs_model_class.make_local_url
+        else:
+            make_local_url = ASGSFeature.make_local_url
+        try:
             register_view_items = [
-                (self.asgs_model_class.make_local_url(uri, identifier), label)
+                (make_local_url(uri, identifier), label)
                 for uri, label, identifier in self.register_items
             ]
-        else:
-            try:
-                register_view_items = [
-                    (ASGSFeature.make_local_url(uri, identifier), label)
-                    for uri, label, identifier in self.register_items
-                ]
-            except Exception as e:
-                register_view_items = self.register_items
+        except Exception as e:
+            register_view_items = self.register_items
         _template_context = {
             'model': self.asgs_model_class,
             'register_items': register_view_items

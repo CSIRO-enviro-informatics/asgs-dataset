@@ -12,18 +12,12 @@
     <script src="{{ url_for('static', filename='util.js') }}"></script>
 {% endblock %}
 {% block content %}
-    <h1>SA3 Feature - {{ deets['name'] }}&nbsp;({{ deets['code'] }})</h1>
+    <h2>Indigenous Location</h2>
+    <h1>ILOC Feature - {{ deets['name'] }}&nbsp;({{ deets['code'] }})</h1>
     <h3><a href="{{ uri }}">{{ uri }}</a></h3>
     <div id="map_container"></div>
     <ul>
         <li>Name: {{ deets['name'] }}</li>
-        <li>Within SA4: <a href="{{ url_for("controller.redirect_sa4", sa4=deets['sa4']) }}">{{ deets['sa4'] }}</a></li>
-        {% if 'state_abbrev' in deets %}
-            <li>Within State: <a href="{{ url_for("controller.redirect_state", state=deets['state_abbrev']) }}">{{ deets['state_abbrev'] }}&nbsp;(State ID: {{ deets['state'] }})</a></li>
-        {% else %}
-            <li>Within State: <a href="{{ url_for("controller.redirect_state", state=deets['state']) }}">State ID {{ deets['state'] }}</a></li>
-        {% endif %}
-        <li>Albers Area: {{ "%0.0f" | format(deets['albers_area'] * 1000000 | round(0)) }}&nbsp;m<sup>2</sup></li>
         <li>Shape Area: {{ deets['shape_area'] }}</li>
         <li>Shape Length: {{ deets['shape_length'] }}</li>
     </ul>

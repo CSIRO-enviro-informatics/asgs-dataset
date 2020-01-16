@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+    {% block content %}
+    <h1>ASGS 2016 Linked Data API</h1>
+	<p>This is an API that delivers contents of the <a href="http://www.abs.gov.au/websitedbs/D3310114.nsf/home/Australian+Statistical+Geography+Standard+(ASGS)">Australian Statistical Geography Standard (ASGS) 2016 product</a> online as <a href="https://www.w3.org/standards/semanticweb/data">Linked Data</a>. To do this, the tool uses the <a href="http://linked.data.gov.au/def/asgs">ASGS Ontology</a> as its main data model and the series of public ASGS 2016 Web Feature Services, such as <a href="https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer?service=wfs&version=2.0.0&request=GetCapabilities">the one for Mesh Blocks</a> as its source of data.</p>
+	<p>This tool is currently still in beta testing mode and, while it is, it is operated by CSIRO's <a href="https://research.csiro.au/ei/">Environmental Informatics</a> team. In the medium term, the tool is likely to be managed by the <a href="http://www.abs.gov.au">Australian Bureau of Statistics</a>.</p>
+        <h3>Other ABS Features in ASGS</h3>
+        <p><ul>
+        <li>
+            <a href="{{ url_for('controller.suas') }}">Significant Urban Areas</a> - the list of all SUAs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_sua', sua='1018') }}">A SUA</a> - example, 1018 (Lithgow)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.gccsas') }}">Greater Capital City Statistical Areas</a> - the list of all GCCSAs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_gccsa', gccsa='3GBRI') }}">A GCCSA</a> - example, 3GBRI (Greater Brisbane)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.ras') }}">Remoteness Areas</a> - the list of all RAs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_ra', ra='72') }}">A RA</a> - example, 71 (Outer Regional Australia - NT)</li>
+            </ul>
+        </li>
+        </ul></p>
+        <h3>Indigenous Locality Features</h3>
+        <p><ul>
+        <li>
+            <a href="{{ url_for('controller.ilocs') }}">Indigenous Location Register</a> - the list of all ILOCs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_iloc', iloc='50800204') }}">An ILOC</a> - example, 50800204 - Mindi Rardi - Kurnangki (Fitzroy Crossing)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.iareas') }}">Indigenous Area Register</a> - the list of all IAREs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_iare', iare='107002') }}">An IARE</a> - example, 107002 (Baulkham Hills)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.iregs') }}">Indigenous Area Register</a> - the list of all IREGs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_ireg', ireg='501') }}">An IREG</a> - example, 501 (Broome)</li>
+            </ul>
+        </li>
+        </ul></p>
+        <h3>State Section Features</h3>
+        <p><ul>
+        <li>
+            <a href="{{ url_for('controller.ucls') }}">Urban Centre and Locality Register</a> - the list of all UCLs, paged
+            <ul>
+
+                <li><a href="{{ url_for('controller.redirect_ucl', ucl='112001') }}">A UCL</a> - example, 112001 (Armidale)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.sosrs') }}">Sections of State Ranges</a> - the list of all SOSRs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_sosr', sosr='203') }}">A SOSR</a> - example, 203 (Geelong)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.soss') }}">Sections of State</a> - the list of all SOSs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_sos', sos='50') }}">A SOS</a> - example, 50 (Perth)</li>
+            </ul>
+        </li>
+        </ul></p>
+
+    {% endblock %}

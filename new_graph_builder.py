@@ -17,7 +17,7 @@ from asgs_dataset.model import NotFoundError
 
 OUTPUT_DIRECTORY = "./instance"  # Relative path from pwd
 INSTANCES_PER_FILE = 1000
-HARVESTABLE_INSTANCE_VIEW = "asgs"
+HARVESTABLE_INSTANCE_VIEW = "loci"
 MULTI_PROCESSING = True
 MULTI_THREADING = True
 USE_SAVED_REGISTER_INDEX = True
@@ -32,6 +32,15 @@ INSTANCE_URI_TO_LOCAL_ROUTE = {
     "http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel4/": "/statisticalarealevel4/",
     "http://linked.data.gov.au/dataset/asgs2016/stateorterritory/": "/stateorterritory/",
     "http://linked.data.gov.au/dataset/asgs2016/australia/": "/australia/",
+    "http://linked.data.gov.au/dataset/asgs2016/greatercapitalcitystatisticalarea/": "/greatercapitalcitystatisticalarea/",
+    "http://linked.data.gov.au/dataset/asgs2016/significanturbanarea/": "/significanturbanarea/",
+    "http://linked.data.gov.au/dataset/asgs2016/remotenessarea/": "/remotenessarea/",
+    "http://linked.data.gov.au/dataset/asgs2016/indigenouslocation/": "/indigenouslocation/",
+    "http://linked.data.gov.au/dataset/asgs2016/indigenousarea/": "/indigenousarea/",
+    "http://linked.data.gov.au/dataset/asgs2016/indigenousregion/": "/indigenousregion/",
+    "http://linked.data.gov.au/dataset/asgs2016/urbancentreandlocality/": "/urbancentreandlocality/",
+    "http://linked.data.gov.au/dataset/asgs2016/sectionofstaterange/": "/sectionofstaterange/",
+    "http://linked.data.gov.au/dataset/asgs2016/sectionofstate/": "/sectionofstate/",
 }
 # -- END CONFIGURABLE OPTIONS
 # ---------------------------

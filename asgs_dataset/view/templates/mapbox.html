@@ -1,0 +1,71 @@
+<script>
+   var initial_bounds = {{ bbox|tojson|safe }};
+   initial_bounds[0] = meters2degress(initial_bounds[0][0],initial_bounds[0][1]);
+   initial_bounds[1] = meters2degress(initial_bounds[1][0],initial_bounds[1][1]);
+   var geojson_geom = {{ geometry|tojson|safe }};
+   geojson_geom = geom_convert(geojson_geom);
+   var map = new mapboxgl.Map({
+     container: 'map_container', // container id
+     style: {
+        "version": 8,
+        "sources": {
+            "osm-topo": {
+                "type": "raster",
+                // point to our third-party tiles. Note that some examples
+                // show a "url" property. This only applies to tilesets with
+                // corresponding TileJSON (such as mapbox tiles).
+                "tiles": [
+                    "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+                    "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+                    "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+                ],
+                "tileSize": 256
+            },
+            "asgs-feature": {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': geojson_geom
+                }
+            },
+        },
+        "layers": [{
+            "id": "bg",
+            "type": "raster",
+            "source": "osm-topo",
+            "minzoom": 0,
+            "maxzoom": 22
+        },{
+            "id": "fg",
+            "type": "fill",
+            "source": "asgs-feature",
+            "paint": {
+                "fill-color": "#2f3788",
+                "fill-opacity": 0.9,
+                "fill-outline-color": "#191c88",
+            }
+        },
+        {
+            "id": "fg-outline",
+            "type": "line",
+            "source": "asgs-feature",
+            "paint": {
+               "line-width": 4,
+               "line-color": "#191c88",
+            }
+        }]
+     },
+     center: [-74.50, 40], // starting position
+     zoom: 2 // starting zoom
+    });
+
+    var nav = new mapboxgl.NavigationControl();
+    map.addControl(nav, 'top-left');
+    map.addControl(new mapboxgl.AttributionControl({
+        compact: true
+    }));
+    map.fitBounds(initial_bounds, {
+      padding: {top: 20, bottom:20, left: 20, right: 20}
+    });
+</script>

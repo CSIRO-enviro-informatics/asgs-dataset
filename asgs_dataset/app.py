@@ -1,12 +1,12 @@
 import logging
 import asgs_dataset._config as conf
 from flask import Flask
-from asgs_dataset.controller import routes
+from asgs_dataset.controller import controller
 import pyldapi
 import argparse
 
 app = Flask(__name__, template_folder=conf.TEMPLATES_DIR, static_folder=conf.STATIC_DIR)
-app.register_blueprint(routes.routes)
+app.register_blueprint(controller)
 
 
 # run the Flask app
