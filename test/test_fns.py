@@ -3,7 +3,7 @@ from lxml import etree
 import os
 from urllib.request import Request, urlopen
 from io import StringIO
-from model.lookups import *
+#from asgs_dataset.model.lookups import *
 
 
 def get_asgs_type(uri):

@@ -114,3 +114,5 @@ venv.bak/
 
 /new_areas/
 index_*.pickle
+.github/actions/*/node_modules/
+!.github/actions/*/dist/
