@@ -9,8 +9,7 @@ app = Flask(__name__, template_folder=conf.TEMPLATES_DIR, static_folder=conf.STA
 app.register_blueprint(controller)
 
 
-# run the Flask app
-if __name__ == '__main__':
+def run():
     parser = argparse.ArgumentParser(description='ASGS Dataset LDAPI')
     parser.add_argument('--init', action="store_true", default=False, help='Initialise the application then exit (rofr.ttl etc)')
     args, unknown = parser.parse_known_args()
@@ -26,3 +25,7 @@ if __name__ == '__main__':
     if not args.init:
         app.run(debug=conf.DEBUG, threaded=True, use_reloader=False)
 
+
+# run the Flask app
+if __name__ == '__main__':
+    run()

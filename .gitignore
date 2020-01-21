@@ -111,3 +111,6 @@ venv.bak/
 # Mac
 .DS_Store
 .directory
+
+/new_areas/
+index_*.pickle
