@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
+<html lang="en">
+<head>
     <meta charset="utf-8">
-    <title>ASGS</title>
+    <title>ASGS LD API</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='simple.css') }}" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli">
     {% block extra_head_stylesheets%}
@@ -21,7 +21,9 @@
         <a href="{{ url_for('controller.sa2s') }}">SA2s</a> |
         <a href="{{ url_for('controller.sa3s') }}">SA3s</a> |
         <a href="{{ url_for('controller.sa4s') }}">SA4s</a> |
-        <a href="{{ url_for('controller.states') }}">States</a>
+        <a href="{{ url_for('controller.states') }}">States</a> |
+        <a href="{{ url_for('controller.other_abs') }}">Other ABS Features</a> |
+        <a href="{{ url_for('controller.non_abs') }}">Non-ABS Features</a>
     </header>
     <div id="content">
         {% block content %}{% endblock %}
