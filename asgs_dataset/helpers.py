@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from collections import namedtuple
 from decimal import Decimal
-
+import pickle
+import gzip
 import lxml
-
+from os import path
 import rdflib
 from rdflib import Namespace
 from rdflib.namespace import RDF, RDFS, OWL, XSD
@@ -394,3 +395,19 @@ def calculate_bbox(g, pad=0, srs=None):
         b[2] = mymin(b[2] + (x_extra / 2.0), 360.0)
         b[3] = mymax(b[3] - (x_extra / 2.0), -180.0)
     return b
+
+def load_gz_pickle(var_name, dirname=None):
+    if dirname is None:
+        dirname = "."
+    dirname = path.abspath(dirname)
+    filename = path.join(dirname, "{:s}.pickle.gz".format(var_name))
+    with gzip.open(filename, "rb", compresslevel=9) as fp:
+        a = pickle.load(fp)
+    return a
+
+class FakeXMLElement(object):
+    __slots__ = ("tag", "text")
+
+    def __init__(self, tag, text):
+        self.tag = tag
+        self.text = text
