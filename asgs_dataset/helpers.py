@@ -39,7 +39,10 @@ RDF_a = RDF.term('type')
 
 def chunks(source, length):
     """Yield successive n-sized chunks from l."""
-    for i in range(0, len(source), length):
+    source_len = len(source)
+    if (source_len % length) != 0:
+        raise ValueError("Cannot do chunks.")
+    for i in range(0, source_len, length):
         yield source[i:i + length]
 
 AsgsWfsTypeTuple = namedtuple('AsgsWfsType', ['service', 'typename', 'propertyname'])
@@ -114,7 +117,8 @@ def gml_extract_geom_to_geojson(node, recursion=0, parent_srs=None):
 
             :param elem:
             :type elem: etree._Element
-            :return:
+            :return: poly coordinate tuples
+            :rtype: list[tuple[float]]
             """
             nonlocal LinearRing
             nonlocal posList, pos
@@ -138,6 +142,10 @@ def gml_extract_geom_to_geojson(node, recursion=0, parent_srs=None):
                                 "Dims = {:s} but pos has a different number of dimensions."\
                                     .format(str(dims)))
                         pos_list.extend(pos_members)
+                pos_remainder = len(pos_list) % dims
+                if pos_remainder != 0:
+                    for x in range(pos_remainder):
+                        pos_list.pop()
                 if dims == 2:
                     if flip_xy:
                         for x, y in chunks(pos_list, 2):
@@ -306,6 +314,55 @@ def wfs_extract_features_as_geojson(tree, feature_ns, feature_type, class_conver
             features_list.append((key, val))
         geojson_feature_collection['features'] = features_list
     return geojson_feature_collection
+
+def combine_geojson_geometries(geoms):
+    if len(geoms) == 1:
+        return geoms[0]
+    non_empty_geoms = tuple(geom for geom in geoms if "type" in geom)
+    if len(non_empty_geoms) < 1:
+        return {}
+    geoms = non_empty_geoms
+    all_dims = (geom['dims'] == geoms[0]['dims'] for geom in geoms)
+    if not all(all_dims):
+        raise RuntimeError("Cannot combine geometries with different geometry dimensions")
+    all_multipolygon = all(geom['type'].lower() == "multipolygon" for geom in geoms)
+    if all_multipolygon:
+        geom = geoms[0]
+        for i in range(1, len(geoms)):
+            g2 = geoms[i]
+            geom['coordinates'].extend(g2['coordinates'])
+    else:
+        raise RuntimeError("For now, we can only combine geometries if they are all of type Multipolygon")
+    return geom
+
+def combine_geojson_features(feature_collection):
+    can_add = ["albers_area", "shape_area", "shape_length"]
+    features = feature_collection['features']
+    if len(features) == 1:
+        return features[0]
+    new_feature = {
+        "type": "Feature",
+        "geometry": {},
+        "properties": {}
+    }
+    first_feature = features[0]
+    for p in can_add:
+        new_feature['properties'][p] = 0.0
+    geoms = []
+    for f in features:
+        for p in can_add:
+            f_p = f['properties'].get(p, None)
+            if f_p is not None:
+                new_feature['properties'][p] += f_p
+        geoms.append(f['geometry'])
+    for p in first_feature['properties']:
+        if p not in new_feature['properties']:
+            new_feature['properties'][p] = first_feature['properties'][p]
+
+    new_feature['geometry'] = combine_geojson_geometries(geoms)
+    return new_feature
+
+
 
 def wfs_extract_features_with_rdf_converter(
         tree, feature_ns, feature_type, class_converter):

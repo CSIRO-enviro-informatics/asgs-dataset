@@ -1,6 +1,11 @@
-function meters2degress(x, y) {
-    var lon = x * 180.0 / 20037508.34;
-    var lat = Math.atan(Math.exp(y * Math.PI / 20037508.34)) * 360.0 / Math.PI - 90.0;
+var mercator_meters = 20037508.34;
+var const_lat_multiplier = 180.0 / mercator_meters;
+var const_lon_multiplier1 = Math.PI / mercator_meters;
+var const_lot_multiplier2 = 360.0 / Math.PI;
+
+function meters2degrees(x, y) {
+    var lon = x * const_lat_multiplier;
+    var lat = Math.atan(Math.exp(y * const_lon_multiplier1)) * const_lot_multiplier2 - 90.0;
     return [lon, lat]
 }
 
@@ -20,7 +25,7 @@ function geom_convert(geom, dims) {
                 // Wrong number of dims!
                 return new_poly_part;
             }
-            var lonlat = meters2degress(poly_part_segment[0], poly_part_segment[1]);
+            var lonlat = meters2degrees(poly_part_segment[0], poly_part_segment[1]);
             if (dims > 2) {
                 lonlat[2] = poly_part_segment[2];
             }

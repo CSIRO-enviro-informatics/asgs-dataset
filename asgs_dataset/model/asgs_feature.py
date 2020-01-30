@@ -1,5 +1,6 @@
-from collections import namedtuple
 from datetime import datetime
+import gzip
+import os
 from functools import lru_cache, partial
 from urllib.error import HTTPError
 from urllib.parse import urlencode
@@ -11,14 +12,13 @@ from rdflib.namespace import DCTERMS
 
 import asgs_dataset._config as conf
 from lxml import etree
-import os
 
 from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
     gml_extract_geom_to_geojson, gml_extract_geom_to_geosparql, RDF_a, \
     GEO, ASGS, GEO_Feature, GEO_hasGeometry, \
     wfs_extract_features_with_rdf_converter, calculate_bbox, GEOX, \
     gml_extract_shapearea_to_geox_area, DATA, CRS_EPSG, LOCI, ASGS_CAT, \
-    ASGS_ID, GEO_within, GEO_contains, AsgsWfsType, load_gz_pickle, FakeXMLElement
+    ASGS_ID, GEO_within, GEO_contains, AsgsWfsType, load_gz_pickle, FakeXMLElement, combine_geojson_features
 from asgs_dataset.model import ASGSModel, NotFoundError
 
 MESHBLOCK_COUNT = 358009
@@ -44,6 +44,10 @@ INVERSE_TOKEN = object()
 LOCAL_LOOKUP_TOKEN = object()
 # Used when the data property on the WFS is known missing or unreliable
 # Forces the mapper to use a local lookup dict to get the value
+
+DERIVE_TOKEN = object()
+# Used when a data property needed can be derived from a different property on the same feature
+#
 
 IGNORE_TOKEN = object()
 # Used when we want to acknowledge a data property's existence but not use it.
@@ -297,7 +301,7 @@ gccsa_predicate_map_loci = {
     'state': [GEO_within, INVERSE_TOKEN],
 }
 ra_tag_map = {
-    "{WFS}AREA_ALBERS_SQKM": 'albers_area',
+    "{WFS}AREA_ALBERS_SQKM": 'albers_area', # There are some RAs with null Albers!
     "{WFS}RA_CODE_2016": 'code',
     "{WFS}RA_NAME_2016": 'name',
     "{WFS}STATE_CODE_2016": "state",
@@ -315,73 +319,95 @@ ra_predicate_map_loci = {
 iloc_tag_map = {
     "{WFS}ILOC_CODE_2016": 'code',
     "{WFS}ILOC_NAME_2016": 'name',
+    "{WFS}IARE_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:6]) , "iare")
 }
 iloc_predicate_map_asgs = {
     'code': [ASGS.ilocCode2016],
     'name': [ASGS.ilocName2016],
+    'iare': INVERSE_TOKEN,
+
 }
 iloc_predicate_map_loci = {
     'code': [DCTERMS.identifier],
     'name': [DCTERMS.title],
-}
-
-ireg_tag_map = {
-    "{WFS}IREG_CODE_2016": 'code',
-    "{WFS}IREG_NAME_2016": 'name',
-}
-ireg_predicate_map_asgs = {
-    'code': [ASGS.iregCode2016, ASGS.indigenousRegions3DigitCode],
-    'name': [ASGS.iregName2016],
-}
-ireg_predicate_map_loci = {
-    'code': [DCTERMS.identifier, ASGS.indigenousRegions3DigitCode],
-    'name': [DCTERMS.title],
+    'iare': [GEO_within, INVERSE_TOKEN]
 }
 
 iare_tag_map = {
     "{WFS}IARE_CODE_2016": 'code',
     "{WFS}IARE_NAME_2016": 'name',
+    "{WFS}IREG_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:3]), "ireg")
+
 }
 iare_predicate_map_asgs = {
     'code': [ASGS.iareCode2016, ASGS.indigenousAreas6DigitCode],
     'name': [ASGS.iareName2016],
+    'ireg': INVERSE_TOKEN,
 }
 iare_predicate_map_loci = {
     'code': [DCTERMS.identifier, ASGS.indigenousAreas6DigitCode],
     'name': [DCTERMS.title],
+    'ireg': [GEO_within, INVERSE_TOKEN]
+}
+
+ireg_tag_map = {
+    "{WFS}IREG_CODE_2016": 'code',
+    "{WFS}IREG_NAME_2016": 'name',
+    "{WFS}STATE_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:1]), "state"),
+}
+ireg_predicate_map_asgs = {
+    'code': [ASGS.iregCode2016, ASGS.indigenousRegions3DigitCode],
+    'name': [ASGS.iregName2016],
+    'state': INVERSE_TOKEN,
+}
+ireg_predicate_map_loci = {
+    'code': [DCTERMS.identifier, ASGS.indigenousRegions3DigitCode],
+    'name': [DCTERMS.title],
+    'state': [GEO_within, INVERSE_TOKEN],
+
 }
 
 ucl_tag_map = {
     "{WFS}UCL_CODE_2016": 'code',
+    "{WFS}SOSR_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:3]), "sosr")
 }
 ucl_predicate_map_asgs = {
     'code': [ASGS.uclCode2016],
+    'sosr': INVERSE_TOKEN,
 }
 ucl_predicate_map_loci = {
     'code': [DCTERMS.identifier],
+    'sosr': [GEO_within, INVERSE_TOKEN],
 }
 
 sosr_tag_map = {
     "{WFS}SOSR_CODE_2016": 'code',
+    "{WFS}SOS_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:2]), "sos")
 }
 sosr_predicate_map_asgs = {
     'code': [ASGS.sosrCode2016, ASGS.sectionOfStateRange3DigitCode],
+    'sos': INVERSE_TOKEN,
 }
 sosr_predicate_map_loci = {
     'code': [DCTERMS.identifier, ASGS.sectionOfStateRange3DigitCode],
+    'sos': [GEO_within, INVERSE_TOKEN]
 }
 
 sos_tag_map = {
     "{WFS}SOS_CODE_2016": 'code',
+    "{WFS}STATE_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:1]), "state"),
 }
 sos_predicate_map_asgs = {
     'code': [ASGS.sosCode2016, ASGS.sectionOfState2DigitCode],
+    'state': INVERSE_TOKEN,
 }
 sos_predicate_map_loci = {
     'code': [DCTERMS.identifier, ASGS.sectionOfState2DigitCode],
+    'state': [GEO_within, INVERSE_TOKEN],
 }
 
 sua_tag_map = {
+    # Note, SUA cannot have a "state", nor derive one, because they can go across state borders.
     "{WFS}SUA_CODE_2016": 'code',
 }
 sua_predicate_map_asgs = {
@@ -493,7 +519,16 @@ state_id_map = {
     6: "TAS",
     7: "NT",
     8: "ACT",
-    9: "OT"
+    9: "OT",
+    "1": "NSW",
+    "2": "VIC",
+    "3": "QLD",
+    "4": "SA",
+    "5": "WA",
+    "6": "TAS",
+    "7": "NT",
+    "8": "ACT",
+    "9": "OT"
 }
 
 
@@ -507,6 +542,7 @@ def asgs_features_geojson_converter(asgs_type, wfs_features):
     to_int = ('object_id', 'category', 'state')
     to_datetime = tuple()
     is_geom = ('shape',)
+    is_optional = ('albers_area','shape')  # TODO: This should _not_ be optional!
     features_list = []
     if isinstance(wfs_features, (dict,)):
         features_source = wfs_features.items()
@@ -537,6 +573,9 @@ def asgs_features_geojson_converter(asgs_type, wfs_features):
                 if LOCAL_LOOKUP_TOKEN in tokens:
                     # Don't process this tag yet, do it after all of the other WFS tags
                     continue
+                if DERIVE_TOKEN in tokens:
+                    # Don't process this tag yet, do it after all of the other WFS tags
+                    continue
             used_tags.add(r.tag.upper())
             if var in is_geom and ignore_geom:
                 continue
@@ -561,23 +600,35 @@ def asgs_features_geojson_converter(asgs_type, wfs_features):
             else:
                 gj_dict['properties'][var] = val
         to_lookup = []
+        to_derive = []
         for t in tag_map:
             if t.upper() not in used_tags:
                 var = tag_map[t]
                 lookup_tuple = None
+                derive_tuple = None
                 if isinstance(var, (list, tuple)):
                     tokens = var[0:-1]
                     var = var[-1]
-                    if LOCAL_LOOKUP_TOKEN in tokens:
+                    if LOCAL_LOOKUP_TOKEN is tokens[0]:
                         lookup_name = "{}_to_{}".format(asgs_type.lower(), var.lower())
                         lookup_table = LOCAL_DATA_VAL_LOOKUPS.get(lookup_name, None)
                         if lookup_table is None:
                             raise RuntimeError("No local lookup table available for {}".format(lookup_name))
                         # hardcoded "code" here for now, assume always lookup based on code
                         lookup_tuple = (lookup_table, "code", var)
-                if lookup_tuple is None:
-                    raise RuntimeError("Need but didn't find tag: {}".format(t))
-                to_lookup.append(lookup_tuple)
+                        used_tags.add(t.upper())
+                    elif DERIVE_TOKEN is tokens[0]:
+                        arg1, derive_fn = tokens[1]
+                        derive_tuple = (arg1, derive_fn, var)
+                if lookup_tuple is None and derive_tuple is None:
+                    if var in is_optional:
+                        pass
+                    else:
+                        raise RuntimeError("Need but didn't find tag: {}\nFound tags:\n{}".format(t, used_tags))
+                if lookup_tuple is not None:
+                    to_lookup.append(lookup_tuple)
+                if derive_tuple is not None:
+                    to_derive.append(derive_tuple)
         for l in to_lookup:
             lookup_table, key, var = l
             try:
@@ -595,6 +646,16 @@ def asgs_features_geojson_converter(asgs_type, wfs_features):
                 except LookupError:
                     raise RuntimeError("Cannot get local lookup value for item with key: {}".format(key))
             gj_dict['properties'][var] = val
+        for d in to_derive:
+            p1, derive_fn, var = d
+            try:
+                arg1 = gj_dict['properties'][p1]
+            except LookupError:
+                raise RuntimeError("Need to derive {} from {}, but we don't know {}".format(var, p1, p1))
+            try:
+                gj_dict['properties'][var] = derive_fn(arg1)
+            except Exception as e:
+                raise RuntimeError("Cannot derive {} from {}, error:\n{}".format(var, p1, repr(e)))
         features_list.append(gj_dict)
     return features_list
 
@@ -610,8 +671,7 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
         lazy_id = str(canonical_uri).split('/')[-1]
         no_triples = set()
         to_converter = {
-            'shape': lambda x: (
-            no_triples, URIRef("".join([conf.GEOMETRY_SERVICE_URI, geometry_service_routes[asgs_type], lazy_id]))),
+            'shape': lambda x: (no_triples, URIRef("".join([conf.GEOMETRY_SERVICE_URI, geometry_service_routes[asgs_type], lazy_id]))),
             'shape_area': partial(gml_extract_shapearea_to_geox_area, crs=CRS_EPSG["3857"]), # cartesian area from asgs using "pseudo-mercator" projection
             'albers_area': partial(gml_extract_shapearea_to_geox_area,
                                    extra_transform=lambda x: (set(), float(x) * 1000000.0), crs=CRS_EPSG["3577"]),# cartesian GDA-94 CRS using "Albers_Conic_Equal_Area" projection
@@ -624,7 +684,11 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
             'nrmr': lambda x: (no_triples, URIRef(conf.URI_NRMR_INSTANCE_BASE + x.text)),
             'gccsa': lambda x: (no_triples, URIRef(conf.URI_GCCSA_INSTANCE_BASE + x.text)),
             'iloc': lambda x: (no_triples, URIRef(conf.URI_ILOC_INSTANCE_BASE + x.text)),
+            'iare': lambda x: (no_triples, URIRef(conf.URI_IARE_INSTANCE_BASE + x.text)),
+            'ireg': lambda x: (no_triples, URIRef(conf.URI_IREG_INSTANCE_BASE + x.text)),
             'ucl': lambda x: (no_triples, URIRef(conf.URI_UCL_INSTANCE_BASE + x.text)),
+            'sosr': lambda x: (no_triples, URIRef(conf.URI_SOSR_INSTANCE_BASE + x.text)),
+            'sos': lambda x: (no_triples, URIRef(conf.URI_SOS_INSTANCE_BASE + x.text)),
             'sua': lambda x: (no_triples, URIRef(conf.URI_SUA_INSTANCE_BASE + x.text)),
             'ra': lambda x: (no_triples, URIRef(conf.URI_RA_INSTANCE_BASE + x.text)),
             'state': lambda x: (no_triples, URIRef(conf.URI_STATE_INSTANCE_BASE + state_id_map.get(int(x.text), 'OT'))),
@@ -641,6 +705,7 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
         to_int = ('object_id', 'category', 'state')
     to_float = ('shape_length',)
     is_geom = ('shape',)
+    is_optional = ('shape','albers_area')  # TODO: This should _not_ be optional!
 
     features_list = []
     if isinstance(wfs_features, (dict,)):
@@ -674,6 +739,8 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
                 tokens = var[0:-1]
                 var = var[-1]
                 if LOCAL_LOOKUP_TOKEN in tokens:
+                    continue
+                if DERIVE_TOKEN in tokens:
                     continue
             used_tags.add(c.tag.upper())
             if var in is_geom and ignore_geom:
@@ -724,38 +791,37 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
                     pass
 
         to_lookup = []
+        to_derive = []
         for t in tag_map:
             if t.upper() not in used_tags:
                 var = tag_map[t]
                 lookup_tuple = None
+                derive_tuple = None
                 if isinstance(var, (list, tuple)):
                     tokens = var[0:-1]
                     var = var[-1]
-                    if LOCAL_LOOKUP_TOKEN in tokens:
+                    if LOCAL_LOOKUP_TOKEN is tokens[0]:
                         lookup_name = "{}_to_{}".format(asgs_type.lower(), var.lower())
                         lookup_table = LOCAL_DATA_VAL_LOOKUPS.get(lookup_name, None)
                         if lookup_table is None:
                             raise RuntimeError("No local lookup table available for {}".format(lookup_name))
-                        if var in predicate_map:
-                            found_predicates = []
-                            predicate = predicate_map[var]
-                            if predicate is INVERSE_TOKEN:
-                                continue
-                            if not isinstance(predicate, list):
-                                predicate = [predicate]
-                            for p in predicate:
-                                if p is INVERSE_TOKEN:
-                                    continue
-                                found_predicates.append(p)
-                        else:
-                            found_predicates = [URIRef(var)]
                         # hardcoded "code" here for now, assume always lookup based on code
-                        lookup_tuple = (lookup_table, "code", var, found_predicates)
-                if lookup_tuple is None:
-                    raise RuntimeError("Need but didn't find tag: {}".format(t))
-                to_lookup.append(lookup_tuple)
+                        lookup_tuple = (lookup_table, "code", var)
+                    elif DERIVE_TOKEN is tokens[0]:
+                        arg1, derive_fn = tokens[1]
+                        derive_tuple = (arg1, derive_fn, var)
+                if lookup_tuple is None and derive_tuple is None:
+                    if var in is_optional:
+                        pass
+                    else:
+                        raise RuntimeError("Need but didn't find tag: {}\nFound tags:\n{}".format(t, used_tags))
+                if lookup_tuple is not None:
+                    to_lookup.append(lookup_tuple)
+                if derive_tuple is not None:
+                    to_derive.append(derive_tuple)
+        extra_data_keyvals = {}
         for l in to_lookup:
-            lookup_table, key, var, preds = l
+            lookup_table, key, var = l
             try:
                 key = kv_map[key]
             except LookupError:
@@ -770,6 +836,21 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
                     val = lookup_table[key]
                 except LookupError:
                     raise RuntimeError("Cannot get local lookup value for item with key: {}".format(key))
+            kv_map[var] = val
+            extra_data_keyvals[var] = val
+        for d in to_derive:
+            p1, derive_fn, var = d
+            try:
+                arg1 = kv_map[p1]
+            except LookupError:
+                raise RuntimeError("Need to derive {} from {}, but we don't know {}".format(var, p1, p1))
+            try:
+                val = derive_fn(arg1)
+            except Exception as e:
+                raise RuntimeError("Cannot derive {} from {}, error:\n{}".format(var, p1, repr(e)))
+            kv_map[var] = val
+            extra_data_keyvals[var] = val
+        for (var, val) in extra_data_keyvals.items():
             if var in to_converter:
                 conv_func = to_converter[var]
                 try:
@@ -779,155 +860,25 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
                     raise
                 for (s, p, o) in iter(_triples):
                     triples.add((s, p, o))
-            for p in preds:
+            if var in predicate_map:
+                found_predicates = []
+                predicate = predicate_map[var]
+                if predicate is INVERSE_TOKEN:
+                    continue
+                if not isinstance(predicate, list):
+                    predicate = [predicate]
+                for p in predicate:
+                    if p is INVERSE_TOKEN:
+                        continue
+                    found_predicates.append(p)
+            else:
+                found_predicates = [URIRef(var)]
+            for p in found_predicates:
                 triples.add((feature_uri, p, val))
 
         features_list.append(feature_uri)
     return triples, feature_nodes
 
-
-# def asgs_features_loci_converter(asgs_type, canonical_uri,  wfs_features):
-#     # this converter is used for the "loci" ontology mappings
-#     if len(wfs_features) < 1:
-#         return None
-#
-#     to_float = ('shape_length',)
-#     is_geom = ('shape',)
-#
-#     features_list = []
-#     if isinstance(wfs_features, (dict,)):
-#         features_source = wfs_features.items()
-#     elif isinstance(wfs_features, (list, set)):
-#         features_source = iter(wfs_features)
-#     else:
-#         features_source = [wfs_features]
-#
-#     tag_map = tag_map_lookup.get(asgs_type, common_tag_map)
-#     predicate_map = predicate_map_lookup['loci'].get(asgs_type, common_predicate_map_asgs)
-#
-#     triples = set()
-#     feature_nodes = []
-#     for object_id, feat_elem in features_source:  # type: int, etree._Element
-#         feature_uri = rdflib.URIRef(canonical_uri)
-#         triples.add((feature_uri, RDF_a, GEO_Feature))
-#         triples.add((feature_uri, RDF_a, ASGS.Feature))
-#         used_tags = set()
-#         kv_map = {}
-#         for c in feat_elem.iterchildren():  # type: etree._Element
-#             try:
-#                 var = tag_map[c.tag]
-#             except KeyError:
-#                 used_tags.add(c.tag.upper())
-#                 continue
-#             if isinstance(var, (list, tuple)):
-#                 tokens = var[0:-1]
-#                 var = var[-1]
-#                 if LOCAL_LOOKUP_TOKEN in tokens:
-#                     continue
-#             used_tags.add(c.tag.upper())
-#             if var in to_converter:
-#                 conv_func = to_converter[var]
-#                 try:
-#                     _triples, val = conv_func(c)
-#                 except Exception as e:
-#                     print(e)
-#                     raise
-#                 for (s, p, o) in iter(_triples):
-#                     triples.add((s, p, o))
-#             else:
-#                 val = c.text
-#             if var in to_float:
-#                 val = Literal(float(val))
-#             elif var in to_int:
-#                 try:
-#                     val = int(val)
-#                 except ValueError:
-#                     val = str(val)
-#                 val = Literal(val)
-#             else:
-#                 if not isinstance(val, (URIRef, Literal, BNode)):
-#                     val = Literal(str(val))
-#             if var in is_geom:
-#                 triples.add((feature_uri, GEO_hasGeometry, val))
-#             elif var in predicate_map.keys():
-#                 predicate = predicate_map[var]
-#                 if predicate is INVERSE_TOKEN:
-#                     continue
-#                 if not isinstance(predicate, list):
-#                     predicate = [predicate]
-#                 for p in predicate:
-#                     if p is INVERSE_TOKEN:
-#                         continue
-#                     triples.add((feature_uri, p, val))
-#             else:
-#                 if var == "object_id":
-#                     pass  # we don't care about the internal ASGS object id
-#                 elif var == "shape_length":
-#                     pass  # we can't represent feature length in LOCI RDF yet
-#                 else:
-#                     raise NotImplementedError(var)
-#                 #pass  # do nothing with predicates we don't know
-#         to_lookup = []
-#         for t in tag_map:
-#             if t.upper() not in used_tags:
-#                 var = tag_map[t]
-#                 lookup_tuple = None
-#                 if isinstance(var, (list, tuple)):
-#                     tokens = var[0:-1]
-#                     var = var[-1]
-#                     if LOCAL_LOOKUP_TOKEN in tokens:
-#                         lookup_name = "{}_to_{}".format(asgs_type.lower(), var.lower())
-#                         lookup_table = LOCAL_DATA_VAL_LOOKUPS.get(lookup_name, None)
-#                         if lookup_table is None:
-#                             raise RuntimeError("No local lookup table available for {}".format(lookup_name))
-#                         if var in predicate_map:
-#                             found_predicates = []
-#                             predicate = predicate_map[var]
-#                             if predicate is INVERSE_TOKEN:
-#                                 continue
-#                             if not isinstance(predicate, list):
-#                                 predicate = [predicate]
-#                             for p in predicate:
-#                                 if p is INVERSE_TOKEN:
-#                                     continue
-#                                 found_predicates.append(p)
-#                         else:
-#                             found_predicates = [URIRef(var)]
-#                         # hardcoded "code" here for now, assume always lookup based on code
-#                         lookup_tuple = (lookup_table, "code", var, found_predicates)
-#                 if lookup_tuple is None:
-#                     raise RuntimeError("Need but didn't find tag: {}".format(t))
-#                 to_lookup.append(lookup_tuple)
-#         for l in to_lookup:
-#             lookup_table, key, var, preds = l
-#             try:
-#                 key = kv_map[key]
-#             except LookupError:
-#                 raise
-#             try:
-#                 ikey = int(key)
-#             except ValueError:
-#                 ikey = None
-#             val = lookup_table.get(ikey, None) if ikey is not None else None
-#             if val is None:
-#                 try:
-#                     val = lookup_table[key]
-#                 except LookupError:
-#                     raise RuntimeError("Cannot get local lookup value for item with key: {}".format(key))
-#             if var in to_converter:
-#                 conv_func = to_converter[var]
-#                 try:
-#                     c = object()
-#                     c.text = str(val)
-#                     _triples, val = conv_func(c)
-#                 except Exception as e:
-#                     raise
-#                 for (s, p, o) in iter(_triples):
-#                     triples.add((s, p, o))
-#             for p in preds:
-#                 triples.add((feature_uri, p, val))
-#         features_list.append(feature_uri)
-#     return triples, feature_nodes
 
 def extract_asgs_features_as_geojson(asgs_type, tree):
     geojson_features = wfs_extract_features_as_geojson(
@@ -951,23 +902,39 @@ def retrieve_asgs_feature(asgs_type, identifier, local=True):
         identifier = identifier.split('/')[-1]
 
     tree = None
-    if asgs_type == "STATE" or asgs_type == "AUS":
-        parser = etree.XMLParser(recover=True, huge_tree=True)
+    # Some types have _huge_ geometries that blow out the XML parser, enable huge_tree for them
+    if asgs_type in { "STATE", "AUS", "GCCSA", "SUA", "IREG", "SOS" }:
+        parser = etree.XMLParser(recover=False, huge_tree=True)
     else:
-        parser = etree.XMLParser(recover=True)
+        parser = etree.XMLParser(recover=False)
     if local:  # a stub to use a local file for testing
         xml_file = os.path.join(
             os.path.dirname(
-                os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
             'test',
             asgs_type + '_' + identifier + '.xml')
-        try:
-            tree = etree.parse(xml_file, parser=parser)
-        except (FileNotFoundError, OSError):
-            tree = None
-        except Exception as e:
-            print(e)
-            raise
+        gz_file = xml_file + ".gz"
+        if os.path.exists(gz_file):
+            local_file = gzip.GzipFile(gz_file, 'rb', compresslevel=9)
+        elif os.path.exists(xml_file):
+            local_file = open(xml_file, 'rb')
+        else:
+            local_file = None
+        if local_file:
+            try:
+                tree = etree.parse(local_file, parser=parser)
+            except (FileNotFoundError, OSError):
+                tree = None
+            except Exception as e:
+                print(e)
+                raise
+            finally:
+                if not local_file.closed:
+                    try:
+                        local_file.close()
+                        del local_file
+                    except Exception:
+                        pass
     if tree is None:
         wfs_uri = ASGSFeature.construct_wfs_query_for_feature_type(
             asgs_type, identifier)
@@ -1103,14 +1070,22 @@ class ASGSFeature(ASGSModel):
         self.uri = uri
         self.id = uri.split('/')[-1]
         self._assign_asgs_type()
+        if self.asgs_type == "STATE" and self.id in state_id_map.keys():
+            self.id = state_id_map[self.id]
         feature_xml_tree = retrieve_asgs_feature(self.asgs_type, self.id)
         self.xml_tree = feature_xml_tree
-        wfs_features = extract_asgs_features_as_geojson(
+        feature_collection = extract_asgs_features_as_geojson(
             self.asgs_type, feature_xml_tree)
         try:
-            asgs_feature = wfs_features['features'][0]
+            gj_features = feature_collection['features']
         except (AttributeError, KeyError, TypeError) as e:
             raise NotFoundError()
+        if gj_features is None or len(gj_features) < 1:
+            raise NotFoundError()
+        elif len(gj_features) > 1:
+            asgs_feature = combine_geojson_features(feature_collection)
+        else:
+            asgs_feature = gj_features[0]
         self.geometry = asgs_feature['geometry']
         deets = asgs_feature['properties']
         if 'state' in deets and 'state_abbrev' not in deets:
@@ -1414,6 +1389,18 @@ class ASGSFeature(ASGSModel):
                     g.add((feat, reg_reg, URIRef(conf.URI_RA_INSTANCE_BASE)))
             elif self.asgs_type == "ILOC":
                 g.add((feat, RDF_a, ASGS.IndigenousLocation))
+                if 'iare' in deets:
+                    iare_code = Literal(str(deets['iare']))
+                    iare = URIRef(conf.URI_IARE_INSTANCE_BASE+str(deets['iare']))
+                    g.add((iare, RDF_a, URIRef(conf.URI_IARE_CLASS)))
+
+                    if is_loci_profile:
+                        g.add((iare, GEO_contains, feat))
+                        iare_code._datatype = ASGS_ID.term('iareCode2016')
+                        g.add((iare, DCTERMS.identifier, iare_code))
+                    else:
+                        g.add((iare, ASGS.contains, feat))
+                        g.add((iare, ASGS.iareCode2016, iare_code))
                 # register
                 if is_loci_profile:
                     g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_ILOC_INSTANCE_BASE)))
@@ -1421,6 +1408,18 @@ class ASGSFeature(ASGSModel):
                     g.add((feat, reg_reg, URIRef(conf.URI_ILOC_INSTANCE_BASE)))
             elif self.asgs_type == "IARE":
                 g.add((feat, RDF_a, ASGS.IndigenousArea))
+                if 'ireg' in deets:
+                    ireg_code = Literal(str(deets['ireg']))
+                    ireg = URIRef(conf.URI_IREG_INSTANCE_BASE+str(deets['ireg']))
+                    g.add((ireg, RDF_a, URIRef(conf.URI_IREG_CLASS)))
+
+                    if is_loci_profile:
+                        g.add((ireg, GEO_contains, feat))
+                        ireg_code._datatype = ASGS_ID.term('iregCode2016')
+                        g.add((ireg, DCTERMS.identifier, ireg_code))
+                    else:
+                        g.add((ireg, ASGS.contains, feat))
+                        g.add((ireg, ASGS.iregCode2016, ireg_code))
                 # register
                 if is_loci_profile:
                     g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_IARE_INSTANCE_BASE)))
@@ -1435,6 +1434,18 @@ class ASGSFeature(ASGSModel):
                     g.add((feat, reg_reg, URIRef(conf.URI_IREG_INSTANCE_BASE)))
             elif self.asgs_type == "UCL":
                 g.add((feat, RDF_a, ASGS.UrbanCentreAndLocality))
+                if 'sosr' in deets:
+                    sosr_code = Literal(str(deets['sosr']))
+                    sosr = URIRef(conf.URI_SOSR_INSTANCE_BASE+str(deets['sosr']))
+                    g.add((sosr, RDF_a, URIRef(conf.URI_SOSR_CLASS)))
+
+                    if is_loci_profile:
+                        g.add((sosr, GEO_contains, feat))
+                        sosr_code._datatype = ASGS_ID.term('sosrCode2016')
+                        g.add((sosr, DCTERMS.identifier, sosr_code))
+                    else:
+                        g.add((sosr, ASGS.contains, feat))
+                        g.add((sosr, ASGS.sosrCode2016, sosr_code))
                 # register
                 if is_loci_profile:
                     g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_UCL_INSTANCE_BASE)))
@@ -1442,6 +1453,18 @@ class ASGSFeature(ASGSModel):
                     g.add((feat, reg_reg, URIRef(conf.URI_UCL_INSTANCE_BASE)))
             elif self.asgs_type == "SOSR":
                 g.add((feat, RDF_a, ASGS.SectionOfStateRange))
+                if 'sos' in deets:
+                    sos_code = Literal(str(deets['sos']))
+                    sos = URIRef(conf.URI_SOS_INSTANCE_BASE+str(deets['sos']))
+                    g.add((sos, RDF_a, URIRef(conf.URI_SOS_CLASS)))
+
+                    if is_loci_profile:
+                        g.add((sos, GEO_contains, feat))
+                        sos_code._datatype = ASGS_ID.term('sosCode2016')
+                        g.add((sos, DCTERMS.identifier, sos_code))
+                    else:
+                        g.add((sos, ASGS.contains, feat))
+                        g.add((sos, ASGS.sosCode2016, sos_code))
                 # register
                 if is_loci_profile:
                     g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_SOSR_INSTANCE_BASE)))
