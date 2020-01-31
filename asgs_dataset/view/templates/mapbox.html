@@ -1,7 +1,7 @@
 <script>
    var initial_bounds = {{ bbox|tojson|safe }};
-   initial_bounds[0] = meters2degress(initial_bounds[0][0],initial_bounds[0][1]);
-   initial_bounds[1] = meters2degress(initial_bounds[1][0],initial_bounds[1][1]);
+   initial_bounds[0] = meters2degrees(initial_bounds[0][0],initial_bounds[0][1]);
+   initial_bounds[1] = meters2degrees(initial_bounds[1][0],initial_bounds[1][1]);
    var geojson_geom = {{ geometry|tojson|safe }};
    geojson_geom = geom_convert(geojson_geom);
    var map = new mapboxgl.Map({

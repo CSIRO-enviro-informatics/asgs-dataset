@@ -116,3 +116,7 @@ venv.bak/
 index_*.pickle
 .github/actions/*/node_modules/
 !.github/actions/*/dist/
+
+*.csv
+*.pickle
+!*.pickle.gz

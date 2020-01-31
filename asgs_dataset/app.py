@@ -19,7 +19,7 @@ def run():
                         datefmt='%Y-%m-%d %H:%M:%S',
                         format='%(asctime)s %(levelname)s %(filename)s:%(lineno)s %(message)s')
 
-    pyldapi.setup(app, conf.APP_DIR, conf.DATA_URI_PREFIX)
+    #pyldapi.setup(app, conf.APP_DIR, conf.DATA_URI_PREFIX)
 
     # run the Flask app
     if not args.init:

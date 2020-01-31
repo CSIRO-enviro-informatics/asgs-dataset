@@ -16,7 +16,7 @@
     <h3><a href="{{ uri }}">{{ uri }}</a></h3>
     <div id="map_container"></div>
     <ul>
-        <li>Category: {{ deets['category_name'] }}&nbsp;({{ deets['category'] }})</li>
+        <li>Category: {{ deets['category_name'] }}&nbsp;({{ deets['category_code'] }})</li>
         <li>Within SA1: <a href="{{ url_for("controller.redirect_sa1", sa1=deets['sa1']) }}">{{ deets['sa1'] }}</a></li>
         {% if 'state_abbrev' in deets %}
             <li>Within State: <a href="{{ url_for("controller.redirect_state", state=deets['state_abbrev']) }}">{{ deets['state_abbrev'] }}&nbsp;(State ID: {{ deets['state'] }})</a></li>
@@ -33,7 +33,7 @@
         {% if 'nrmr' in deets %}
             <li>Within Natural Resource Management Region: {{ deets['nrmr'] }}</li>
         {% endif %}
-        <li>Albers Area: {{ "%0.0f" | format(deets['albers_area'] * 1000000 | round(0)) }}&nbsp;m<sup>2</sup></li>
+        <li>Albers Area: {{ "%0.0f" | format(deets['albers_area'] * 1000000.0 | round(0)) }}&nbsp;m<sup>2</sup></li>
         <li>Shape Area: {{ deets['shape_area'] }}</li>
         <li>Shape Length: {{ deets['shape_length'] }}</li>
     </ul>

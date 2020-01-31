@@ -17,6 +17,14 @@
     <h3><a href="{{ uri }}">{{ uri }}</a></h3>
     <div id="map_container"></div>
     <ul>
+        {% if 'sos' in deets %}
+            <li>Within Section Of State: <a href="{{ url_for("controller.redirect_sos", sos=deets['sos']) }}">{{ deets['sos'] }}</a></li>
+        {% endif %}
+        {% if 'albers_area' in deets %}
+            <li>Albers Area: {{ "%0.0f" | format(deets['albers_area'] * 1000000.0 | round(0)) }}&nbsp;m<sup>2</sup></li>
+        {% else %}
+            <li>Albers Area is missing on this feature!</li>
+        {% endif %}
         <li>Shape Area: {{ deets['shape_area'] }}</li>
         <li>Shape Length: {{ deets['shape_length'] }}</li>
     </ul>
