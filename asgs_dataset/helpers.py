@@ -18,7 +18,6 @@ ASGS = Namespace("http://linked.data.gov.au/def/asgs#")
 DATA = Namespace("http://linked.data.gov.au/def/datatype/")
 CRS_OGC = Namespace("http://www.opengis.net/def/crs/OGC/1.3/")
 CRS_EPSG = Namespace("http://www.opengis.net/def/crs/EPSG/0/")
-QB4ST = Namespace("http://www.w3.org/ns/qb4st/")
 LOCI = Namespace("http://linked.data.gov.au/def/loci#")
 ASGS_CAT = Namespace("http://linked.data.gov.au/def/asgs-cat/")
 ASGS_ID = Namespace("http://linked.data.gov.au/def/asgs/id#")
@@ -34,6 +33,7 @@ GEO_isSimple = GEO.term('isSimple')
 GEO_hasDefaultGeometry = GEO.term('hasDefaultGeometry')
 GEO_within = GEO.term('sfWithin')
 GEO_contains = GEO.term('sfContains')
+GEOX_inCRS = GEOX.term('inCRS')
 RDF_a = RDF.term('type')
 
 
@@ -210,7 +210,7 @@ def gml_extract_shapearea_to_geox_area(node, extra_transform=None, crs=None):
         if not isinstance(crs, (list, set, tuple)):
             crs = [crs]
         for _c in crs:
-           triples.add((area, QB4ST.crs, _c))
+           triples.add((area, GEOX_inCRS, _c))
     return triples, area
 
 def gml_extract_geom_to_geosparql(node, recursion=0):

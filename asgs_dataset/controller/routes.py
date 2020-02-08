@@ -48,12 +48,12 @@ def reg():
 
 @ctrl.route('/stateorterritory/')
 def states():
-    total = ASGSFeature.total_states()
+    total = ASGSFeature.get_known_count('STATE')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
     # get page of MB URIs from ABS Web Service
-    register_states = [str(i) for i in range(1,10)]
+    register_states = [str(i) for i in range(1, 10)]
 
     register_renderer = ASGSRegisterRenderer(
         request,
@@ -105,7 +105,7 @@ def aus_index():
 
 @ctrl.route('/meshblock/')
 def meshblocks():
-    total = ASGSFeature.total_meshblocks()
+    total = ASGSFeature.get_known_count('MB')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -123,7 +123,7 @@ def meshblocks():
 
 @ctrl.route('/statisticalarealevel1/')
 def sa1s():
-    total = ASGSFeature.total_sa1s()
+    total = ASGSFeature.get_known_count('SA1')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -141,7 +141,7 @@ def sa1s():
 
 @ctrl.route('/statisticalarealevel2/')
 def sa2s():
-    total = ASGSFeature.total_sa2s()
+    total = ASGSFeature.get_known_count('SA2')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -159,7 +159,7 @@ def sa2s():
 
 @ctrl.route('/statisticalarealevel3/')
 def sa3s():
-    total = ASGSFeature.total_sa3s()
+    total = ASGSFeature.get_known_count('SA3')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -177,7 +177,7 @@ def sa3s():
 
 @ctrl.route('/statisticalarealevel4/')
 def sa4s():
-    total = ASGSFeature.total_sa4s()
+    total = ASGSFeature.get_known_count('SA4')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -194,7 +194,7 @@ def sa4s():
 
 @ctrl.route('/greatercapitalcitystatisticalarea/')
 def gccsas():
-    total = ASGSFeature.total_gccsas()
+    total = ASGSFeature.get_known_count('GCCSA')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -211,7 +211,7 @@ def gccsas():
 
 @ctrl.route('/significanturbanarea/')
 def suas():
-    total = ASGSFeature.total_suas()
+    total = ASGSFeature.get_known_count('SUA')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -228,7 +228,7 @@ def suas():
 
 @ctrl.route('/remotenessarea/')
 def ras():
-    total = ASGSFeature.total_ras()
+    total = ASGSFeature.get_known_count('RA')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -245,7 +245,7 @@ def ras():
 
 @ctrl.route('/urbancentreandlocality/')
 def ucls():
-    total = ASGSFeature.total_ucls()
+    total = ASGSFeature.get_known_count('UCL')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -262,7 +262,7 @@ def ucls():
 
 @ctrl.route('/sectionofstaterange/')
 def sosrs():
-    total = ASGSFeature.total_sosrs()
+    total = ASGSFeature.get_known_count('SOSR')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -279,7 +279,7 @@ def sosrs():
 
 @ctrl.route('/sectionofstate/')
 def soss():
-    total = ASGSFeature.total_soss()
+    total = ASGSFeature.get_known_count('SOS')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -296,7 +296,7 @@ def soss():
 
 @ctrl.route('/indigenouslocation/')
 def ilocs():
-    total = ASGSFeature.total_ilocs()
+    total = ASGSFeature.get_known_count('ILOC')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -313,7 +313,7 @@ def ilocs():
 
 @ctrl.route('/indigenousarea/')
 def iareas():
-    total = ASGSFeature.total_iareas()
+    total = ASGSFeature.get_known_count('IARE')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -330,7 +330,7 @@ def iareas():
 
 @ctrl.route('/indigenousregion/')
 def iregs():
-    total = ASGSFeature.total_iregs()
+    total = ASGSFeature.get_known_count('IREG')
     if total is None:
         return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
 
@@ -344,6 +344,75 @@ def iregs():
         ASGSFeature,
         super_register=conf.DATA_URI_PREFIX,
     ).render()
+
+@ctrl.route('/localgovernmentarea/')
+def lgas():
+    total = ASGSFeature.get_known_count('LGA')
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_LGA_INSTANCE_BASE,
+        'Register of ASGS Local Government Areas',
+        'All the ASGS Local Government Areas',
+        [conf.URI_LGA_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.DATA_URI_PREFIX,
+    ).render()
+
+@ctrl.route('/naturalresourcemanagementregion/')
+def nrmrs():
+    total = ASGSFeature.get_known_count('NRMR')
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_NRMR_INSTANCE_BASE,
+        'Register of ASGS Natural Resource Management Regions',
+        'All the ASGS Natural Resource Management Regions',
+        [conf.URI_NRMR_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.DATA_URI_PREFIX,
+    ).render()
+
+@ctrl.route('/statesuburb/')
+def sscs():
+    total = ASGSFeature.get_known_count('SSC')
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_SSC_INSTANCE_BASE,
+        'Register of ASGS State Suburbs',
+        'All the ASGS State Suburbs',
+        [conf.URI_SSC_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.DATA_URI_PREFIX,
+    ).render()
+
+@ctrl.route('/commonwealthelectoraldivision/')
+def ceds():
+    total = ASGSFeature.get_known_count('CED')
+    if total is None:
+        return Response('ASGS Web Service is unreachable', status=500, mimetype='text/plain')
+
+    return ASGSRegisterRenderer(
+        request,
+        conf.URI_CED_INSTANCE_BASE,
+        'Register of ASGS Commonwealth Electoral Divisions',
+        'All the ASGS Commonwealth Electoral Divisions',
+        [conf.URI_CED_CLASS],
+        total,
+        ASGSFeature,
+        super_register=conf.DATA_URI_PREFIX,
+    ).render()
+
 #
 #   instances
 #
@@ -452,3 +521,23 @@ def redirect_iare(iare):
 def redirect_ireg(ireg):
     args = request.args
     return redirect(url_for('controller.object', uri=conf.URI_IREG_INSTANCE_BASE + ireg, **args))
+
+@ctrl.route('/statesuburb/<path:ssc>')
+def redirect_ssc(ssc):
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_SSC_INSTANCE_BASE + ssc, **args))
+
+@ctrl.route('/naturalresourcemanagementregion/<path:nrmr>')
+def redirect_nrmr(nrmr):
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_NRMR_INSTANCE_BASE + nrmr, **args))
+
+@ctrl.route('/localgovernmentarea/<path:lga>')
+def redirect_lga(lga):
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_LGA_INSTANCE_BASE + lga, **args))
+
+@ctrl.route('/commonwealthelectoraldivision/<path:ced>')
+def redirect_ced(ced):
+    args = request.args
+    return redirect(url_for('controller.object', uri=conf.URI_CED_INSTANCE_BASE + ced, **args))

@@ -21,21 +21,27 @@ from asgs_dataset.helpers import wfs_extract_features_as_geojson, \
     ASGS_ID, GEO_within, GEO_contains, AsgsWfsType, load_gz_pickle, FakeXMLElement, combine_geojson_features
 from asgs_dataset.model import ASGSModel, NotFoundError
 
-MESHBLOCK_COUNT = 358009
-SA1_COUNT = 57490
-SA2_COUNT = 2292
-SA3_COUNT = 340
-SA4_COUNT = 89
-GCCSA_COUNT = 17
-SUA_COUNT = 110
-RA_COUNT = 53
-UCL_COUNT = 1853
-SOSR_COUNT = 89
-SOS_COUNT = 52
-ILOC_COUNT = 1097
-IARE_COUNT = 412
-IREG_COUNT = 40
-
+ASGS_KNOWN_COUNTS = {
+    "MB": 358009,
+    "SA1": 57490,
+    "SA2": 2292,
+    "SA3": 340,
+    "SA4": 89,
+    "GCCSA": 17,
+    "SUA": 110,
+    "RA": 53,
+    "UCL": 1853,
+    "SOSR": 89,
+    "SOS": 52,
+    "ILOC": 1097,
+    "IARE": 412,
+    "IREG": 40,
+    "SSC": 15286,
+    "CED": 80,
+    "NRMR": 60,
+    "LGA": 545,
+    'STATE': 9,
+}
 
 INVERSE_TOKEN = object()
 # Inverse token is used when a relationship need to be expressed in an inverse way, eg:
@@ -82,6 +88,10 @@ geometry_service_routes = {
     "ILOC": "asgs16_iloc/",
     "IARE": "asgs16_iare/",
     "IREG": "asgs16_ireg/",
+    "SSC": "asgs16_ssc/",
+    "CED": "asgs16_ced/",
+    "NRMR": "asgs16_nrmr/",
+    "LGA": "asgs16_lga/",
 }
 
 feature_identification_types = {
@@ -101,6 +111,10 @@ feature_identification_types = {
     "ILOC": ASGS_ID.term("ilocCode2016"),
     "IARE": ASGS_ID.term("iareCode2016"),
     "IREG": ASGS_ID.term("iregCode2016"),
+    "SSC": ASGS_ID.term("sscCode2016"),
+    "CED": ASGS_ID.term("cedCode2016"),
+    "NRMR": ASGS_ID.term("nrmrCode2016"),
+    "LGA": ASGS_ID.term("lgaCode2016"),
 }
 
 ASGS_WFS_MB = AsgsWfsType('MB', 'MB:MB', 'MB:MB_CODE_2016')  # Meshblock
@@ -120,6 +134,11 @@ ASGS_WFS_SOS = AsgsWfsType('SOS', 'SOS:SOS', 'SOS:SOS_CODE_2016')  # SectionOfSt
 ASGS_WFS_ILOC = AsgsWfsType('ILOC', 'ILOC:ILOC', 'ILOC:ILOC_CODE_2016')  # IndigenousLocation
 ASGS_WFS_IARE = AsgsWfsType('IARE', 'IARE:IARE', 'IARE:IARE_CODE_2016')  # IndigenousArea
 ASGS_WFS_IREG = AsgsWfsType('IREG', 'IREG:IREG', 'IREG:IREG_CODE_2016')  # IndigenousRegion
+ASGS_WFS_NRMR = AsgsWfsType('NRMR', 'NRMR:NRMR', 'NRMR:NRMR_CODE_2016')  # NaturalResourceManagementRegion
+ASGS_WFS_SSC = AsgsWfsType('SSC', 'SSC:SSC', 'SSC:SSC_CODE_2016')  # StateSuburb
+ASGS_WFS_LGA = AsgsWfsType('LGA', 'LGA:LGA', 'LGA:LGA_CODE_2016')  # LocalGovernmentArea
+ASGS_WFS_CED = AsgsWfsType('CED', 'CED:CED', 'CED:CED_CODE_2016')  # CommonwealthElectoralDivision
+
 
 ASGS_WFS_LOOKUP = {
     "MB": ASGS_WFS_MB,  # Meshblock
@@ -138,13 +157,18 @@ ASGS_WFS_LOOKUP = {
     "ILOC": ASGS_WFS_ILOC,  # IndigenousLocation
     "IARE": ASGS_WFS_IARE,  # IndigenousArea
     "IREG": ASGS_WFS_IREG,  # IndigenousRegion
+    "SSC": ASGS_WFS_SSC,
+    "CED": ASGS_WFS_CED,
+    "NRMR": ASGS_WFS_NRMR,
+    "LGA": ASGS_WFS_LGA,
 }
 
 LOCAL_DATA_VAL_LOOKUPS = {
     **load_gz_pickle("sa1_to_iloc"),
     **load_gz_pickle("sa1_to_ucl"),
     **load_gz_pickle("sa1_to_ra"),
-    **load_gz_pickle("sa2_to_sua"),
+    **load_gz_pickle("sa1_to_ced"),
+    **load_gz_pickle("mb_to_lga")
 }
 
 
@@ -168,7 +192,8 @@ mb_tag_map = {
     "{WFS}DZN_CODE_2016": "dzn",
     "{WFS}SSC_CODE_2016": "ssc",
     "{WFS}NRMR_CODE_2016": "nrmr",
-    "{WFS}ADD_CODE_2016": "add"
+    "{WFS}ADD_CODE_2016": "add",
+    "{WFS}LGA_CODE_2016": (LOCAL_LOOKUP_TOKEN, "lga"),
 }
 mb_predicate_map_asgs = {
     'code': [ASGS.mbCode2016],
@@ -179,6 +204,7 @@ mb_predicate_map_asgs = {
     'dzn': INVERSE_TOKEN,
     'ssc': INVERSE_TOKEN,
     'nrmr': INVERSE_TOKEN,
+    'lga': INVERSE_TOKEN,
     'add': IGNORE_TOKEN,
 }
 mb_predicate_map_loci = {
@@ -190,6 +216,7 @@ mb_predicate_map_loci = {
     'dzn': [GEO_within, INVERSE_TOKEN],
     'ssc': [GEO_within, INVERSE_TOKEN],
     'nrmr': [GEO_within, INVERSE_TOKEN],
+    'lga': [GEO_within, INVERSE_TOKEN],
     'add': IGNORE_TOKEN,
 }
 
@@ -202,6 +229,7 @@ sa1_tag_map = {
     "{WFS}RA_CODE_2016": (LOCAL_LOOKUP_TOKEN, "ra"),
     "{WFS}UCL_CODE_2016": (LOCAL_LOOKUP_TOKEN, "ucl"),
     "{WFS}ILOC_CODE_2016": (LOCAL_LOOKUP_TOKEN, "iloc"),
+    "{WFS}CED_CODE_2016": (LOCAL_LOOKUP_TOKEN, "ced"),
 }
 sa1_predicate_map_asgs = {
     'code': [ASGS.sa1Maincode2016, ASGS.statisticalArea1Sa111DigitCode],
@@ -210,7 +238,8 @@ sa1_predicate_map_asgs = {
     'state': INVERSE_TOKEN,
     'ra': INVERSE_TOKEN,
     'ucl': INVERSE_TOKEN,
-    'iloc': INVERSE_TOKEN
+    'iloc': INVERSE_TOKEN,
+    'ced': INVERSE_TOKEN
 }
 sa1_predicate_map_loci = {
     'code': [DCTERMS.identifier, ASGS.statisticalArea1Sa111DigitCode],
@@ -220,6 +249,7 @@ sa1_predicate_map_loci = {
     'ra': [GEO_within, INVERSE_TOKEN],
     'ucl': [GEO_within, INVERSE_TOKEN],
     'iloc': [GEO_within, INVERSE_TOKEN],
+    'ced': [GEO_within, INVERSE_TOKEN],
 }
 
 sa2_tag_map = {
@@ -417,6 +447,68 @@ sua_predicate_map_loci = {
     'code': [DCTERMS.identifier],
 }
 
+ced_tag_map = {
+    "{WFS}CED_CODE_2016": 'code',
+    "{WFS}CED_NAME_2016": 'name',
+    "{WFS}STATE_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:1]), "state"),
+}
+ced_predicate_map_asgs = {
+    'code': [ASGS.cedCode2016],
+    'name': [ASGS.cedName2016],
+    'state': INVERSE_TOKEN,
+}
+ced_predicate_map_loci = {
+    'code': [DCTERMS.identifier],
+    'name': [DCTERMS.title],
+    'state': [GEO_within, INVERSE_TOKEN],
+}
+lga_tag_map = {
+    "{WFS}AREA_ALBERS_SQKM": 'albers_area',
+    "{WFS}LGA_CODE_2016": 'code',
+    "{WFS}LGA_NAME_2016": 'name',
+    "{WFS}STATE_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:1]), "state"),
+}
+lga_predicate_map_asgs = {
+    'code': [ASGS.lgaCode2016],
+    'name': [ASGS.lgaName2016],
+    'state': INVERSE_TOKEN,
+}
+lga_predicate_map_loci = {
+    'code': [DCTERMS.identifier],
+    'name': [DCTERMS.title],
+    'state': [GEO_within, INVERSE_TOKEN],
+}
+nrmr_tag_map = {
+    "{WFS}NRMR_CODE_2016": 'code',
+    "{WFS}NRMR_NAME_2016": 'name',
+    "{WFS}STATE_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:1]), "state"),
+}
+nrmr_predicate_map_asgs = {
+    'code': [ASGS.nrmrCode2016],
+    'name': [ASGS.nrmrName2016],
+    'state': INVERSE_TOKEN,
+}
+nrmr_predicate_map_loci = {
+    'code': [DCTERMS.identifier],
+    'name': [DCTERMS.title],
+    'state': [GEO_within, INVERSE_TOKEN],
+}
+ssc_tag_map = {
+    "{WFS}SSC_CODE_2016": 'code',
+    "{WFS}SSC_NAME_2016": 'name',
+    "{WFS}STATE_CODE_2016": (DERIVE_TOKEN, ("code", lambda x: x[:1]), "state"),
+}
+ssc_predicate_map_asgs = {
+    'code': [ASGS.sscCode2016],
+    'name': [ASGS.sscName2016],
+    'state': INVERSE_TOKEN,
+}
+ssc_predicate_map_loci = {
+    'code': [DCTERMS.identifier],
+    'name': [DCTERMS.title],
+    'state': [GEO_within, INVERSE_TOKEN],
+}
+
 state_tag_map = {
     "{WFS}AREA_ALBERS_SQKM": 'albers_area',
     "{WFS}STATE_CODE_2016": 'code',
@@ -469,6 +561,10 @@ tag_map_lookup = {
     "ILOC": {**common_tag_map, **iloc_tag_map},  # IndigenousLocation
     "IARE": {**common_tag_map, **iare_tag_map},  # IndigenousArea
     "IREG": {**common_tag_map, **ireg_tag_map},  # IndigenousRegion
+    "NRMR": {**common_tag_map, **nrmr_tag_map},
+    "SSC": {**common_tag_map, **ssc_tag_map},
+    "LGA": {**common_tag_map, **lga_tag_map},
+    "CED": {**common_tag_map, **ced_tag_map},
 }
 predicate_map_lookup = {
     "geosparql": {
@@ -488,6 +584,10 @@ predicate_map_lookup = {
         "ILOC": {**common_predicate_map_asgs, **iloc_predicate_map_asgs},  # IndigenousLocation
         "IARE": {**common_predicate_map_asgs, **iare_predicate_map_asgs},  # IndigenousArea
         "IREG": {**common_predicate_map_asgs, **ireg_predicate_map_asgs},  # IndigenousRegion
+        "NRMR": {**common_predicate_map_asgs, **nrmr_predicate_map_asgs},
+        "SSC": {**common_predicate_map_asgs, **ssc_predicate_map_asgs},
+        "LGA": {**common_predicate_map_asgs, **lga_predicate_map_asgs},
+        "CED": {**common_predicate_map_asgs, **ced_predicate_map_asgs},
     },
     "loci": {
         "AUS": {**common_predicate_map_asgs, **australia_predicate_map_loci},  # Australia
@@ -506,6 +606,10 @@ predicate_map_lookup = {
         "ILOC": {**common_predicate_map_asgs, **iloc_predicate_map_loci},  # IndigenousLocation
         "IARE": {**common_predicate_map_asgs, **iare_predicate_map_loci},  # IndigenousArea
         "IREG": {**common_predicate_map_asgs, **ireg_predicate_map_loci},  # IndigenousRegion
+        "NRMR": {**common_predicate_map_asgs, **nrmr_predicate_map_loci},
+        "SSC": {**common_predicate_map_asgs, **ssc_predicate_map_loci},
+        "LGA": {**common_predicate_map_asgs, **lga_predicate_map_loci},
+        "CED": {**common_predicate_map_asgs, **ced_predicate_map_loci},
     }
 }
 predicate_map_lookup['asgs'] = predicate_map_lookup['geosparql']
@@ -673,8 +777,7 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
         to_converter = {
             'shape': lambda x: (no_triples, URIRef("".join([conf.GEOMETRY_SERVICE_URI, geometry_service_routes[asgs_type], lazy_id]))),
             'shape_area': partial(gml_extract_shapearea_to_geox_area, crs=CRS_EPSG["3857"]), # cartesian area from asgs using "pseudo-mercator" projection
-            'albers_area': partial(gml_extract_shapearea_to_geox_area,
-                                   extra_transform=lambda x: (set(), float(x) * 1000000.0), crs=CRS_EPSG["3577"]),# cartesian GDA-94 CRS using "Albers_Conic_Equal_Area" projection
+            'albers_area': partial(gml_extract_shapearea_to_geox_area, extra_transform=lambda x: (set(), float(x) * 1000000.0), crs=CRS_EPSG["3577"]), # cartesian GDA-94 CRS using "Albers_Conic_Equal_Area" projection
             'sa1': lambda x: (no_triples, URIRef(conf.URI_SA1_INSTANCE_BASE + x.text)),
             'sa2': lambda x: (no_triples, URIRef(conf.URI_SA2_INSTANCE_BASE + x.text)),
             'sa3': lambda x: (no_triples, URIRef(conf.URI_SA3_INSTANCE_BASE + x.text)),
@@ -691,6 +794,8 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
             'sos': lambda x: (no_triples, URIRef(conf.URI_SOS_INSTANCE_BASE + x.text)),
             'sua': lambda x: (no_triples, URIRef(conf.URI_SUA_INSTANCE_BASE + x.text)),
             'ra': lambda x: (no_triples, URIRef(conf.URI_RA_INSTANCE_BASE + x.text)),
+            'lga': lambda x: (no_triples, URIRef(conf.URI_LGA_INSTANCE_BASE + x.text)),
+            'ced': lambda x: (no_triples, URIRef(conf.URI_CED_INSTANCE_BASE + x.text)),
             'state': lambda x: (no_triples, URIRef(conf.URI_STATE_INSTANCE_BASE + state_id_map.get(int(x.text), 'OT'))),
             'code': lambda x: (no_triples, Literal(x.text, datatype=feature_identification_types[asgs_type])),
             'category_code': lambda x: (no_triples, ASGS_CAT.term(x.text))
@@ -718,7 +823,7 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
     tag_map = tag_map_lookup.get(asgs_type, common_tag_map)
     predicate_map = predicate_map_lookup[mappings].get(asgs_type, common_predicate_map_asgs)
     ignore_geom = False
-    if mappings == "loci" or asgs_type == "STATE" or asgs_type == "AUS":
+    if mappings != "loci" and (asgs_type == "STATE" or asgs_type == "AUS"):
         ignore_geom = True
 
     triples = set()
@@ -1060,6 +1165,14 @@ class ASGSFeature(ASGSModel):
             return url_for("controller.redirect_sos", sos=instance_id)
         elif asgs_type == "RA":
             return url_for("controller.redirect_ra", ra=instance_id)
+        elif asgs_type == "NRMR":
+            return url_for("controller.redirect_nrmr", nrmr=instance_id)
+        elif asgs_type == "CED":
+            return url_for("controller.redirect_ced", ced=instance_id)
+        elif asgs_type == "LGA":
+            return url_for("controller.redirect_lga", lga=instance_id)
+        elif asgs_type == "SSC":
+            return url_for("controller.redirect_ssc", ssc=instance_id)
         elif asgs_type == "AUS":
             return url_for("controller.redirect_aus", code=instance_id)
         return url_for("controller.object", uri=instance_uri)
@@ -1124,6 +1237,8 @@ class ASGSFeature(ASGSModel):
             return 'ILOC'
         elif '/sectionofstaterange/' in instance_uri:
             return 'SOSR'
+        elif '/localgovernmentarea/' in instance_uri:
+            return 'LGA'
         elif '/significanturbanarea/' in instance_uri:
             return 'SUA'
         elif '/statisticalarealevel1/' in instance_uri:
@@ -1136,6 +1251,8 @@ class ASGSFeature(ASGSModel):
             return 'SA4'
         elif '/urbancentreandlocality/' in instance_uri:
             return 'UCL'
+        elif '/commonwealthelectoraldivision/' in instance_uri:
+            return 'CED'
         elif '/naturalresourcemanagementregion/' in instance_uri:
             return 'NRMR'
         elif '/greatercapitalcitystatisticalarea/' in instance_uri:
@@ -1212,11 +1329,10 @@ class ASGSFeature(ASGSModel):
                 sa1 = URIRef(conf.URI_SA1_INSTANCE_BASE + deets['sa1'])
 
                 if 'dzn' in deets:
-                    dzn_type = URIRef(conf.URI_DZN_CLASS)
                     dzn_code = Literal(str(deets['dzn']))
                     # TODO, give DZN's their own register
                     dzn = URIRef(conf.URI_DZN_INSTANCE_BASE+str(deets['dzn']))
-                    g.add((dzn, RDF_a, dzn_type))
+                    g.add((dzn, RDF_a, URIRef(conf.URI_DZN_CLASS)))
                     if is_loci_profile:
                         dzn_code._datatype = ASGS_ID.term('dznCode2016')
                         g.add((dzn, DCTERMS.identifier, dzn_code))
@@ -1225,11 +1341,9 @@ class ASGSFeature(ASGSModel):
                         g.add((dzn, ASGS.dznCode2016, dzn_code))
                         g.add((dzn, ASGS.contains, feat))
                 if 'ssc' in deets:
-                    ss_type = URIRef(conf.URI_SSC_CLASS)
                     ss_code = Literal(str(deets['ssc']))
-                    # TODO, give SSC's their own register
                     ss = URIRef(conf.URI_SSC_INSTANCE_BASE+str(deets['ssc']))
-                    g.add((ss, RDF_a, ss_type))
+                    g.add((ss, RDF_a, URIRef(conf.URI_SSC_CLASS)))
 
                     if is_loci_profile:
                         ss_code._datatype = ASGS_ID.term('sscCode2016')
@@ -1238,12 +1352,22 @@ class ASGSFeature(ASGSModel):
                     else:
                         g.add((ss, ASGS.sscCode2016, ss_code))
                         g.add((ss, ASGS.contains, feat))
+                if 'lga' in deets:
+                    lga_code = Literal(str(deets['lga']))
+                    lga = URIRef(conf.URI_LGA_INSTANCE_BASE+str(deets['lga']))
+                    g.add((lga, RDF_a, URIRef(conf.URI_LGA_CLASS)))
+
+                    if is_loci_profile:
+                        lga_code._datatype = ASGS_ID.term('lgaCode2016')
+                        g.add((lga, DCTERMS.identifier, lga_code))
+                        g.add((lga, GEO_contains, feat))
+                    else:
+                        g.add((lga, ASGS.lgaCode2016, lga_code))
+                        g.add((lga, ASGS.contains, feat))
                 if 'nrmr' in deets:
-                    nrmr_type = URIRef(conf.URI_NRMR_CLASS)
                     nrmr_code = Literal(str(deets['nrmr']))
-                    # TODO, give NRMR's their own register
                     nrmr = URIRef(conf.URI_NRMR_INSTANCE_BASE+str(deets['nrmr']))
-                    g.add((nrmr, RDF_a, nrmr_type))
+                    g.add((nrmr, RDF_a, URIRef(conf.URI_NRMR_CLASS)))
 
                     if is_loci_profile:
                         g.add((nrmr, GEO_contains, feat))
@@ -1305,6 +1429,18 @@ class ASGSFeature(ASGSModel):
                     else:
                         g.add((ra, ASGS.contains, feat))
                         g.add((ra, ASGS.raCode2016, ra_code))
+                if 'ced' in deets:
+                    ced_code = Literal(str(deets['ced']))
+                    ced = URIRef(conf.URI_CED_INSTANCE_BASE+str(deets['ced']))
+                    g.add((ced, RDF_a, URIRef(conf.URI_CED_CLASS)))
+                    if is_loci_profile:
+                        g.add((ced, GEO_contains, feat))
+                        ced_code._datatype = ASGS_ID.term('cedCode2016')
+                        g.add((ced, DCTERMS.identifier, ced_code))
+                    else:
+                        g.add((ced, ASGS.contains, feat))
+                        g.add((ced, ASGS.cedCode2016, ced_code))
+
             elif self.asgs_type == "SA2":
                 g.add((feat, RDF_a, ASGS.StatisticalAreaLevel2))
                 sa3 = URIRef(conf.URI_SA3_INSTANCE_BASE + deets['sa3'])
@@ -1387,6 +1523,13 @@ class ASGSFeature(ASGSModel):
                     g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_RA_INSTANCE_BASE)))
                 else:
                     g.add((feat, reg_reg, URIRef(conf.URI_RA_INSTANCE_BASE)))
+            elif self.asgs_type == "CED":
+                g.add((feat, RDF_a, ASGS.CommonwealthElectoralDivision))
+                # register
+                if is_loci_profile:
+                    g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_CED_INSTANCE_BASE)))
+                else:
+                    g.add((feat, reg_reg, URIRef(conf.URI_CED_INSTANCE_BASE)))
             elif self.asgs_type == "ILOC":
                 g.add((feat, RDF_a, ASGS.IndigenousLocation))
                 if 'iare' in deets:
@@ -1477,6 +1620,27 @@ class ASGSFeature(ASGSModel):
                     g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_SOS_INSTANCE_BASE)))
                 else:
                     g.add((feat, reg_reg, URIRef(conf.URI_SOS_INSTANCE_BASE)))
+            elif self.asgs_type == "LGA":
+                g.add((feat, RDF_a, ASGS.LocalGovernmentArea))
+                # register
+                if is_loci_profile:
+                    g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_LGA_INSTANCE_BASE)))
+                else:
+                    g.add((feat, reg_reg, URIRef(conf.URI_LGA_INSTANCE_BASE)))
+            elif self.asgs_type == "SSC":
+                g.add((feat, RDF_a, ASGS.StateSuburb))
+                # register
+                if is_loci_profile:
+                    g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_SSC_INSTANCE_BASE)))
+                else:
+                    g.add((feat, reg_reg, URIRef(conf.URI_SSC_INSTANCE_BASE)))
+            elif self.asgs_type == "NRMR":
+                g.add((feat, RDF_a, ASGS.NaturalResourceManagementRegion))
+                # register
+                if is_loci_profile:
+                    g.add((feat, LOCI.isMemberOf, URIRef(conf.URI_NRMR_INSTANCE_BASE)))
+                else:
+                    g.add((feat, reg_reg, URIRef(conf.URI_NRMR_INSTANCE_BASE)))
             else:
                 g.add((feat, RDF_a, ASGS.Australia))
                 # register
@@ -1503,64 +1667,10 @@ class ASGSFeature(ASGSModel):
                 format(profile))
 
     @staticmethod
-    def total_meshblocks():
-        return MESHBLOCK_COUNT
+    def get_known_count(asgs_type):
+        return ASGS_KNOWN_COUNTS[asgs_type]
 
-    @staticmethod
-    def total_sa1s():
-        return SA1_COUNT
 
-    @staticmethod
-    def total_sa2s():
-        return SA2_COUNT
-
-    @staticmethod
-    def total_sa3s():
-        return SA3_COUNT
-
-    @staticmethod
-    def total_sa4s():
-        return SA4_COUNT
-
-    @staticmethod
-    def total_gccsas():
-        return GCCSA_COUNT
-
-    @staticmethod
-    def total_suas():
-        return SUA_COUNT
-
-    @staticmethod
-    def total_ilocs():
-        return ILOC_COUNT
-
-    @staticmethod
-    def total_iareas():
-        return IARE_COUNT
-
-    @staticmethod
-    def total_iregs():
-        return IREG_COUNT
-
-    @staticmethod
-    def total_ucls():
-        return UCL_COUNT
-
-    @staticmethod
-    def total_sosrs():
-        return SOSR_COUNT
-
-    @staticmethod
-    def total_soss():
-        return SOS_COUNT
-
-    @staticmethod
-    def total_ras():
-        return RA_COUNT
-
-    @staticmethod
-    def total_states():
-        return 9
 
     @classmethod
     def get_feature_index(cls, asgs_type, startindex, count):
