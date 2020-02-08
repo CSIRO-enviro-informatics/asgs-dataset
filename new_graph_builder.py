@@ -41,6 +41,10 @@ INSTANCE_URI_TO_LOCAL_ROUTE = {
     "http://linked.data.gov.au/dataset/asgs2016/urbancentreandlocality/": "/urbancentreandlocality/",
     "http://linked.data.gov.au/dataset/asgs2016/sectionofstaterange/": "/sectionofstaterange/",
     "http://linked.data.gov.au/dataset/asgs2016/sectionofstate/": "/sectionofstate/",
+    "http://linked.data.gov.au/dataset/asgs2016/statesuburb/": "/statesuburb/",
+    "http://linked.data.gov.au/dataset/asgs2016/naturalresourcemanagementregion/": "/naturalresourcemanagementregion/",
+    "http://linked.data.gov.au/dataset/asgs2016/localgovernmentarea/": "/localgovernmentarea/",
+    "http://linked.data.gov.au/dataset/asgs2016/commonwealthelectoraldivision/": "/commonwealthelectoraldivision/",
 }
 # -- END CONFIGURABLE OPTIONS
 # ---------------------------
