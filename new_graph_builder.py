@@ -21,7 +21,7 @@ HARVESTABLE_INSTANCE_VIEW = "loci"
 MULTI_PROCESSING = True
 MULTI_THREADING = True
 USE_SAVED_REGISTER_INDEX = True
-DEBUG_MODE = False # Does nothing for now.
+DEBUG_MODE = False  # Does nothing for now.
 VERBOSE_MODE = True
 #TODO: Automate this, somehow.
 INSTANCE_URI_TO_LOCAL_ROUTE = {
@@ -172,6 +172,7 @@ def harvest_rofr():
 def reg_uri_to_filename(reg_uri):
     return str(reg_uri).rstrip('/').replace("http://", "http_").replace("https://", "http_").replace("/","_").replace('#','')
 
+
 def seconds_to_human_string(secs):
     """
 
@@ -180,11 +181,12 @@ def seconds_to_human_string(secs):
     :return:
     :rtype: string
     """
-    whole_hours = math.floor(secs) // 3600
-    secs = secs - (whole_hours*3600)
-    whole_mins = math.floor(secs) // 60
-    secs = secs - (whole_mins*60)
-    return "{:d}H {:00d}M {:.1f}S".format(int(whole_hours), int(whole_mins), secs)
+    whole_secs = math.floor(secs)
+    whole_hours = whole_secs // 3600
+    remain_secs = whole_secs % 3600
+    whole_mins = remain_secs // 60
+    secs_left = remain_secs % 60
+    return "{:d}H {:00d}M {:00d}S".format(whole_hours, whole_mins, secs_left)
 
 
 def _harvest_register_worker_fn(worker_index, reg_uri, instances, serial_chunk_size=INSTANCES_PER_FILE, **kwargs):
@@ -203,17 +205,19 @@ def _harvest_register_worker_fn(worker_index, reg_uri, instances, serial_chunk_s
         start_serial_group_time = time.perf_counter()
         info_message_pref = "P[{}] Wkr: {}  Set: {}/{},".format(str(os.getpid()), worker_index+1, iig+1, len(serial_groups))
         total_in_group = len(instance_s_group)
+        done_in_group = 0
         if isinstance(instance_s_group, tuple):
             instance_s_group = list(instance_s_group)
         with open("{}/{}_p{}_s{}.nt".format(OUTPUT_DIRECTORY, reg_uri_to_filename(reg_uri), str(worker_index+1), str(iig+1)),
                   'ab+') as inst_file:
-            for iiig, inst in enumerate(instance_s_group):
+            for inst in instance_s_group:
                 start_instance_time = 0 if first_group else time.perf_counter()
                 local_instance_url = str(inst).replace(replace_s, replace_r)
-                info_message = "{} Inst: {}/{}, ".format(info_message_pref, iiig+1, total_in_group)
+                info_message = "{} Inst: {}/{}, ".format(info_message_pref, done_in_group+1, total_in_group)
                 est_sfx = " First group - No est remaining." if first_group else " Wkr est {}".format(seconds_to_human_string(est_secs))
                 info(info_message+local_instance_url+est_sfx)
                 total_instances_done += 1
+                done_in_group += 1
                 m = endpoint_rule.match("|" + local_instance_url)
                 if m is None:
                     stripped_url = local_instance_url.split("#")[0].split("?")[0].split("#")[0]
@@ -258,6 +262,7 @@ def _harvest_register_worker_fn(worker_index, reg_uri, instances, serial_chunk_s
                         loc = next(iter(loc))
                     instance_s_group.append(loc)
                     total_instances_done -= 1
+                    done_in_group -= 1
                     continue
                 if hasattr(resp, 'status_code') and hasattr(resp, 'data'):
                     assert resp.status_code == 200
