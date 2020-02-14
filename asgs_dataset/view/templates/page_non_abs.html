@@ -5,7 +5,33 @@
 	<p>This is an API that delivers contents of the <a href="http://www.abs.gov.au/websitedbs/D3310114.nsf/home/Australian+Statistical+Geography+Standard+(ASGS)">Australian Statistical Geography Standard (ASGS) 2016 product</a> online as <a href="https://www.w3.org/standards/semanticweb/data">Linked Data</a>. To do this, the tool uses the <a href="http://linked.data.gov.au/def/asgs">ASGS Ontology</a> as its main data model and the series of public ASGS 2016 Web Feature Services, such as <a href="https://geo.abs.gov.au/arcgis/services/ASGS2016/MB/MapServer/WFSServer?service=wfs&version=2.0.0&request=GetCapabilities">the one for Mesh Blocks</a> as its source of data.</p>
 	<p>This tool is currently still in beta testing mode and, while it is, it is operated by CSIRO's <a href="https://research.csiro.au/ei/">Environmental Informatics</a> team. In the medium term, the tool is likely to be managed by the <a href="http://www.abs.gov.au">Australian Bureau of Statistics</a>.</p>
 
-        <h3>Non-ABS features in the ASGS will be implemented soon. Please be patient.</h3>
-
+        <h3>Non-ABS features in the ASGS.</h3>
+        <p><ul>
+        <li>
+            <a href="{{ url_for('controller.lgas') }}">Local Government Areas</a> - the list of all LGAs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_lga', lga='11800') }}">A LGA</a> - example, 11800 (Coffs Harbour)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.ceds') }}">Commonwealth Electorate Divisions</a> - the list of all CEDs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_ced', ced='237') }}">A CED</a> - example, 237 (Wills)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.sscs') }}">State Suburbs</a> - the list of all SSCs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_ssc', ssc='60527') }}">A SSC</a> - example, 71 (Quoiba)</li>
+            </ul>
+        </li>
+        <li>
+            <a href="{{ url_for('controller.nrmrs') }}">Natural Resource Management Regionss</a> - the list of all NRMRs, paged
+            <ul>
+                <li><a href="{{ url_for('controller.redirect_nrmr', nrmr='401') }}">A NRMR</a> - example, 401 (Mount Lofty Ranges)</li>
+            </ul>
+        </li>
+        </ul>
+        </p>
 
     {% endblock %}

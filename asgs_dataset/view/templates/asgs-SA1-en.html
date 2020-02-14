@@ -31,6 +31,9 @@
         {% if 'ra' in deets %}
             <li>Within Remoteness Area: <a href="{{ url_for("controller.redirect_ra", ra=deets['ra']) }}">{{ deets['ra'] }}</a></li>
         {% endif %}
+        {% if 'ced' in deets %}
+            <li>Within Commonwealth Electoral Division: <a href="{{ url_for("controller.redirect_ced", ced=deets['ced']) }}">{{ deets['ced'] }}</a></li>
+        {% endif %}
         <li>Albers Area: {{ "%0.0f" | format(deets['albers_area'] * 1000000.0 | round(0)) }}&nbsp;m<sup>2</sup></li>
         <li>Shape Area: {{ deets['shape_area'] }}</li>
         <li>Shape Length: {{ deets['shape_length'] }}</li>

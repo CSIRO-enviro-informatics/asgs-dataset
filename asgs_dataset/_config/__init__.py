@@ -29,8 +29,8 @@ URI_SA2_CLASS = "".join([DEF_URI_PREFIX, "#StatisticalAreaLevel2"])
 URI_SA3_CLASS = "".join([DEF_URI_PREFIX, "#StatisticalAreaLevel3"])
 URI_SA4_CLASS = "".join([DEF_URI_PREFIX, "#StatisticalAreaLevel4"])
 URI_DZN_CLASS = "".join([DEF_URI_PREFIX, "#DestinationZone"])
-URI_SSC_CLASS = "".join([DEF_URI_PREFIX, "#StateSuburb"])
-URI_NRMR_CLASS = "".join([DEF_URI_PREFIX, "#NaturalResourceManagementRegion"])
+
+
 URI_GCCSA_CLASS = "".join([DEF_URI_PREFIX, "#GreaterCapitalCityStatisticalArea"])
 URI_SUA_CLASS = "".join([DEF_URI_PREFIX, "#SignificantUrbanArea"])
 URI_RA_CLASS = "".join([DEF_URI_PREFIX, "#RemotenessArea"])
@@ -49,8 +49,8 @@ URI_SA2_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'statisticalarealevel2/'])
 URI_SA3_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'statisticalarealevel3/'])
 URI_SA4_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'statisticalarealevel4/'])
 URI_DZN_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'destinationzone/'])
-URI_SSC_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'statesuburb/'])
-URI_NRMR_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'naturalresourcemanagementregion/'])
+
+
 URI_GCCSA_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'greatercapitalcitystatisticalarea/'])
 URI_SUA_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'significanturbanarea/'])
 URI_RA_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'remotenessarea/'])
@@ -60,6 +60,18 @@ URI_SOS_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'sectionofstate/'])
 URI_ILOC_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'indigenouslocation/'])
 URI_IARE_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'indigenousarea/'])
 URI_IREG_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'indigenousregion/'])
+
+URI_SSC_CLASS = "".join([DEF_URI_PREFIX, "#StateSuburb"])
+URI_NRMR_CLASS = "".join([DEF_URI_PREFIX, "#NaturalResourceManagementRegion"])
+URI_LGA_CLASS = "".join([DEF_URI_PREFIX, "#LocalGovernmentArea"])
+URI_CED_CLASS = "".join([DEF_URI_PREFIX, "#CommonwealthElectoralDivision"])
+
+URI_SSC_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'statesuburb/'])
+URI_NRMR_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'naturalresourcemanagementregion/'])
+URI_LGA_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'localgovernmentarea/'])
+URI_CED_INSTANCE_BASE = '/'.join([DATA_URI_PREFIX, 'commonwealthelectoraldivision/'])
+
+
 
 WFS_SERVICE_BASE_URI = 'https://geo.abs.gov.au/arcgis/services/ASGS2016/{service}/MapServer/WFSServer'
 GEOMETRY_SERVICE_HOST = "http://gds.loci.cat"

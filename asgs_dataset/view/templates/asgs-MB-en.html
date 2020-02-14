@@ -28,11 +28,15 @@
             <li>Within Destination Zone: {{ deets['dzn'] }}</li>
         {% endif %}
         {% if 'ssc' in deets %}
-            <li>Within StateSuburb Code: {{ deets['ssc'] }}</li>
+            <li>Within State Suburb: <a href="{{ url_for("controller.redirect_ssc", ssc=deets['ssc']) }}">{{ deets['ssc'] }}</a></li>
+        {% endif %}
+        {% if 'lga' in deets %}
+            <li>Within Local Government Area: <a href="{{ url_for("controller.redirect_lga", lga=deets['lga']) }}">{{ deets['lga'] }}</a></li>
         {% endif %}
         {% if 'nrmr' in deets %}
-            <li>Within Natural Resource Management Region: {{ deets['nrmr'] }}</li>
+            <li>Within Natural Resource Management Region: <a href="{{ url_for("controller.redirect_nrmr", nrmr=deets['nrmr']) }}">{{ deets['nrmr'] }}</a></li>
         {% endif %}
+
         <li>Albers Area: {{ "%0.0f" | format(deets['albers_area'] * 1000000.0 | round(0)) }}&nbsp;m<sup>2</sup></li>
         <li>Shape Area: {{ deets['shape_area'] }}</li>
         <li>Shape Length: {{ deets['shape_length'] }}</li>
