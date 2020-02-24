@@ -1056,7 +1056,7 @@ def retrieve_asgs_feature(asgs_type, identifier, local=True):
                 except Exception:
                     raise RuntimeError("Cannot decode XML from WFS endpoint")
         except HTTPError as he:
-            print("URL:{}\nHTTP Error: {}".format(ccatchment_wfs_uri, he.code))
+            print("URL:{}\nHTTP Error: {}".format(wfs_uri, he.code))
             if he.code == 404:
                 raise NotFoundError()
             raise
