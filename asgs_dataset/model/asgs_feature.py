@@ -1,6 +1,7 @@
 from datetime import datetime
 import gzip
 import os
+import time
 from functools import lru_cache, partial
 from urllib.error import HTTPError
 from urllib.parse import urlencode
@@ -168,6 +169,7 @@ LOCAL_DATA_VAL_LOOKUPS = {
     **load_gz_pickle("sa1_to_ucl"),
     **load_gz_pickle("sa1_to_ra"),
     **load_gz_pickle("sa1_to_ced"),
+    **load_gz_pickle("sa2_to_sua"),
     **load_gz_pickle("mb_to_lga")
 }
 
@@ -1001,6 +1003,31 @@ def extract_asgs_features_as_rdf(asgs_type, tree, ont_conv, g=None):
         g.add((s, p, o))
     return g
 
+def retryable_request(uri, method, retries=3, delay=2):
+    if retries < 0:
+        raise RuntimeError("Too many retries on URL request")
+    try:
+        r = Request(uri, method=method)
+        resp = urlopen(r)  # not using with: so will not automatically close
+        if not (200 <= resp.status <= 299):
+            if resp.status == 404:
+                raise NotFoundError()
+            raise RuntimeError("Cannot get feature index from WFS backend.")
+        return resp
+    except HTTPError as he:
+        print("URL:{}\nHTTP Error: {}".format(uri, he.code))
+        if he.code == 404:
+            raise NotFoundError()
+        if retries < 1:
+            raise
+    except Exception as e:
+        print(e)
+        if retries < 1:
+            raise
+    print("retrying...")
+    time.sleep(delay)
+    return retryable_request(uri, method, retries=retries-1, delay=delay*2)
+
 @lru_cache(maxsize=128)
 def retrieve_asgs_feature(asgs_type, identifier, local=True):
     if identifier.startswith("http:") or identifier.startswith("https:"):
@@ -1043,26 +1070,16 @@ def retrieve_asgs_feature(asgs_type, identifier, local=True):
     if tree is None:
         wfs_uri = ASGSFeature.construct_wfs_query_for_feature_type(
             asgs_type, identifier)
+        resp = retryable_request(wfs_uri, 'GET', retries=3, delay=2)
         try:
-            r = Request(wfs_uri, method='GET')
-            with urlopen(r) as resp:
-                if not (200 <= resp.status <= 299):
-                    if resp.status == 404:
-                        raise NotFoundError()
-                    raise RuntimeError(
-                        "Cannot get feature index from WFS backend.")
-                try:
-                    tree = etree.parse(resp, parser=parser)
-                except Exception:
-                    raise RuntimeError("Cannot decode XML from WFS endpoint")
-        except HTTPError as he:
-            print("URL:{}\nHTTP Error: {}".format(ccatchment_wfs_uri, he.code))
-            if he.code == 404:
-                raise NotFoundError()
-            raise
-        except Exception as e:
-            print(e)
-            raise
+            tree = etree.parse(resp, parser=parser)
+        except Exception:
+            raise RuntimeError("Cannot decode XML from WFS endpoint")
+        finally:
+            try:
+                resp.close()
+            except:
+                pass
     # uncomment to see the full XML dump
     #s = etree.tostring(tree, pretty_print=True)
     #print(s.decode('utf-8'))
