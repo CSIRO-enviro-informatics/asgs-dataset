@@ -169,6 +169,7 @@ LOCAL_DATA_VAL_LOOKUPS = {
     **load_gz_pickle("sa1_to_ucl"),
     **load_gz_pickle("sa1_to_ra"),
     **load_gz_pickle("sa1_to_ced"),
+    **load_gz_pickle("sa2_to_sua"),
     **load_gz_pickle("mb_to_lga")
 }
 
