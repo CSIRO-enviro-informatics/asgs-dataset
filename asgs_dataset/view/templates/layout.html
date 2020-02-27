@@ -5,6 +5,8 @@
     <title>ASGS LD API</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='simple.css') }}" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli">
+    {% block extra_scripts%}
+    {% endblock %}
     {% block extra_head_stylesheets%}
     {% endblock %}
     {% block extra_head_css%}
