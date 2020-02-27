@@ -164,6 +164,42 @@ class ASGSClassRenderer(pyldapi.Renderer):
                 raise RuntimeError("ASGS RDF Renderer doesn't know which graph to render")
         if self.format in {'application/ld+json', 'application/json'}:
             serial_format = 'json-ld'
+            fallback_context = {
+               "schema": "http://schema.org/",
+               "skos": "https://www.w3.org/TR/skos-reference/",
+               "gsp": "http://www.opengis.net/ont/geosparql#",
+               "description": "schema:description",
+               "geo": "schema:geo",
+               "hasGeometry": "gsp:hasGeometry",
+                "asWKT": "gsp:asWKT",
+               "image": {
+               "@id": "schema:image",
+               "@type": "@id"
+               },
+               "name": "schema:name",
+               "sameAs": "schema:sameAs",
+               "related": "skos:related"
+            }
+            context = [
+               "https://opengeospatial.github.io/ELFIE/json-ld/elf.jsonld",
+               "https://opengeospatial.github.io/ELFIE/json-ld/elf-network.jsonld",
+               {
+                  "dct": "http://purl.org/dc/terms/",
+                  "loci": "http://linked.data.gov.au/def/loci#",
+                  "geox": "http://linked.data.gov.au/def/geox#",
+                  "asgs-id": "http://linked.data.gov.au/def/asgs/id#",
+                  "asgs": "http://linked.data.gov.au/def/asgs#",
+                  "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+               }
+            ]
+            res = None
+            from urllib.error import HTTPError
+            try:
+               res = g.serialize(format='json-ld', context=context, auto_compact=True)
+            except HTTPError as he:
+               #use fallback context instead
+               res = g.serialize(format='json-ld', context=fallback_context, auto_compact=True)
+            return Response(res, mimetype=self.format, headers=self.headers)
         elif self.format in self.RDF_MIMETYPES:
             serial_format = self.format
         else:
