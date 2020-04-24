@@ -17,7 +17,7 @@
     <div id="map_container"></div>
     <ul>
         <li>Name: {{ deets['name'] }}</li>
-        {% if 'state_abbrev' in deets %}
+        {% if 'state_abbrev' in deets and STATES_USE_NAMEABBREV is defined and STATES_USE_NAMEABBREV  %}
             <li>Within State: <a href="{{ url_for("controller.redirect_state", state=deets['state_abbrev']) }}">{{ deets['state_abbrev'] }}&nbsp;(State ID: {{ deets['state'] }})</a></li>
         {% else %}
             <li>Within State: <a href="{{ url_for("controller.redirect_state", state=deets['state']) }}">State ID {{ deets['state'] }}</a></li>
@@ -30,9 +30,11 @@
         <li>Shape Length: {{ deets['shape_length'] }}</li>
     </ul>
     <hr/>
-    <p>JSON Dump</p>
-    <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ deets|tojson|safe }}</code></pre>
-    <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ geometry|tojson|safe }}</code></pre>
+    {% if JSON_DUMP is defined and JSON_DUMP %}
+        <p>JSON Dump</p>
+        <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ deets|tojson|safe }}</code></pre>
+        <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ geometry|tojson|safe }}</code></pre>
+    {% endif %}
     <h3>Other profiles, formats and languages:</h3>
     <ul><li><a href="{{ request.base_url }}?uri={{ uri }}&_view=alternates">Alternate Views</a></li></ul>
 {% endblock %}

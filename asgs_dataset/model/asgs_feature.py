@@ -7,8 +7,8 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 import rdflib
-from flask import Response, render_template, redirect, url_for
-from rdflib import Graph, URIRef, Namespace, RDF, RDFS, XSD, OWL, Literal, BNode
+from flask import url_for
+from rdflib import Graph, URIRef, RDFS, Literal, BNode
 from rdflib.namespace import DCTERMS
 
 import asgs_dataset._config as conf
@@ -61,6 +61,8 @@ IGNORE_TOKEN = object()
 
 RDF_INCLUDE_UNKNOWN_PREDICATES = False
 
+STATES_USE_NAMEABBREV = False
+
 # WHY ARE THEY ALL WFS?!
 xml_ns = {
     "MB": "WFS",
@@ -101,7 +103,7 @@ feature_identification_types = {
     "SA2": ASGS_ID.term("sa2Maincode2016"),
     "SA3": ASGS_ID.term("sa3Code2016"),
     "SA4": ASGS_ID.term("sa4Code2016"),
-    "STATE": ASGS_ID.term("stateCode2016"),
+    "STATE": ASGS_ID.term("stateNameAbbrev2016") if STATES_USE_NAMEABBREV else ASGS_ID.term("stateCode2016"),
     "AUS": ASGS_ID.term("ausCode2016"),
     "GCCSA": ASGS_ID.term("gccsaCode2016"),
     "SUA": ASGS_ID.term("suaCode2016"),
@@ -123,8 +125,10 @@ ASGS_WFS_SA1 = AsgsWfsType('SA1', 'SA1:SA1', 'SA1:SA1_MAINCODE_2016')  # Statist
 ASGS_WFS_SA2 = AsgsWfsType('SA2', 'SA2:SA2', 'SA2:SA2_MAINCODE_2016')  # StatisticalAreaLevel2
 ASGS_WFS_SA3 = AsgsWfsType('SA3', 'SA3:SA3', 'SA3:SA3_CODE_2016')  # StatisticalAreaLevel3
 ASGS_WFS_SA4 = AsgsWfsType('SA4', 'SA4:SA4', 'SA4:SA4_CODE_2016')  # StatisticalAreaLevel4
-ASGS_WFS_STATE = AsgsWfsType('STATE', 'STATE:STATE', 'STATE:STATE_NAME_ABBREV_2016')  # States (by name abbrev)
-#ASGS_WFS_STATE = AsgsWfsType('STATE', 'STATE:STATE', 'STATE:STATE_CODE_2016')  # States (by 1-digit code)
+if STATES_USE_NAMEABBREV:
+    ASGS_WFS_STATE = AsgsWfsType('STATE', 'STATE:STATE', 'STATE:STATE_NAME_ABBREV_2016')  # States (by name abbrev)
+else:
+    ASGS_WFS_STATE = AsgsWfsType('STATE', 'STATE:STATE', 'STATE:STATE_CODE_2016')  # States (by 1-digit code)
 ASGS_WFS_AUS = AsgsWfsType('AUS', 'AUS:AUS', 'AUS:AUS_CODE_2016')  # Australia
 ASGS_WFS_GCCSA = AsgsWfsType('GCCSA', 'GCCSA:GCCSA', 'GCCSA:GCCSA_CODE_2016')  # GreaterCapitalCityStatisticalArea
 ASGS_WFS_SUA = AsgsWfsType('SUA', 'SUA:SUA', 'SUA:SUA_CODE_2016')  # SignificantUrbanArea
@@ -776,34 +780,38 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
     if mappings == 'loci':
         lazy_id = str(canonical_uri).split('/')[-1]
         no_triples = set()
+        to_uri = {
+            'sa1': lambda x: URIRef(conf.URI_SA1_INSTANCE_BASE + x.text),
+            'sa2': lambda x: URIRef(conf.URI_SA2_INSTANCE_BASE + x.text),
+            'sa3': lambda x: URIRef(conf.URI_SA3_INSTANCE_BASE + x.text),
+            'sa4': lambda x: URIRef(conf.URI_SA4_INSTANCE_BASE + x.text),
+            'dzn': lambda x: URIRef(conf.URI_DZN_INSTANCE_BASE + x.text),
+            'ssc': lambda x: URIRef(conf.URI_SSC_INSTANCE_BASE + x.text),
+            'nrmr': lambda x: URIRef(conf.URI_NRMR_INSTANCE_BASE + x.text),
+            'gccsa': lambda x: URIRef(conf.URI_GCCSA_INSTANCE_BASE + x.text),
+            'iloc': lambda x: URIRef(conf.URI_ILOC_INSTANCE_BASE + x.text),
+            'iare': lambda x: URIRef(conf.URI_IARE_INSTANCE_BASE + x.text),
+            'ireg': lambda x: URIRef(conf.URI_IREG_INSTANCE_BASE + x.text),
+            'ucl': lambda x: URIRef(conf.URI_UCL_INSTANCE_BASE + x.text),
+            'sosr': lambda x: URIRef(conf.URI_SOSR_INSTANCE_BASE + x.text),
+            'sos': lambda x: URIRef(conf.URI_SOS_INSTANCE_BASE + x.text),
+            'sua': lambda x: URIRef(conf.URI_SUA_INSTANCE_BASE + x.text),
+            'ra': lambda x: URIRef(conf.URI_RA_INSTANCE_BASE + x.text),
+            'lga': lambda x: URIRef(conf.URI_LGA_INSTANCE_BASE + x.text),
+            'ced': lambda x: URIRef(conf.URI_CED_INSTANCE_BASE + x.text),
+            'state': lambda x: URIRef(conf.URI_STATE_INSTANCE_BASE + state_id_map.get(int(x.text),'OT')) if STATES_USE_NAMEABBREV \
+                else URIRef(conf.URI_STATE_INSTANCE_BASE + x.text),
+        }
         to_converter = {
             'shape': lambda x: (no_triples, URIRef("".join([conf.GEOMETRY_SERVICE_URI, geometry_service_routes[asgs_type], lazy_id]))),
-            'shape_area': partial(gml_extract_shapearea_to_geox_area, crs=CRS_EPSG["3857"]), # cartesian area from asgs using "pseudo-mercator" projection
-            'albers_area': partial(gml_extract_shapearea_to_geox_area, extra_transform=lambda x: (set(), float(x) * 1000000.0), crs=CRS_EPSG["3577"]), # cartesian GDA-94 CRS using "Albers_Conic_Equal_Area" projection
-            'sa1': lambda x: (no_triples, URIRef(conf.URI_SA1_INSTANCE_BASE + x.text)),
-            'sa2': lambda x: (no_triples, URIRef(conf.URI_SA2_INSTANCE_BASE + x.text)),
-            'sa3': lambda x: (no_triples, URIRef(conf.URI_SA3_INSTANCE_BASE + x.text)),
-            'sa4': lambda x: (no_triples, URIRef(conf.URI_SA4_INSTANCE_BASE + x.text)),
-            'dzn': lambda x: (no_triples, URIRef(conf.URI_DZN_INSTANCE_BASE + x.text)),
-            'ssc': lambda x: (no_triples, URIRef(conf.URI_SSC_INSTANCE_BASE + x.text)),
-            'nrmr': lambda x: (no_triples, URIRef(conf.URI_NRMR_INSTANCE_BASE + x.text)),
-            'gccsa': lambda x: (no_triples, URIRef(conf.URI_GCCSA_INSTANCE_BASE + x.text)),
-            'iloc': lambda x: (no_triples, URIRef(conf.URI_ILOC_INSTANCE_BASE + x.text)),
-            'iare': lambda x: (no_triples, URIRef(conf.URI_IARE_INSTANCE_BASE + x.text)),
-            'ireg': lambda x: (no_triples, URIRef(conf.URI_IREG_INSTANCE_BASE + x.text)),
-            'ucl': lambda x: (no_triples, URIRef(conf.URI_UCL_INSTANCE_BASE + x.text)),
-            'sosr': lambda x: (no_triples, URIRef(conf.URI_SOSR_INSTANCE_BASE + x.text)),
-            'sos': lambda x: (no_triples, URIRef(conf.URI_SOS_INSTANCE_BASE + x.text)),
-            'sua': lambda x: (no_triples, URIRef(conf.URI_SUA_INSTANCE_BASE + x.text)),
-            'ra': lambda x: (no_triples, URIRef(conf.URI_RA_INSTANCE_BASE + x.text)),
-            'lga': lambda x: (no_triples, URIRef(conf.URI_LGA_INSTANCE_BASE + x.text)),
-            'ced': lambda x: (no_triples, URIRef(conf.URI_CED_INSTANCE_BASE + x.text)),
-            'state': lambda x: (no_triples, URIRef(conf.URI_STATE_INSTANCE_BASE + state_id_map.get(int(x.text), 'OT'))),
+            'shape_area': partial(gml_extract_shapearea_to_geox_area, crs=CRS_EPSG["3857"]),  # cartesian area from asgs using "pseudo-mercator" projection
+            'albers_area': partial(gml_extract_shapearea_to_geox_area, extra_transform=lambda x: (set(), float(x) * 1000000.0), crs=CRS_EPSG["3577"]),  # cartesian GDA-94 CRS using "Albers_Conic_Equal_Area" projection
             'code': lambda x: (no_triples, Literal(x.text, datatype=feature_identification_types[asgs_type])),
             'category_code': lambda x: (no_triples, ASGS_CAT.term(x.text))
         }
         to_int = ('object_id',)
     else:
+        to_uri = {}
         to_converter = {
             'shape': gml_extract_geom_to_geosparql,
             'shape_area': partial(gml_extract_shapearea_to_geox_area, crs=CRS_EPSG["3857"]), #cartesian area from asgs using "pseudo-mercator" projection
@@ -852,7 +860,10 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
             used_tags.add(c.tag.upper())
             if var in is_geom and ignore_geom:
                 continue
-            if var in to_converter:
+            if var in to_uri:
+                conv_func = to_uri[var]
+                val = conv_func(c)
+            elif var in to_converter:
                 conv_func = to_converter[var]
                 _triples, val = conv_func(c)
                 for (s, p, o) in iter(_triples):
@@ -958,7 +969,14 @@ def asgs_features_triples_converter(asgs_type, canonical_uri, *args, mappings='g
             kv_map[var] = val
             extra_data_keyvals[var] = val
         for (var, val) in extra_data_keyvals.items():
-            if var in to_converter:
+            if var in to_uri:
+                conv_func = to_uri[var]
+                try:
+                    c = FakeXMLElement(var, str(val))
+                    val = conv_func(c)
+                except Exception as e:
+                    raise
+            elif var in to_converter:
                 conv_func = to_converter[var]
                 try:
                     c = FakeXMLElement(var, str(val))
@@ -1668,7 +1686,10 @@ class ASGSFeature(ASGSModel):
                     g.add((feat, reg_reg, URIRef(conf.URI_AUS_INSTANCE_BASE)))
             if self.asgs_type != "AUS" and self.asgs_type != "STATE":
                 if 'state' in deets:
-                    state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + state_id_map.get(int(deets['state']), 'OT'))
+                    if STATES_USE_NAMEABBREV:
+                        state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + state_id_map.get(int(deets['state']), 'OT'))
+                    else:
+                        state_uri = URIRef(conf.URI_STATE_INSTANCE_BASE + str(deets['state']))
                     if is_loci_profile:
                         g.add((feat, GEO_within, state_uri))
                         g.add((state_uri, GEO_contains, feat))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from asgs_dataset.model import NotFoundError
-from asgs_dataset.model.asgs_feature import ASGSFeature
+from asgs_dataset.model import asgs_feature
 from asgs_dataset.view.ldapi import ASGSClassRenderer
 import asgs_dataset._config as config
 
@@ -18,7 +18,7 @@ class ASGSFeatureRenderer(ASGSClassRenderer):
             _uri = ''.join([config.URI_ASGSFEATURE_INSTANCE_BASE, identifier])
         self.identifier = identifier
         try:
-            self.instance = ASGSFeature(_uri)
+            self.instance = asgs_feature.ASGSFeature(_uri)
             kwargs.setdefault('asgs_template',
                               'asgs-' + self.instance.asgs_type + '-en.html')
         except Exception as e:
@@ -51,6 +51,8 @@ class ASGSFeatureRenderer(ASGSClassRenderer):
                 'geometry': None,
                 'bbox': None,
             })
+        if asgs_feature.STATES_USE_NAMEABBREV:
+            _template_context['STATES_USE_NAMEABBREV'] = True
         if template_context is not None and len(template_context) > 0:
             _template_context.update(template_context)
         return super(ASGSFeatureRenderer, self).\

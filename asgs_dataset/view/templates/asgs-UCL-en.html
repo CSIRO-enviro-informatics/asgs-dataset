@@ -29,9 +29,13 @@
         <li>Shape Length: {{ deets['shape_length'] }}</li>
     </ul>
     <hr/>
-    <p>JSON Dump</p>
-    <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ deets|tojson|safe }}</code></pre>
-    <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ geometry|tojson|safe }}</code></pre>
+    {% if JSON_DUMP is defined and JSON_DUMP %}
+        {% if JSON_DUMP is defined and JSON_DUMP %}
+        <p>JSON Dump</p>
+        <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ deets|tojson|safe }}</code></pre>
+        <pre style="white-space: pre-wrap; max-width:900px;"><code>{{ geometry|tojson|safe }}</code></pre>
+    {% endif %}
+    {% endif %}
     <h3>Other profiles, formats and languages:</h3>
     <ul><li><a href="{{ request.base_url }}?uri={{ uri }}&_view=alternates">Alternate Views</a></li></ul>
 {% endblock %}
