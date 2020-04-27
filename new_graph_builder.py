@@ -376,14 +376,12 @@ def harvest_register(reg_uri):
 
 ##UTILS##
 def grouper(iterable, n):
-    assert is_iterable(iterable)
     if isinstance(iterable, (list, tuple)):
         return list_grouper(iterable, n)
     elif isinstance(iterable, (set, frozenset)):
         return set_grouper(iterable, n)
 
 def list_grouper(iterable, n):
-    assert isinstance(iterable, (list, tuple))
     assert n > 0
     iterable = iter(iterable)
     count = 0
@@ -403,7 +401,6 @@ def list_grouper(iterable, n):
             break
 
 def set_grouper(iterable, n):
-    assert isinstance(iterable, (set, frozenset))
     assert n > 0
     iterable = iter(iterable)
     count = 0
@@ -422,10 +419,6 @@ def set_grouper(iterable, n):
                 yield frozenset(group)
             break
 
-def first(i):
-    assert is_iterable(i)
-    return next(iter(i))
-
 def is_iterable(i):
     return isinstance(i, (list, set, tuple, frozenset))
 
@@ -440,6 +433,10 @@ if __name__ == '__main__':
         if m_Worker:
             workers = []
             for i,r in enumerate(registers):
+                # if "meshblock/" in str(r):
+                #     continue
+                # if "statisticalarealevel1/" in str(r):
+                #     continue
                 t = m_Worker(target=harvest_register, args=(r,), name="worker"+str(i))
                 t.start()
                 workers.append(t)
