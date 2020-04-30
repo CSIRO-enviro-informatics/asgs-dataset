@@ -1,4 +1,9 @@
 {% extends "layout.html" %}
+{% block extra_scripts %}
+    <script type="application/ld+json"> 
+       {{ include_raw(request.url + "&_format=application/ld+json") }}
+    </script>
+{% endblock %}
 
     {% block content %}
     <h1>ASGS State Feature - {{ deets['name'] }} ({{ deets['name_abbrev'] }})</h1>

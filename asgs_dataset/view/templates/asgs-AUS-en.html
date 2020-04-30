@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 
+    {% block extra_scripts %}
+       <script type="application/ld+json"> 
+          {{ include_raw(uri+"?_format=application/ld+json") }}
+       </script>
+    {% endblock %}
+
     {% block content %}
     <h1>ASGS Feature - {{ deets['name'] }}</h1>
     <h3><a href="{{ uri }}">{{ uri }}</a></h3>
