@@ -1490,7 +1490,7 @@ class ASGSFeature(ASGSModel):
                     g.add((sa3, ASGS.isStatisticalAreaLevel3Of, feat))
                 if 'sua' in deets:
                     sua_code = Literal(str(deets['sua']))
-                    sua = URIRef(conf.URI_RA_INSTANCE_BASE+str(deets['sua']))
+                    sua = URIRef(conf.URI_SUA_INSTANCE_BASE+str(deets['sua']))
                     g.add((sua, RDF_a, URIRef(conf.URI_SUA_CLASS)))
 
                     if is_loci_profile:
